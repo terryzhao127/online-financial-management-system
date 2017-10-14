@@ -1,0 +1,95 @@
+/* Jumbotron */
+.jumbotron {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    background-color: white;
+}
+
+.jumbotron-text {
+    margin-bottom: 3.4em;
+}
+
+@media only screen and (max-width: 352px) {
+    .jumbotron-heading {
+        font-size: 2.2em;
+    }
+
+    .jumbotron p {
+        font-size: 1.2em;
+    }
+}
+
+@media only screen and (max-width: 322px) {
+    .jumbotron-heading {
+        font-size: 2.2em;
+    }
+
+    .jumbotron p {
+        font-size: 1em;
+    }
+
+    .btn {
+        font-size: 1em;
+    }
+}
+
+/* Navigation Bar */
+.nav-item a {
+    color: white;
+}
+
+.nav-item a:hover {
+    color: grey;
+}
+
+
+@media only screen and (max-width: 386px) {
+    .navbar-brand {
+        font-size: 1.2em;
+    }
+
+        .navbar-toggler-icon {
+        max-width: 0.8em;
+    }
+}
+
+@media only screen and (max-width: 352px) {
+    .navbar-brand {
+        font-size: 1.1em;
+    }
+
+    .navbar-toggler-icon {
+        max-width: 0.7em;
+    }
+}
+
+@media only screen and (max-width: 322px) {
+    .navbar-brand {
+        font-size: 1em;
+    }
+
+    .nav-link {
+        font-size: 0.9em;
+    }
+
+    .navbar-toggler-icon {
+        max-width: 0.7em;
+    }
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 322px) {
+    .btn {
+        font-size: 1em;
+    }
+}
+
+/* For Margin */
+.margin-bottom-2 {
+    margin-bottom: 2em;
+}
