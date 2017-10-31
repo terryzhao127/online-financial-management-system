@@ -1,80 +1,79 @@
-/* Jumbotron */
-.jumbotron {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    background-color: white;
+/* Load Fonts */
+@font-face {
+    font-family: "RobotoSlab";
+    src: url('../fonts/RobotoSlab.ttf') format("truetype");
 }
 
-.jumbotron-text {
-    margin-bottom: 3.4em;
+@font-face {
+  font-family: "Dosis";
+  src: url('../fonts/Dosis.ttf') format("truetype");
 }
 
-@media only screen and (max-width: 352px) {
-    .jumbotron-heading {
-        font-size: 2.2em;
-    }
-
-    .jumbotron p {
-        font-size: 1.2em;
-    }
-}
-
-@media only screen and (max-width: 322px) {
-    .jumbotron-heading {
-        font-size: 2.2em;
-    }
-
-    .jumbotron p {
-        font-size: 1em;
-    }
-
-    .btn {
-        font-size: 1em;
-    }
+@font-face {
+  font-family: "Raleway";
+  src: url('../fonts/Raleway.ttf') format("truetype");
 }
 
 /* Navigation Bar */
-.nav-item a {
-    color: white;
+.navbar-brand {
+    font-family: RobotoSlab, sans-serif;
 }
 
-.nav-item a:hover {
-    color: grey;
+.nav-item {
+    font-family: Dosis, sans-serif;
 }
 
-
-@media only screen and (max-width: 386px) {
+@media only screen and (max-width: 500px) {
     .navbar-brand {
         font-size: 1.2em;
     }
 
-        .navbar-toggler-icon {
-        max-width: 0.8em;
+    .navbar-toggler-icon {
+        max-width: 0.7em;
     }
 }
 
-@media only screen and (max-width: 352px) {
+@media only screen and (max-width: 465px) {
     .navbar-brand {
         font-size: 1.1em;
     }
 
     .navbar-toggler-icon {
-        max-width: 0.7em;
+        max-width: 0.6em;
     }
 }
 
-@media only screen and (max-width: 322px) {
+@media only screen and (max-width: 432px) {
     .navbar-brand {
         font-size: 1em;
     }
 
     .nav-link {
-        font-size: 0.9em;
+        font-size: 0.7em;
+    }
+}
+
+@media only screen and (max-width: 402px) {
+    .navbar-brand {
+        font-size: 0.8em;
+    }
+
+    .nav-link {
+        font-size: 0.7em;
     }
 
     .navbar-toggler-icon {
-        max-width: 0.7em;
+        max-width: 0.5em;
     }
+
+    .footer {
+        font-size: 0.8em;
+    }
+}
+
+/* Main Content */
+.main-content {
+    font-family: Raleway, sans-serif;
 }
 
 /* Buttons */
@@ -92,4 +91,15 @@
 /* For Margin */
 .margin-bottom-2 {
     margin-bottom: 2em;
+}
+
+/* Footer */
+.footer {
+    font-family: Dosis, sans-serif;
+}
+
+@media only screen and (max-width: 402px) {
+    .footer {
+        font-size: 0.8em;
+    }
 }

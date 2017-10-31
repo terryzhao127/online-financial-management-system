@@ -2,5 +2,44 @@
 
 {% block title %}Financial Management System{% endblock %}
 
-{% block jumbotron_title %}Welcome!{% endblock %}
-{% block jumbotron_subtitle %}This is a system for better financial management.{% endblock %}
+{% block additional_stylesheets %}
+    <style>
+    .form-signin {
+        max-width: 330px;
+        padding: 15px;
+        margin: 0 auto;
+    }
+
+    .jumbotron {
+        background-color: white
+    }
+
+    input {
+        margin-bottom: 1em;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Jumbotron -->
+    <section class="jumbotron text-center">
+        <div class="container">
+            <div class="jumbotron-text">
+                <h1 class="jumbotron-heading">Welcome!</h1>
+                <p class="lead text-muted">Please login to manage financial affairs:</p>
+            </div>
+            <form class="form-signin">
+                <label for="inputEmail" class="sr-only">Email address</label>
+                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required=""
+                       autofocus="">
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}
