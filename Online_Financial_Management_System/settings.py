@@ -122,5 +122,5 @@ USE_TZ = True
 # TODO: Deploying static file
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "templates", "common_static")
+    os.path.join(BASE_DIR, "static")
 ]
