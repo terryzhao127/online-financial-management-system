@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block base_stylesheets %}
+    <style>
+        #sidemenu button {
+            font-size: 1.5em;
+            color: #007bff;
+            background-color: white;
+        }
+
+        #sidemenu button:hover {
+            background-color: gainsboro;
+        }
+
+        #sidemenu a {
+            font-family: Dosis, sans-serif !important;
+        }
+
+        #user-btn {
+            cursor: pointer;
+        }
+    </style>
+    {% block secondary_base_stylesheets %}{% endblock %}
+{% endblock %}
+
+{% block user %}
+    <a class="nav-link" id="user-btn"><i class="fa fa-user" aria-hidden="true"></i>
+    {% block username %}{% endblock %}
+    </a>
+{% endblock %}
+
+{% block base-content %}
+    <div class="container">
+        <aside class="col-md-2">
+            <div class="mt-2 mb-3" id="sidemenu">
+                <ul class="nav flex-md-column flex-row justify-content-between text-center">
+                    <li class="nav-item"><a href="/info/" class="nav-link pl-0 text-info">
+                        <button class="btn">Information</button>
+                    </a>
+                </ul>
+            </div>
+        </aside>
+    </div>
+    {% block secondary_base_content %}{% endblock %}
+{% endblock %}
+
+{% block base_scripts %}
+    <script>
+        $('#sidemenu').affix({
+            offset: {
+                top: $('#navbar').offset().top + $('#navbar').outerHeight(),
+                bottom: $('footer').outerHeight() + 50
+            }
+        });
+    </script>
+    {% block secondary_base_scripts %}{% endblock %}
+{% endblock %}
