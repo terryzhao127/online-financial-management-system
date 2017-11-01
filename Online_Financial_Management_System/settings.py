@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'login.apps.IndexConfig',
     'info.apps.InfoConfig',
+    'receipt.apps.ReceiptConfig',
+    'tax.apps.TaxConfig',
+    'table.apps.TableConfig',
+    'salary.apps.SalaryConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

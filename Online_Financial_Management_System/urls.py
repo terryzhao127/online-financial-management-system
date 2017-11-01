@@ -21,5 +21,8 @@ urlpatterns = [
     url(r'^$', lambda r: redirect('/login/')),
     url(r'^login/', include('login.urls')),
     url(r'^info/', include('info.urls')),
+    url(r'^receipt/', include('receipt.urls')),
+    url(r'^table/', include('table.urls')),
+    url(r'^tax/', include('tax.urls')),
     url(r'^admin/', admin.site.urls),
 ]

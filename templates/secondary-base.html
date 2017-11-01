@@ -3,20 +3,7 @@
 {% block base_stylesheets %}
     <style>
         #sidemenu a {
-            padding: 0;
             font-family: Dosis, sans-serif;
-        }
-
-        #sidemenu div {
-            color: #007bff;
-            background-color: white;
-        }
-
-        @media only screen and (min-width: 768px) {
-            #sidemenu div:hover {
-                color: aliceblue;
-                background-color: gainsboro;
-            }
         }
 
         #user-btn {
@@ -41,29 +28,28 @@
 {% endblock %}
 
 {% block base-content %}
-    <div class="container h-100 px-0">
+    <div class="container h-100">
         <div class="row h-100">
-            <aside class="col-md-2 px-0">
-                <div class="mt-5 mb-3" id="sidemenu">
-                    <ul class="nav flex-md-column flex-row justify-content-between text-center">
+            <aside class="col-md-2">
+                <div class="mt-2 mb-3" id="sidemenu">
+                    <ul class="nav flex-md-column flex-row justify-content-between">
                         <li class="nav-item">
-                            <a href="/info/" class="nav-link text-info">
-                                <div class="btn btn-block">Information</div>
+                            <a href="/info/" class="nav-link pl-0 text-info">
+                                Information
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link text-info">
-                                <div class="btn btn-block">Receipts</div>
-                            </a>
+                                <a href="/receipt/" class="nav-link pl-0 text-info">Receipts</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link text-info">
-                                <div class="btn btn-block">Tables</div>
-                            </a>
+                                <a href="/table/" class="nav-link pl-0 text-info">Tables</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link text-info">
-                                <div class="btn btn-block">Taxes</div>
+                                <a href="/tax/" class="nav-link pl-0 text-info">Taxes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link pl-0 text-info">
+                                <!-- TODO: Salary Management -->
                             </a>
                         </li>
                     </ul>
@@ -72,7 +58,7 @@
             <main class="col py-3">
                 <div class="row">
                     <div class="col">
-                        <div class="py-3">
+                        <div class="tab-content py-3">
                             <div class="tab-pane active" id="tab1" role="tabpanel">
                                 <h2 class="mb-3">{% block secondary_base_title %}{% endblock %}</h2>
                                 {% block secondary_base_content %}{% endblock %}
@@ -80,8 +66,9 @@
                         </div>
                     </div>
                 </div>
-            </main>
         </div>
+        </main>
+    </div>
     </div>
 {% endblock %}
 
