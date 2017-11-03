@@ -29,11 +29,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'login.apps.IndexConfig',
+    'accounts.apps.AccountConfig',
     'info.apps.InfoConfig',
-    'receipt.apps.ReceiptConfig',
+    'receipts.apps.ReceiptConfig',
     'tax.apps.TaxConfig',
-    'table.apps.TableConfig',
+    'tables.apps.TableConfig',
     'salary.apps.SalaryConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -122,3 +122,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
+
+# Redirect after a successful authentication:
+LOGIN_REDIRECT_URL = '/info/'

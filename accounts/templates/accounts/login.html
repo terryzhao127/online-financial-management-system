@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block home_url %}/login/{% endblock %}
+
+{% block title %}Financial Management System{% endblock %}
+
+{% block base_stylesheets %}
+    <style>
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .jumbotron {
+            background-color: white
+        }
+
+        input {
+            margin-bottom: 1em;
+        }
+    </style>
+{% endblock %}
+{% block base-content %}
+    <!-- Jumbotron -->
+    <section class="jumbotron text-center">
+        <div class="container">
+            <div class="jumbotron-text">
+                <h1 class="jumbotron-heading">Welcome!</h1>
+                <p class="lead text-muted">Please login to manage financial affairs:</p>
+            </div>
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Login failed!</strong>
+                    <p>Your username and password didn't match. Please try again.</p>
+                </div>
+            {% endif %}
+
+{#        TODO: Make following available#}
+{#            {% if next %}#}
+{#                {% if user.is_authenticated %}#}
+{#                    <p>Your account doesn't have access to this page. To proceed,#}
+{#                        please login with an account that has access.</p>#}
+{#                {% else %}#}
+{#                    <p>Please login to see this page.</p>#}
+{#                {% endif %}#}
+{#            {% endif %}#}
+
+            <form class="form-signin" id="login-form" action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group text-left">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="form-group text-left">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <input type="hidden" name="next" value="{{ next }}"/>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Sign in</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block base_scripts %}
+    <script>
+        $(window).on('load', function () {
+            var inputs = document.getElementsByTagName("INPUT");
+            var i;
+            for (i = 0; i < inputs.length; ++i) {
+                inputs[i].classList.add("form-control");
+            }
+        })
+    </script>
+{% endblock %}

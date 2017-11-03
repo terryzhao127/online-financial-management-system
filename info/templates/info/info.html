@@ -1,12 +1,10 @@
 {% extends 'secondary-base.html' %}
 
-{% block home_url %}/info/{% endblock %}
-
 {% block title %}Information{% endblock %}
 
-{% block username %}Test{% endblock %}
+{% block username %}{{ username }}{% endblock %}
 
-{% block secondary_base_title %}Information of Test{% endblock %}
+{% block secondary_base_title %}Information of {{ username }}{% endblock %}
 {% block secondary_base_content %}
     <p>Here is the information</p>
 {% endblock %}

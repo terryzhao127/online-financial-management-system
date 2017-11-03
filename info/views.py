@@ -4,4 +4,7 @@ from django.shortcuts import render
 
 
 def get_page(request):
-    return render(request, 'info/info.html')
+    result = {
+        'username': request.user.get_username(),
+    }
+    return render(request, 'info/info.html', result)

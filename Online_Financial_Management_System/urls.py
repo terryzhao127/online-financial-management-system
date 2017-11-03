@@ -16,13 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.shortcuts import redirect
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    url(r'^$', lambda r: redirect('/login/')),
-    url(r'^login/', include('login.urls')),
+    url(r'^$', lambda r: redirect('/accounts/login/')),
+    url(r'^accounts/', include('accounts.urls')),
     url(r'^info/', include('info.urls')),
-    url(r'^receipt/', include('receipt.urls')),
-    url(r'^table/', include('table.urls')),
+    url(r'^receipts/', include('receipts.urls')),
+    url(r'^tables/', include('tables.urls')),
     url(r'^tax/', include('tax.urls')),
     url(r'^admin/', admin.site.urls),
 ]

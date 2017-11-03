@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block home_url %}{% url 'info' %}{% endblock %}
+
 {% block base_stylesheets %}
     <style>
         #sidemenu a {
@@ -34,18 +36,18 @@
                 <div class="mt-2 mb-3" id="sidemenu">
                     <ul class="nav flex-md-column flex-row justify-content-between">
                         <li class="nav-item">
-                            <a href="/info/" class="nav-link pl-0 text-info">
+                            <a href="{% url 'info' %}" class="nav-link pl-0 text-info">
                                 Information
                             </a>
                         </li>
                         <li class="nav-item">
-                                <a href="/receipt/" class="nav-link pl-0 text-info">Receipts</a>
+                                <a href="{% url 'receipts' %}" class="nav-link pl-0 text-info">Receipts</a>
                         </li>
                         <li class="nav-item">
-                                <a href="/table/" class="nav-link pl-0 text-info">Tables</a>
+                                <a href="{% url 'tables' %}" class="nav-link pl-0 text-info">Tables</a>
                         </li>
                         <li class="nav-item">
-                                <a href="/tax/" class="nav-link pl-0 text-info">Taxes</a>
+                                <a href="{% url 'tax' %}" class="nav-link pl-0 text-info">Tax</a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link pl-0 text-info">
@@ -66,9 +68,8 @@
                         </div>
                     </div>
                 </div>
+            </main>
         </div>
-        </main>
-    </div>
     </div>
 {% endblock %}
 
