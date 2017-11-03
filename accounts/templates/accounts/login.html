@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% block home_url %}/login/{% endblock %}
-
 {% block title %}Financial Management System{% endblock %}
+
+{% block home_url %}{% url 'login' %}{% endblock %}
 
 {% block base_stylesheets %}
     <style>
@@ -21,7 +21,7 @@
         }
     </style>
 {% endblock %}
-{% block base-content %}
+{% block base_content %}
     <!-- Jumbotron -->
     <section class="jumbotron text-center">
         <div class="container">
