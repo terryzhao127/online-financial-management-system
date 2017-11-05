@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block home_url %}{% url 'login' %}{% endblock %}
+
+{% block base_stylesheets %}
+    {% block accounts_base_stylesheets %}{% endblock %}
+{% endblock %}
+
+{% block base_content %}
+    {% block accounts_base_content %}{% endblock %}
+{% endblock %}
+
+{% block base_scripts %}
+    {% block accounts_base_scripts %}{% endblock %}
+{% endblock %}

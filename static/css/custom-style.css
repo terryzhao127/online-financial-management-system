@@ -5,17 +5,18 @@
 }
 
 @font-face {
-  font-family: "Dosis";
-  src: url('../fonts/Dosis.ttf') format("truetype");
+    font-family: "Dosis";
+    src: url('../fonts/Dosis.ttf') format("truetype");
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url('../fonts/Raleway.ttf') format("truetype");
+    font-family: "Raleway";
+    src: url('../fonts/Raleway.ttf') format("truetype");
 }
 
 /* Navigation Bar */
 .navbar-brand {
+    font-size: 1.6em;
     font-family: RobotoSlab, sans-serif;
 }
 
@@ -23,8 +24,12 @@
     font-family: Dosis, sans-serif;
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 768px) {
     .navbar-brand {
+        font-size: 1.6em;
+    }
+
+    .nav-link {
         font-size: 1.2em;
     }
 
@@ -35,35 +40,35 @@
 
 @media only screen and (max-width: 465px) {
     .navbar-brand {
-        font-size: 1.1em;
+        font-size: 1.4em;
     }
 
     .navbar-toggler-icon {
-        max-width: 0.6em;
+        max-width: 0.7em;
     }
 }
 
 @media only screen and (max-width: 432px) {
     .navbar-brand {
-        font-size: 1em;
+        font-size: 1.2em;
     }
 
     .nav-link {
-        font-size: 0.7em;
+        font-size: 1.1em;
     }
 }
 
-@media only screen and (max-width: 402px) {
+@media only screen and (max-width: 360px) {
     .navbar-brand {
-        font-size: 0.8em;
+        font-size: 0.9em;
     }
 
     .nav-link {
-        font-size: 0.7em;
+        font-size: 0.9em;
     }
 
     .navbar-toggler-icon {
-        max-width: 0.5em;
+        max-width: 0.6em;
     }
 
     .footer {
@@ -86,11 +91,6 @@
     .btn {
         font-size: 1em;
     }
-}
-
-/* For Margin */
-.margin-bottom-2 {
-    margin-bottom: 2em;
 }
 
 /* Footer */

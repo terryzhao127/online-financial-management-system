@@ -12,7 +12,7 @@
             cursor: pointer;
         }
     </style>
-    {% block secondary_base_stylesheets %}{% endblock %}
+    {% block apps_base_stylesheets %}{% endblock %}
 {% endblock %}
 
 {% block user %}
@@ -20,10 +20,10 @@
         <a class="nav-link dropdown-toggle" id="user-btn" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
             <i class="fa fa-user" aria-hidden="true"></i>
-            {% block username %}{% endblock %}
+            {{ user.get_username }}
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="{% url 'info' %}">Personal Info</a>
+            <a class="dropdown-item" href="{% url 'change_password' %}">Change password</a>
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
         </div>
     </div>
@@ -62,8 +62,8 @@
                     <div class="col">
                         <div class="tab-content py-3">
                             <div class="tab-pane active" id="tab1" role="tabpanel">
-                                <h2 class="mb-3">{% block secondary_base_title %}{% endblock %}</h2>
-                                {% block secondary_base_content %}{% endblock %}
+                                <h2 class="mb-3">{% block apps_base_title %}{% endblock %}</h2>
+                                {% block apps_base_content %}{% endblock %}
                             </div>
                         </div>
                     </div>
@@ -82,5 +82,5 @@
             }
         });
     </script>
-    {% block secondary_base_scripts %}{% endblock %}
+    {% block apps_base_scripts %}{% endblock %}
 {% endblock %}

@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.shortcuts import redirect
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^$', lambda r: redirect('/accounts/login/')),
@@ -26,4 +25,5 @@ urlpatterns = [
     url(r'^tables/', include('tables.urls')),
     url(r'^tax/', include('tax.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('errors.urls')),
 ]

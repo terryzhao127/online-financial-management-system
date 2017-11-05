@@ -55,7 +55,35 @@
 </nav>
 
 <div class="main-content">
-{% block base_content %}{% endblock %}
+    <!-- Global Alerts Area -->
+    <div class="container text-center mt-3" id="global-alerts">
+    {% block alerts_area %}
+        {% for alert in alerts %}
+            {% if alert.0 == 'success' %}
+                <div class="alert alert-success my-0">
+                    <strong>{{ alert.1 }}</strong>
+                    <p class="my-0">{{ alert.2 }}</p>
+                </div>
+            {% elif alert.0 == 'info' %}
+                <div class="alert alert-info my-0">
+                    <strong>{{ alert.1 }}</strong>
+                    <p class="my-0">{{ alert.2 }}</p>
+                </div>
+            {% elif alert.0 == 'warning' %}
+                <div class="alert alert-warning my-0">
+                    <strong>{{ alert.1 }}</strong>
+                    <p class="my-0">{{ alert.2 }}</p>
+                </div>
+            {% elif alert.0 == 'error' %}
+                <div class="alert alert-danger my-0">
+                    <strong>{{ alert.1 }}</strong>
+                    <p class="my-0">{{ alert.2 }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endblock %}
+    </div>
+    {% block base_content %}{% endblock %}
 </div>
 
 

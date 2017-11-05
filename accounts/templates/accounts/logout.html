@@ -1,20 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'accounts_base.html' %}
 
 {% block title %}Logout{% endblock %}
 
-{% block home_url %}{% url 'logout' %}{% endblock %}
-
-{% block base_content %}
+{% block accounts_base_content %}
     <div class="container">
         <div class="alert alert-success my-5 text-center">
             <strong>Success!</strong> You have successfully logged out!
-            <p>The browser will redirect in <span id="countdown"></span> seconds. Click <a href="/">HERE</a> to
+            <p>The browser will redirect in <span id="countdown"></span> seconds. Click <a
+                    href="{% url 'login' %}">HERE</a> to
                 redirect now.</p>
         </div>
     </div>
 {% endblock %}
 
-{% block base_scripts %}
+{% block accounts_base_scripts %}
     <script>
         // Total seconds to wait
         var seconds = 3;
@@ -23,7 +22,7 @@
             seconds = seconds - 1;
             if (seconds < 0) {
                 // Chnage your redirection link here
-                window.location = "/";
+                window.location = "{% url 'login' %}";
             } else {
                 // Update remaining seconds
                 document.getElementById("countdown").innerHTML = seconds;

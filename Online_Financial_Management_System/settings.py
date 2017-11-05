@@ -24,11 +24,12 @@ SECRET_KEY = '6s10&rpn8gh#0lx5wy7jz0q_=%s(z1y=x%_gp+u5p4-$t931kn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'errors.apps.ErrorsConfig',
     'accounts.apps.AccountConfig',
     'info.apps.InfoConfig',
     'receipts.apps.ReceiptConfig',
