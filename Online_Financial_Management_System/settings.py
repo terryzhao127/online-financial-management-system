@@ -126,3 +126,7 @@ STATICFILES_DIRS = [
 
 # Redirect after a successful authentication:
 LOGIN_REDIRECT_URL = '/info/'
+
+# Media path
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -11,6 +11,20 @@
         #user-btn {
             cursor: pointer;
         }
+
+        @media only screen and (max-width: 900px) and (min-width: 768px) {
+            .navbar-brand {
+                font-size: 1.1em;
+            }
+
+            .nav-link {
+                font-size: 0.9em;
+            }
+
+            .navbar-toggler-icon {
+                max-width: 0.7em;
+            }
+        }
     </style>
     {% block apps_base_stylesheets %}{% endblock %}
 {% endblock %}
@@ -41,19 +55,19 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                                <a href="{% url 'receipts' %}" class="nav-link pl-0 text-info">Receipts</a>
+                            <a href="{% url 'receipts' %}" class="nav-link pl-0 text-info">Receipts</a>
                         </li>
                         <li class="nav-item">
-                                <a href="{% url 'tables' %}" class="nav-link pl-0 text-info">Tables</a>
+                            <a href="{% url 'tables' %}" class="nav-link pl-0 text-info">Tables</a>
                         </li>
                         <li class="nav-item">
-                                <a href="{% url 'tax' %}" class="nav-link pl-0 text-info">Tax</a>
+                            <a href="{% url 'tax' %}" class="nav-link pl-0 text-info">Tax</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link pl-0 text-info">
-                                <!-- TODO: Salary Management -->
-                            </a>
-                        </li>
+                        {% ifequal user.groups.all.0.name 'Administrators' %}
+                            <li class="nav-item">
+                                <a href="{% url 'salary' %}" class="nav-link pl-0 text-info">Salary</a>
+                            </li>
+                        {% endifequal %}
                     </ul>
                 </div>
             </aside>

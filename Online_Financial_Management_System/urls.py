@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.shortcuts import redirect
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^$', lambda r: redirect('/accounts/login/')),
@@ -24,6 +26,10 @@ urlpatterns = [
     url(r'^receipts/', include('receipts.urls')),
     url(r'^tables/', include('tables.urls')),
     url(r'^tax/', include('tax.urls')),
+    url(r'^salary/', include('salary.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('errors.urls')),
+    # url(r'^', include('errors.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
