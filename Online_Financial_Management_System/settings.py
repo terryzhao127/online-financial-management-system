@@ -118,13 +118,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-# TODO: Deploying static file
+STATIC_URL = '/static/'
+
+# For serving static files even in debug mode...
 if DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, '/static')
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-STATIC_URL = '/static/'
 
 # Redirect after a successful authentication:
 LOGIN_REDIRECT_URL = '/info/'
