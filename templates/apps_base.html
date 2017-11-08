@@ -29,7 +29,7 @@
     {% block apps_base_stylesheets %}{% endblock %}
 {% endblock %}
 
-{% block user %}
+{#{% block user %}#}
     <div class="dropdown">
         <a class="nav-link dropdown-toggle" id="user-btn" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
@@ -41,7 +41,7 @@
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
         </div>
     </div>
-{% endblock %}
+{#{% endblock %}#}
 
 {% block base_content %}
     <div class="container h-100">
