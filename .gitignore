@@ -1,3 +1,6 @@
+# Database
+db.sqlite3
+
 # User upload files
 media/
 
