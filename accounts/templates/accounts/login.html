@@ -11,16 +11,36 @@
         }
 
         .jumbotron {
-            background-color: white
+            background-color: transparent;
         }
 
         input {
             margin-bottom: 1em;
         }
+
+        body {
+            margin: 0;
+        }
+
+        /* ---- particles.js container ---- */
+
+        canvas {
+            display: block;
+            vertical-align: bottom;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1000;
+        }
     </style>
 {% endblock %}
 
 {% block accounts_base_content %}
+    <!-- particles.js container -->
+    <div id="particles-js"></div>
     <!-- Jumbotron -->
     <section class="jumbotron text-center">
         <div class="container">
@@ -34,16 +54,6 @@
                     <p>Your username and password didn't match. Please try again.</p>
                 </div>
             {% endif %}
-
-{#        TODO: Make following available#}
-{#            {% if next %}#}
-{#                {% if user.is_authenticated %}#}
-{#                    <p>Your account doesn't have access to this page. To proceed,#}
-{#                        please login with an account that has access.</p>#}
-{#                {% else %}#}
-{#                    <p>Please login to see this page.</p>#}
-{#                {% endif %}#}
-{#            {% endif %}#}
 
             <form class="form-signin" id="login-form" action="{% url 'login' %}" method="post">
                 {% csrf_token %}
@@ -72,4 +82,7 @@
             }
         })
     </script>
+    {% load static %}
+    <script src="{% static 'js/particles.min.js' %}"></script>
+    <script src="{% static 'js/particles-app.js' %}"></script>
 {% endblock %}

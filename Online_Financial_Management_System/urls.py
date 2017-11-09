@@ -20,7 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', lambda r: redirect('/accounts/login/')),
+    url(r'^$', lambda r: redirect('/index/')),
+    url(r'^index/$', include('index.urls')),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^info/', include('info.urls')),
     url(r'^receipts/', include('receipts.urls')),

@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'index.apps.IndexConfig',
     'errors.apps.ErrorsConfig',
     'accounts.apps.AccountConfig',
     'info.apps.InfoConfig',
