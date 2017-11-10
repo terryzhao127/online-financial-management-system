@@ -1,17 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from Online_Financial_Management_System.decorators import custom_login_required
 
 
-def get_page(request):
-    # Test whether the user has logged in.
-    if not request.user.is_authenticated():
-        request.session['alerts'] = [('info', 'Ooops!', 'You have not logged in...')]
-        return HttpResponseRedirect('/accounts/login/')
-
-    # Collect alerts.
-    result = {}
-    if 'alerts' in request.session:
-        result['alerts'] = request.session['alerts']
-        del request.session['alerts']
-
-    return render(request, 'receipt/receipt.html')
+@custom_login_required
+def get_page(request, data):
+    return render(request, 'receipt/receipt.html', data)

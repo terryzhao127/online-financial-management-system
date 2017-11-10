@@ -1,19 +1,22 @@
-{% extends 'accounts_base.html' %}
+{% extends 'outer_base.html' %}
 
-{% block title %}Logout{% endblock %}
+{% block title %}{{ alert.1 }}{% endblock %}
 
-{% block accounts_base_content %}
+{% block outer_base_content %}
     <div class="container">
         <div class="alert alert-success my-5 text-center">
-            <strong>Success!</strong> You have successfully logged out!
-            <p>The browser will redirect in <span id="countdown"></span> seconds. Click <a
-                    href="{% url 'login' %}">HERE</a> to
-                redirect now.</p>
+            <strong>{{ alert.1 }}</strong>
+            <p>{{ alert.2 }}</p>
+            <p>
+                The browser will redirect in <span id="countdown"></span> seconds. Click
+                <a href="{{ redirect_link }}">HERE</a>
+                to redirect now.
+            </p>
         </div>
     </div>
 {% endblock %}
 
-{% block accounts_base_scripts %}
+{% block outer_base_scripts %}
     <script>
         // Total seconds to wait
         var seconds = 3;

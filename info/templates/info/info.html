@@ -10,30 +10,23 @@
         <tr>
             <th class="text-center">Full Name</th>
             <th class="text-center">Age</th>
-            <th class="text-center">Photo</th>
         </tr>
         </thead>
         <tr>
             <td>{{ full_name }}</td>
             <td>{{ age }}</td>
-            <td><img class="img-fluid" src="{{ photo.url }}"></td>
         </tr>
     </table>
-    <h2>Salary Information</h2>
-    <table class="table table-striped table-bordered text-center">
-        <thead>
-        <tr>
-            <th class="text-center">Bonus</th>
-            <th class="text-center">Bonus Pay Date</th>
-            <th class="text-center">Salary</th>
-            <th class="text-center">Paid Method</th>
-        </tr>
-        </thead>
-        <tr>
-            <td>{{ bonus }}</td>
-            <td>{{ bonus_date }}</td>
-            <td>{{ salary_amount }}</td>
-            <td>{{ paid_method }}</td>
-        </tr>
-    </table>
+    <h2>Workplaces</h2>
+    <ul>
+        {% for workplace in workplaces %}
+            <li>{{ workplace.name }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Owned Companies</h2>
+    <ul>
+        {% for company in owned_companies %}
+            <li>{{ company.name }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

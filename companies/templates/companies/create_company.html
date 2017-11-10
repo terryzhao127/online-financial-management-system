@@ -1,0 +1,16 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Create a new company{% endblock %}
+
+{% block apps_base_title %}Create a new company{% endblock %}
+
+{% block apps_base_content %}
+    <form class="" action="{% url 'create_company' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group text-left">
+            <label for="company-name">Name:</label>
+            <input id="company-name" class="form-control" type="text" name="company_name" maxlength="80" required/>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Create</button>
+    </form>
+{% endblock %}

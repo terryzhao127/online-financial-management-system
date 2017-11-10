@@ -1,10 +1,10 @@
-{% extends 'accounts_base.html' %}
+{% extends 'outer_base.html' %}
 
 {% block title %}Financial Management System{% endblock %}
 
-{% block accounts_base_stylesheets %}
+{% block outer_base_stylesheets %}
     <style>
-        .form-signin {
+        .form-login {
             max-width: 330px;
             padding: 15px;
             margin: 0 auto;
@@ -21,26 +21,10 @@
         body {
             margin: 0;
         }
-
-        /* ---- particles.js container ---- */
-
-        canvas {
-            display: block;
-            vertical-align: bottom;
-        }
-
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: -1000;
-        }
     </style>
 {% endblock %}
 
-{% block accounts_base_content %}
-    <!-- particles.js container -->
-    <div id="particles-js"></div>
+{% block outer_base_content %}
     <!-- Jumbotron -->
     <section class="jumbotron text-center">
         <div class="container">
@@ -55,7 +39,7 @@
                 </div>
             {% endif %}
 
-            <form class="form-signin" id="login-form" action="{% url 'login' %}" method="post">
+            <form class="form-login" id="login-form" action="{% url 'login' %}" method="post">
                 {% csrf_token %}
                 <div class="form-group text-left">
                     {{ form.username.label_tag }}
@@ -66,13 +50,13 @@
                     {{ form.password }}
                 </div>
                 <input type="hidden" name="next" value="{{ next }}"/>
-                <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Sign in</button>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Log in</button>
             </form>
         </div>
     </section>
 {% endblock %}
 
-{% block accounts_base_scripts %}
+{% block outer_base_scripts %}
     <script>
         $(window).on('load', function () {
             var inputs = document.getElementsByTagName("INPUT");
@@ -82,7 +66,4 @@
             }
         })
     </script>
-    {% load static %}
-    <script src="{% static 'js/particles.min.js' %}"></script>
-    <script src="{% static 'js/particles-app.js' %}"></script>
 {% endblock %}

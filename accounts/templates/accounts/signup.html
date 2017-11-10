@@ -1,0 +1,66 @@
+{% extends 'outer_base.html' %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block outer_base_stylesheets %}
+    <style>
+        .form-signup {
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .jumbotron {
+            background-color: transparent;
+        }
+
+        input {
+            margin-bottom: 1em;
+        }
+
+        body {
+            margin: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block outer_base_content %}
+    <!-- Jumbotron -->
+    <section class="jumbotron text-center">
+        <div class="container">
+            <div class="jumbotron-text">
+                <h1 class="jumbotron-heading">Sign up</h1>
+                <p class="lead text-muted">Join up to work on financial affairs efficiently:</p>
+            </div>
+            <form class="form-signup" id="signup-form" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group text-left">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                    {% if field.name == 'username' %}
+                        <small class="text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p style="color: red">{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Sign up</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block outer_base_scripts %}
+    <script>
+        $(window).on('load', function () {
+            var inputs = document.getElementsByTagName("INPUT");
+            var i;
+            for (i = 0; i < inputs.length; ++i) {
+                inputs[i].classList.add("form-control");
+            }
+        })
+    </script>
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^$', lambda r: redirect('/index/')),
     url(r'^index/', include('index.urls')),
     url(r'^accounts/', include('accounts.urls')),
+    url(r'^companies/', include('companies.urls')),
     url(r'^info/', include('info.urls')),
     url(r'^receipts/', include('receipts.urls')),
     url(r'^tables/', include('tables.urls')),

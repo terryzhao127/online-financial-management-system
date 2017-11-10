@@ -24,6 +24,20 @@
     font-family: Dosis, sans-serif;
 }
 
+@media only screen and (max-width: 900px) and (min-width: 768px) {
+    .navbar-brand {
+        font-size: 1.1em;
+    }
+
+    .nav-link {
+        font-size: 0.9em;
+    }
+
+    .navbar-toggler-icon {
+        max-width: 0.7em;
+    }
+}
+
 @media only screen and (max-width: 768px) {
     .navbar-brand {
         font-size: 1.6em;
@@ -38,7 +52,7 @@
     }
 }
 
-@media only screen and (max-width: 582px) {
+@media only screen and (max-width: 600px) {
     .navbar-brand {
         font-size: 1.4em;
     }
@@ -48,7 +62,7 @@
     }
 }
 
-@media only screen and (max-width: 526px) {
+@media only screen and (max-width: 540px) {
     .navbar-brand {
         font-size: 1.2em;
     }
@@ -58,7 +72,7 @@
     }
 }
 
-@media only screen and (max-width: 472px) {
+@media only screen and (max-width: 510px) {
     .navbar-brand {
         font-size: 1.1em;
     }
@@ -94,7 +108,7 @@
     }
 }
 
-@media only screen and (max-width: 370px) {
+@media only screen and (max-width: 380px) {
     .navbar-brand {
         font-size: 0.7em;
     }

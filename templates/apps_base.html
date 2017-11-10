@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% block home_url %}{% url 'info' %}{% endblock %}
-
 {% block base_stylesheets %}
     <style>
         #sidemenu a {
@@ -11,37 +9,9 @@
         #user-btn {
             cursor: pointer;
         }
-
-        @media only screen and (max-width: 900px) and (min-width: 768px) {
-            .navbar-brand {
-                font-size: 1.1em;
-            }
-
-            .nav-link {
-                font-size: 0.9em;
-            }
-
-            .navbar-toggler-icon {
-                max-width: 0.7em;
-            }
-        }
     </style>
     {% block apps_base_stylesheets %}{% endblock %}
 {% endblock %}
-
-{#{% block user %}#}
-    <div class="dropdown">
-        <a class="nav-link dropdown-toggle" id="user-btn" data-toggle="dropdown" aria-haspopup="true"
-           aria-expanded="false">
-            <i class="fa fa-user" aria-hidden="true"></i>
-            {{ user.get_username }}
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="{% url 'change_password' %}">Change password</a>
-            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-        </div>
-    </div>
-{#{% endblock %}#}
 
 {% block base_content %}
     <div class="container h-100">
@@ -50,9 +20,10 @@
                 <div class="mt-2 mb-3" id="sidemenu">
                     <ul class="nav flex-md-column flex-row justify-content-between">
                         <li class="nav-item">
-                            <a href="{% url 'info' %}" class="nav-link pl-0 text-info">
-                                Information
-                            </a>
+                            <a href="{% url 'info' %}" class="nav-link pl-0 text-info">Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'companies' %}" class="nav-link pl-0 text-info">Companies</a>
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'receipts' %}" class="nav-link pl-0 text-info">Receipts</a>
@@ -63,11 +34,9 @@
                         <li class="nav-item">
                             <a href="{% url 'tax' %}" class="nav-link pl-0 text-info">Tax</a>
                         </li>
-                        {% ifequal user.groups.all.0.name 'Administrators' %}
-                            <li class="nav-item">
-                                <a href="{% url 'salary' %}" class="nav-link pl-0 text-info">Salary</a>
-                            </li>
-                        {% endifequal %}
+                        <li class="nav-item">
+                            <a href="{% url 'salary' %}" class="nav-link pl-0 text-info">Salary</a>
+                        </li>
                     </ul>
                 </div>
             </aside>

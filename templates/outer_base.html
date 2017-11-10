@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block base_stylesheets %}
+    <style>
+        /* ---- particles.js container ---- */
+
+        canvas {
+            display: block;
+            vertical-align: bottom;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1000;
+        }
+    </style>
+    {% block outer_base_stylesheets %}
+    {% endblock %}
+{% endblock %}
+
+{% block base_content %}
+    <!-- particles.js container -->
+    <div id="particles-js"></div>
+    {% block outer_base_content %}{% endblock %}
+{% endblock %}
+
+{% block base_scripts %}
+    {% load static %}
+    <script src="{% static 'js/particles.min.js' %}"></script>
+    <script src="{% static 'js/particles-app.js' %}"></script>
+    {% block outer_base_scripts %}{% endblock %}
+{% endblock %}
