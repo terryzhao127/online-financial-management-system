@@ -51,15 +51,21 @@
                     <th class="text-center">UUID</th>
                 </tr>
                 </thead>
+                <tbody>
                 {% for workplace in workplaces %}
                     <tr>
-                        <td class="company-name">{{ workplace.name }}</td>
+                        <td class="company-name">
+                            <a href="{% url 'company_details' company_uuid=workplace.unique_id %}">
+                                {{ workplace.name }}
+                            </a>
+                        </td>
                         <td>{{ workplace.unique_id }}</td>
                     </tr>
                 {% endfor %}
+                </tbody>
             </table>
         </div>
-        <div class="tab-pane active" id="tab2" role="tabpanel">
+        <div class="tab-pane" id="tab2" role="tabpanel">
             <div class="mb-3">
                 <header class="table-title d-inline-block">Owned Companies</header>
                 <a class="company-manage-link" href="{% url 'create_company' %}">Create a new company</a>
@@ -69,22 +75,20 @@
                 <tr>
                     <th class="text-center">Company Name</th>
                     <th class="text-center">UUID</th>
-                    <th class="text-center">Operation</th>
                 </tr>
                 </thead>
+                <tbody>
                 {% for company in owned_companies %}
                     <tr>
-                        <td class="company-name">{{ company.name }}</td>
-                        <td>{{ company.unique_id }}</td>
-                        <td>
-                            <form action="{% url 'delete_company' %}" method="POST" style="margin: 0;">
-                                {% csrf_token %}
-                                <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
-                                <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-                            </form>
+                        <td class="company-name">
+                            <a href="{% url 'company_details' company_uuid=company.unique_id %}">
+                                {{ company.name }}
+                            </a>
                         </td>
+                        <td>{{ company.unique_id }}</td>
                     </tr>
                 {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
