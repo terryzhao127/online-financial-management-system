@@ -175,3 +175,12 @@ body {
         font-size: 0.8em;
     }
 }
+
+/* Tables */
+table td {
+    vertical-align: middle !important;
+}
+
+table th {
+    vertical-align: middle !important;
+}

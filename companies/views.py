@@ -8,8 +8,9 @@ from Online_Financial_Management_System.utils import redirect_with_data
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
 
+
 @custom_login_required
-def get_page(request, data):
+def companies(request, data):
     # Collect information of companies.
     staff = Staff.objects.get(user=request.user)
     data['workplaces'] = staff.workplaces.all()

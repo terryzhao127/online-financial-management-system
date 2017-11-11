@@ -1,4 +1,6 @@
 from django.http import HttpResponseRedirect
+from django.contrib.auth import login as direct_login
+from django.contrib.auth import authenticate
 from django.contrib.auth.views import login, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render
@@ -66,11 +68,10 @@ def signup(request):
             user.staff.full_name = form.cleaned_data.get('full_name')
             user.staff.age = form.cleaned_data.get('age')
             user.save()
-
-            # Success
-            return render_alert_page_with_data(request, data, '/login/'
-                                               ,
-                                               ('success', 'Sign up successfully', 'You have successfully signed up!'))
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            direct_login(request, user)
+            return redirect_with_data(request, data, '/info/')
     else:
         form = SignUpForm()
 

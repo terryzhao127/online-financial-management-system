@@ -36,19 +36,18 @@
                     </ul>
                 </div>
             </aside>
-            <main class="col py-3">
+            <main class="col-md-10 py-3">
                 <div class="row">
                     <div class="col">
-                        <div class="tab-content py-3">
-                            <div class="tab-pane active" id="tab1" role="tabpanel">
-                                <h2 class="mb-3">{% block apps_base_title %}{% endblock %}</h2>
-                                {% block apps_base_content %}{% endblock %}
-                            </div>
-                        </div>
+                        <h2 class="mb-3 pb-2">
+                            {% block apps_base_title %}{% endblock %}
+                        </h2>
+                        {% block apps_base_content %}{% endblock %}
                     </div>
                 </div>
-            </main>
         </div>
+        </main>
+    </div>
     </div>
 {% endblock %}
 
