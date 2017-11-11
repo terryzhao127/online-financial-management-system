@@ -2,8 +2,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.views import login, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render
-from django.contrib.auth import update_session_auth_hash, authenticate
-from Online_Financial_Management_System import utils
+from django.contrib.auth import update_session_auth_hash
+from Online_Financial_Management_System.utils import get_alerts, render_alert_page_with_data, redirect_with_data
 from accounts.forms import SignUpForm
 from Online_Financial_Management_System.decorators import custom_login_required
 
@@ -12,13 +12,12 @@ def custom_login(request):
     data = {}
 
     # Collect alerts.
-    alerts = utils.get_alerts(request)
+    alerts = get_alerts(request)
     data['alerts'] = alerts
 
     # Test whether the user has logged in.
     if request.user.is_authenticated():
-        request.session['alerts'] = alerts
-        return HttpResponseRedirect('/info/')
+        return redirect_with_data(request, data, '/info/')
     else:
         return login(request, template_name='accounts/login.html', extra_context=data)
 
@@ -36,7 +35,9 @@ def change_password(request, data):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  # Important!
+            update_session_auth_hash(request, user)
+
+            # Success
             data['alerts'].append(('success', 'Password changed!', 'Your password was successfully updated.'))
             return render(request, 'info/info.html', data)
     else:
@@ -47,7 +48,7 @@ def change_password(request, data):
 
 def signup(request):
     # Collect alerts.
-    alerts = utils.get_alerts(request)
+    alerts = get_alerts(request)
 
     # Test whether the user has logged in.
     if request.user.is_authenticated():
@@ -65,9 +66,11 @@ def signup(request):
             user.staff.full_name = form.cleaned_data.get('full_name')
             user.staff.age = form.cleaned_data.get('age')
             user.save()
-            data['alert'] = ('success', 'Sign up successfully', 'You have successfully signed up!')
-            data['redirect_link'] = '/login/'
-            return render(request, 'alert_and_redirect.html', data)
+
+            # Success
+            return render_alert_page_with_data(request, data, '/login/'
+                                               ,
+                                               ('success', 'Sign up successfully', 'You have successfully signed up!'))
     else:
         form = SignUpForm()
 
