@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'apps_base.html' %}
 
-</body>
-</html>
+{% block title %}Join in a company{% endblock %}
+
+{% block apps_base_title %}Join in a company{% endblock %}
+
+{% block apps_base_content %}
+        <p>Input UUID of the company you are going to join in:</p>
+        <form class="" action="{% url 'join_company' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group text-left">
+            <label for="unique-id">UUID:</label>
+            <input id="unique-id" class="form-control" type="text" name="unique_id" maxlength="36" required/>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Join</button>
+    </form>
+{% endblock %}

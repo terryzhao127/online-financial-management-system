@@ -126,6 +126,10 @@
     }
 }
 
+#user-btn {
+    cursor: pointer !important;
+}
+
 /* Main Content */
 .main-content {
     font-family: Raleway, sans-serif;
