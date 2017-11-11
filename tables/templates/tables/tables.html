@@ -4,12 +4,17 @@
 
 {% block apps_base_title %}Tables{% endblock %}
 
-{% block apps_base_content %}
+{% block apps_base_stylesheets %}
+    {# 这里放样式 #}
     <style>
         .tr-size {
             height: 50px;
         }
     </style>
+{% endblock %}
+
+{% block apps_base_content %}
+    <a href="{% url 'table_details' %}" style="font-size: 5em">DETAILS</a>
     <table class="table">
         <tr>
             <th width="400">Name</th>
