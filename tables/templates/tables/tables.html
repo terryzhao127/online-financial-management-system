@@ -1,0 +1,57 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Tables{% endblock %}
+
+{% block apps_base_title %}Tables{% endblock %}
+
+{% block apps_base_content %}
+    <style>
+        .tr-size {
+            height: 50px;
+        }
+    </style>
+    <table class="table">
+        <tr>
+            <th width="400">Name</th>
+            <th width="200">Date</th>
+            <th width="200">Author</th>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size"><a href="">Financial report (June)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr_size"><a href="">Financial report (June)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size"><a href="">Financial report (June)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+
+
+        {% for item in data %}
+            <tr class="tr-size">
+                <td class="tr-size"><a href="">item.name</a></td>
+                <td>item.date</td>
+                <td>item.author</td>
+            </tr>
+            <% empty %>
+            <p>No tables found<p>
+        {% endfor %}
+    </table>
+
+    <center>
+        <s property="page"></s>
+        <button class="btn btn-default" id="previous_page">Prev</button>
+        <button class="btn btn-default" id="next_page">Next</button>
+        <button class="btn btn-primary" id="upload">Upload</button>
+    </center>
+
+
+
+
+{% endblock %}
