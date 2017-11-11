@@ -8,8 +8,9 @@ from Online_Financial_Management_System.utils import redirect_with_data
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
 
+
 @custom_login_required
-def get_page(request, data):
+def companies(request, data):
     # Collect information of companies.
     staff = Staff.objects.get(user=request.user)
     data['workplaces'] = staff.workplaces.all()
@@ -91,3 +92,18 @@ def delete_company(request, data):
         return redirect_with_data(request, data, '/companies/')
     else:
         return custom_error_404(request)
+
+
+@custom_login_required
+def details(request, data, company_uuid):
+    # Get Company instance.
+    data['company'] = Company.objects.get(unique_id=company_uuid)
+
+    # Get permission.
+    staff = Staff.objects.get(user=request.user)
+    if staff == data['company'].owner:
+        data['is_owner'] = True
+    else:
+        data['is_owner'] = False
+
+    return render(request, 'companies/company_details.html', data)
