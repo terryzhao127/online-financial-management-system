@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from Online_Financial_Management_System import utils
 
 
-def custom_login_required(view_func, group=None):
+def custom_login_required(view_func):
     def wrapper(request, *args, **kw):
         # Collect alerts.
         alerts = utils.get_alerts(request)

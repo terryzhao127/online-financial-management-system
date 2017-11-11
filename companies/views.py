@@ -4,7 +4,7 @@ from django.shortcuts import render
 from accounts.models import Staff
 from companies.models import Company
 from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import redirect_with_data, render_alert_page_with_data
+from Online_Financial_Management_System.utils import redirect_with_data
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 
@@ -35,8 +35,8 @@ def create_company(request, data):
         owned_by.workplaces.add(new_company)
 
         # Success
-        return render_alert_page_with_data(request, data, '/companies/'
-                                  , ('success', 'Create successfully!', 'You have successfully create a new company.'))
+        data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new company.'))
+        return redirect_with_data(request, data, '/companies/')
     else:
         return render(request, 'companies/create_company.html', data)
 
@@ -59,11 +59,16 @@ def join_company(request, data):
 
         # Add the company to workplaces.
         staff = Staff.objects.get(user=request.user)
+
+        # Test whether the user has already joined the company.
+        if company in staff.workplaces.all():
+            data['alerts'].append(('warning', 'Failed to join.', 'You have already joined in this company!'))
+            return redirect_with_data(request, data, '/companies/')
+
         staff.workplaces.add(company)
 
         # Success
-        return render_alert_page_with_data(request, data, '/companies/'
-                                           , ('success', 'Join successfully!', 'You have successfully joined in a company.'))
-
+        data['alerts'].append(('success', 'Join successfully!', 'You have successfully joined in a company.'))
+        return redirect_with_data(request, data, '/companies/')
     else:
         return render(request, 'companies/join_company.html', data)
