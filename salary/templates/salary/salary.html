@@ -3,3 +3,8 @@
 {% block title %}Salary{% endblock %}
 
 {% block apps_base_title %}Salary{% endblock %}
+
+{% block apps_base_content %}
+    <a href="{% url 'salary_details' %}">DETAILS</a>
+    <a href="{% url 'salary_manage' %}">MANAGE</a>
+{% endblock %}
