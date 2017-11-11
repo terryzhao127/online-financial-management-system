@@ -6,7 +6,7 @@ from companies.models import Company
 from Online_Financial_Management_System.decorators import custom_login_required
 from Online_Financial_Management_System.utils import redirect_with_data
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-
+from errors.views import error_404 as custom_error_404
 
 @custom_login_required
 def get_page(request, data):
@@ -72,3 +72,22 @@ def join_company(request, data):
         return redirect_with_data(request, data, '/companies/')
     else:
         return render(request, 'companies/join_company.html', data)
+
+
+@custom_login_required
+def delete_company(request, data):
+    if request.method == 'POST':
+        # Collect form data.
+        unique_id = request.POST['unique_id']
+
+        # Get Company instance.
+        company = Company.objects.get(unique_id=unique_id)
+
+        # Delete
+        company.delete()
+
+        # Success
+        data['alerts'].append(('success', 'Delete successfully!', 'You have successfully deleted a company.'))
+        return redirect_with_data(request, data, '/companies/')
+    else:
+        return custom_error_404(request)

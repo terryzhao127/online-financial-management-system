@@ -28,12 +28,20 @@
         <tr>
             <th class="text-center">Company Name</th>
             <th class="text-center">UUID</th>
+            <th class="text-center">Operation</th>
         </tr>
         </thead>
         {% for company in owned_companies %}
             <tr>
                 <td>{{ company.name }}</td>
                 <td>{{ company.unique_id }}</td>
+                <td>
+                    <form action="{% url 'delete_company' %}" method="POST" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
+                        <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>
