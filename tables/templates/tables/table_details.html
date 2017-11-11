@@ -4,8 +4,7 @@
 
 {% block apps_base_title %}Tables{% endblock %}
 
-{% block apps_base_content %}
-
+{% block base_stylesheets %}
     <style>
         .div_style{
             background-image: url("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510407238013&di=d2000901911ef5bb8b5c251143e852eb&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3De64d5f790633874488c8273f3966b38c%2Feaf81a4c510fd9f9c74354402f2dd42a2834a446.jpg");
@@ -19,16 +18,20 @@
             width: 70px;
         }
     </style>
+{% endblock %}
+{% block apps_base_content %}
     <p>This is the table</p>
-    <div class="div_style">
-
-    </div>
+    <body>
+    <div class="div_style"></div>
     <br>
+
+
     <div>
     <button class="btn btn-default button_size1" id="download" a href="">Download</button>
     <button class="btn btn-default button_size1" id="fresh" a href="">Upload</button>
-    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
     <button class="btn btn-danger button_size2" id="delete">Delete</button>
     <button class="btn btn-primary button_size2" id="print">Print</button>
     </div>
+    </body>
 {% endblock %}

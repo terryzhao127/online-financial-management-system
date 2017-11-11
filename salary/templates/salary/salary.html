@@ -2,4 +2,46 @@
 
 {% block title %}Salary{% endblock %}
 
-{% block apps_base_title %}Salary{% endblock %}
+{% block apps_base_stylesheets %}
+    <style>
+        .tr-size {
+            height: 50px;
+        }
+    </style>
+{% endblock %}
+
+{% block apps_base_content %}
+    <table class="table">
+        <tr>
+            <th width="400">Name</th>
+            <th width="200">Date</th>
+            <th width="200">Uploader</th>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size"><a href="{% url 'salary_details' %}">Salary table (June, 2017)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr_size"><a href="{% url 'salary_details' %}">Salary table (July, 2017)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size"><a href=" {% url 'salary_details' %}">Salary table (Feb, 2016)</a></td>
+            <td>2017.2.7</td>
+            <td>Wang Bo</td>
+        </tr>
+
+
+        {% for item in data %}
+            <tr class="tr-size">
+                <td class="tr-size"><a href="{% url 'salary_details' %}">item.name</a></td>
+                <td>item.date</td>
+                <td>item.uploader</td>
+            </tr>
+            <% empty %>
+            <p>No tables found<p>
+        {% endfor %}
+    </table>
+{% endblock %}

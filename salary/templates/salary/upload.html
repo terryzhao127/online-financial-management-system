@@ -1,0 +1,21 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Salary{% endblock %}
+
+{% block apps_base_stylesheets %}
+    <style>
+        .input-style{
+            font-size: 15px;
+            width: 70px;
+        }
+    </style>
+{% endblock %}
+
+{% block apps_base_content %}
+    <form role="form">
+        <div class="form-group input-style">
+            <input type="file" id="inputfile">
+        </div>
+        <button type="submit" class="btn btn-danger input-style">提交</button>
+    </form>
+{% endblock %}
