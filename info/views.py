@@ -15,4 +15,4 @@ def get_page(request, data):
     owned_companies = Company.objects.filter(owner=staff)
     data['owned_companies'] = owned_companies
 
-    return render(request, 'info/info.html', data)
+    return render(request, 'info/index.html', data)

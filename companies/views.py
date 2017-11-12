@@ -18,7 +18,7 @@ def companies(request, data):
     owned_companies = Company.objects.filter(owner=staff)
     data['owned_companies'] = owned_companies
 
-    return render(request, 'companies/companies.html', data)
+    return render(request, 'companies/index.html', data)
 
 
 @custom_login_required
@@ -39,7 +39,7 @@ def create_company(request, data):
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new company.'))
         return redirect_with_data(request, data, '/companies/')
     else:
-        return render(request, 'companies/create_company.html', data)
+        return render(request, 'companies/create.html', data)
 
 
 @custom_login_required
@@ -72,7 +72,7 @@ def join_company(request, data):
         data['alerts'].append(('success', 'Join successfully!', 'You have successfully joined in a company.'))
         return redirect_with_data(request, data, '/companies/')
     else:
-        return render(request, 'companies/join_company.html', data)
+        return render(request, 'companies/join.html', data)
 
 
 @custom_login_required

@@ -41,7 +41,7 @@ def change_password(request, data):
 
             # Success
             data['alerts'].append(('success', 'Password changed!', 'Your password was successfully updated.'))
-            return render(request, 'info/info.html', data)
+            return render(request, 'info/index.html', data)
     else:
         form = PasswordChangeForm(request.user)
 
