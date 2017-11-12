@@ -106,4 +106,4 @@ def details(request, data, company_uuid):
     else:
         data['is_owner'] = False
 
-    return render(request, 'companies/company_details.html', data)
+    return render(request, 'companies/details.html', data)

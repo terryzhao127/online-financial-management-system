@@ -2,13 +2,23 @@
 
 {% block title %}Create a new company{% endblock %}
 
+{% block apps_base_stylesheets %}
+    <style>
+        .form-create-company {
+            max-width: 330px;
+            margin: 0 auto;
+        }
+    </style>
+
+{% endblock %}
+
 {% block apps_base_title %}Create a new company{% endblock %}
 
 {% block apps_base_content %}
-    <form class="" action="{% url 'create_company' %}" method="post">
+    <form class="form-create-company" action="{% url 'create_company' %}" method="post">
         {% csrf_token %}
         <div class="form-group text-left">
-            <label for="company-name">Name:</label>
+            <label for="company-name">Company Name:</label>
             <input id="company-name" class="form-control" type="text" name="company_name" maxlength="80" required/>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
