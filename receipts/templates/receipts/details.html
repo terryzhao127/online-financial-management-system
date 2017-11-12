@@ -80,3 +80,24 @@
         <button class="btn btn-primary button-size2" id="update">Update</button>
     </div>
 {% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        var change_flag = false;
+
+        $(document).ready(function () {
+            $(".form-control").change(function () {
+                change_flag = true;
+            })
+        });
+
+        $(document).ready(function () {
+            $("#update").click(function () {
+                if(!change_flag){
+                    alert("没有项目修改过")
+                }
+            })
+        });
+
+    </script>
+{% endblock %}

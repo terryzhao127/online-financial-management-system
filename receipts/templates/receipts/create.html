@@ -62,16 +62,46 @@
             <th class="text-center">Total Cost</th>
         </tr>
         <tr>
-            <td><input id="" type="text" class="form-control"></td>
-            <td><input id="" type="text" class="form-control"></td>
-            <td><input id="" type="text" class="form-control"></td>
-            <td><input id="" type="text" class="form-control"></td>
-            <td><input id="" type="text" class="form-control"></td>
-            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="Name0" type="text" class="form-control"></td>
+            <td><input id="Spec0" type="text" class="form-control"></td>
+            <td><input id="Number0" type="text" class="form-control"></td>
+            <td><input id="Unit0" type="text" class="form-control"></td>
+            <td><input id="Price0" type="text" class="form-control"></td>
+            <td><input id="Total-Cos0" type="text" class="form-control"></td>
         </tr>
     </table>
 
     <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
 
 
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        var a, b;
+
+        $(document).ready(function () {
+            $("#Number0").change(function () {
+                a = this.value;
+                if(isNaN(a)){
+                    alert("数量输入有误")
+                }
+                if(!isNaN(a) && !isNaN(b)) {
+                    var c = a * b;
+                    document.getElementById("Total-Cos0").value = c;
+                }
+            });
+
+            $("#Price0").change(function () {
+                b = this.value;
+                if(isNaN(b)){
+                    alert("单价输入有误")
+                }
+                if(!isNaN(a) && !isNaN(b)) {
+                    var c = a * b;
+                    document.getElementById("Total-Cos0").value = c;
+                }
+            });
+        });
+    </script>
 {% endblock %}
