@@ -33,6 +33,9 @@ def receipts(request, data, page_num):
         data['created_receipts'] = created_receipts[start:end]
         data['page_num'] = page_num
 
+        if not data['created_receipts']:
+            return custom_error_404(request, data)
+
     return render(request, 'receipts/index.html', data)
 
 
@@ -41,9 +44,9 @@ def details(request, data, receipt_id):
     try:
         receipt = Receipt.objects.get(id=receipt_id)
     except ValidationError:
-        return error_404(request, data)
+        return custom_error_404(request, data)
     except ObjectDoesNotExist:
-        return error_404(request, data)
+        return custom_error_404(request, data)
 
     data['receipt'] = receipt
     data['items'] = receipt.items.all()
