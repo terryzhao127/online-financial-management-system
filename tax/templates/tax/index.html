@@ -95,25 +95,14 @@
 
             <div class="c"></div>
         </div>
-
-
-        {#        <div style="display:none;">#}
-        {#            <script type="text/javascript">#}
-        {#                var cnzz_protocol = (("https:" === document.location.protocol) ? " https://" : " http://");#}
-        {#                document.write(decodeURI("%3Cspan id='cnzz_stat_icon_5112463'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D5112463' type='text/javascript'%3E%3C/script%3E"));</script>#}
-        {#        </div>#}
     </div>
 {% endblock %}
 
 {% block apps_base_scripts %}
     <script>
-        function $(id) {
-            return document.getElementById(id);
-        }
-
         function btnCalc_onClick() {
             $("txtIncome")
-            {#        document.write(document.getElementById("txtIncome").value);#}
+                    document.write(document.getElementById("txtIncome").value);
             if (isNaN($("txtIncome").value)) {
                 alert("请输入正确的工资数");
                 return;

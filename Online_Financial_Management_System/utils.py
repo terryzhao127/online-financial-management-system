@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect
 # Utility functions
 from django.shortcuts import render
 
+ITEMS_NUMBER_IN_A_PAGE = 10
+
 
 def get_alerts(request):
     """

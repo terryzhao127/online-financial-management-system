@@ -19,7 +19,8 @@
                             <a href="{% url 'info' %}" class="nav-link pl-0 text-info">Information</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'companies' %}" class="nav-link pl-0 text-info">Companies</a>
+                            <a href="{% url 'companies' workplaces_page_num=1 owned_companies_page_num=1 %}"
+                               class="nav-link pl-0 text-info">Companies</a>
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'receipts' %}" class="nav-link pl-0 text-info">Receipts</a>

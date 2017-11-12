@@ -44,53 +44,145 @@
                 <header class="table-title d-inline">Workplaces</header>
                 <a class="company-manage-link" href="{% url 'join_company' %}">Join in a company</a>
             </div>
-            <table class="table table-striped table-bordered text-center">
-                <thead>
-                <tr>
-                    <th class="text-center">Company Name</th>
-                    <th class="text-center">UUID</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for workplace in workplaces %}
+            {% if no_workplace %}
+                <div class="alert alert-warning" role="alert">
+                    <strong>No workplace!</strong>
+                    <p>You have no workpaces, please join in one.</p>
+                </div>
+            {% else %}
+                <table class="table table-striped table-bordered text-center">
+                    <thead>
                     <tr>
-                        <td class="company-name">
-                            <a href="{% url 'company_details' company_uuid=workplace.unique_id %}">
-                                {{ workplace.name }}
-                            </a>
-                        </td>
-                        <td>{{ workplace.unique_id }}</td>
+                        <th class="text-center">Company Name</th>
+                        <th class="text-center">UUID</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for workplace in workplaces %}
+                        <tr>
+                            <td class="company-name">
+                                <a href="{% url 'company_details' company_uuid=workplace.unique_id %}">
+                                    {{ workplace.name }}
+                                </a>
+                            </td>
+                            <td>{{ workplace.unique_id }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <ul class="pagination justify-content-center" style="margin: 0 auto;">
+                    {% if workplaces_page_num == 1 %}
+                        <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'companies' workplaces_page_num=workplaces_page_num|add:'-1' owned_companies_page_num=owned_companies_page_num %}#tab1">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for i in workplaces_page_range %}
+                        {% if i == workplaces_page_num %}
+                            <li class="page-item active">
+                                <a class="page-link"
+                                   href="{% url 'companies' workplaces_page_num=i owned_companies_page_num=owned_companies_page_num %}#tab1">{{ forloop.counter }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="{% url 'companies' workplaces_page_num=i owned_companies_page_num=owned_companies_page_num %}#tab1">{{ forloop.counter }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if workplaces_page_num == workplaces_page_end %}
+                        <li class="page-item disabled"><a class="page-link">Next</a></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'companies' workplaces_page_num=workplaces_page_num|add:'1' owned_companies_page_num=owned_companies_page_num %}#tab1">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
         </div>
         <div class="tab-pane" id="tab2" role="tabpanel">
             <div class="mb-3">
                 <header class="table-title d-inline-block">Owned Companies</header>
                 <a class="company-manage-link" href="{% url 'create_company' %}">Create a new company</a>
             </div>
-            <table class="table table-striped table-bordered text-center">
-                <thead>
-                <tr>
-                    <th class="text-center">Company Name</th>
-                    <th class="text-center">UUID</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for company in owned_companies %}
+            {% if no_owned_company %}
+                <div class="alert alert-warning" role="alert">
+                    <strong>No owned company!</strong>
+                    <p>You have no owned companies, please create one.</p>
+                </div>
+            {% else %}
+                <table class="table table-striped table-bordered text-center">
+                    <thead>
                     <tr>
-                        <td class="company-name">
-                            <a href="{% url 'company_details' company_uuid=company.unique_id %}">
-                                {{ company.name }}
-                            </a>
-                        </td>
-                        <td>{{ company.unique_id }}</td>
+                        <th class="text-center">Company Name</th>
+                        <th class="text-center">UUID</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for company in owned_companies %}
+                        <tr>
+                            <td class="company-name">
+                                <a href="{% url 'company_details' company_uuid=company.unique_id %}">
+                                    {{ company.name }}
+                                </a>
+                            </td>
+                            <td>{{ company.unique_id }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <ul class="pagination justify-content-center" style="margin: 0 auto;">
+                    {% if owned_companies_page_num == 1 %}
+                        <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'companies' workplaces_page_num=workplaces_page_num owned_companies_page_num=owned_companies_page_num|add:'-1' %}#tab2">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for i in owned_companies_page_range %}
+                        {% if i == owned_companies_page_num %}
+                            <li class="page-item active">
+                                <a class="page-link"
+                                   href="{% url 'companies' workplaces_page_num=workplaces_page_num owned_companies_page_num=i %}#tab2">{{ forloop.counter }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="{% url 'companies' workplaces_page_num=workplaces_page_num owned_companies_page_num=i %}#tab2">{{ forloop.counter }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if owned_companies_page_num == owned_companies_page_end %}
+                        <li class="page-item disabled"><a class="page-link">Next</a></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'companies' workplaces_page_num=workplaces_page_num owned_companies_page_num=owned_companies_page_num|add:'1' %}#tab2">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+
         </div>
     </div>
 
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        // Javascript to enable link to tab
+        var url = document.location.toString();
+        if (url.match('#')) {
+            $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+        }
+
+        // Change hash for page-reload
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            window.location.hash = e.target.hash;
+        })
+    </script>
 {% endblock %}
