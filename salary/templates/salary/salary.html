@@ -2,15 +2,40 @@
 
 {% block title %}Salary{% endblock %}
 
+{% block apps_base_title %}Salary{% endblock %}
+
 {% block apps_base_stylesheets %}
     <style>
+        .float-style1 {
+            float: left;
+        }
+        .float-style2 {
+            float: right;
+        }
         .tr-size {
             height: 50px;
+        }
+    .button-size1 {
+            font-size: 4px;
+            height: 25px;
         }
     </style>
 {% endblock %}
 
 {% block apps_base_content %}
+    <div class="float-style1">
+        <p>Please select your company</p>
+    </div>
+    <div class="float-style2">
+    <select class="selectpicker" id="select_company">
+        <option>Lanxiang</option>
+        <option>HIT Securities</option>
+        <option>Shaxian county snacks</option>
+        <option>CCTV</option>
+        <option>New Oriental Cooking School</option>
+    </select>
+    </div>
+    <br><br>
     <table class="table">
         <tr>
             <th width="400">Name</th>
@@ -44,5 +69,9 @@
             <p>No tables found<p>
         {% endfor %}
     </table>
+    <div>
+        <button class="btn btn-primary" onclick="location='upload'">Upload</button>
+    </div>
+
 {% endblock %}
 
