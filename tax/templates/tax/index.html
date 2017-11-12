@@ -100,15 +100,15 @@
 
 {% block apps_base_scripts %}
     <script>
+
         function btnCalc_onClick() {
-            $("txtIncome")
-                    document.write(document.getElementById("txtIncome").value);
-            if (isNaN($("txtIncome").value)) {
+            {#        document.write(document.getElementById("txtIncome").value);#}
+            if (isNaN(document.getElementById("txtIncome").value)) {
                 alert("请输入正确的工资数");
                 return;
             }
             var result = '';
-            var v = parseInt($("txtIncome").value);
+            var v = parseInt(document.getElementById("txtIncome").value);
             var bx = 0;
             if (v < 3500) {
                 result = '<p style="color:#f00;">无需交税</p>';
@@ -184,7 +184,7 @@
                 result += '<tr><td colspan="3"><div style="background:#f90;height:30px;"><div style="height:30px;background:#090;color:#fff;float:left;width:' + lastpercent + '%">工资 ' + lastsalary + ' 元</div><div style="color:#fff;float:right;margin-right:20px;">上缴 ' + jnall + ' 元</div></div></td></tr>';
                 result += '</table>';
             }
-            $("resultCon").innerHTML = result;
+            document.getElementById("resultCon").innerHTML = result;
         }
 
         function GetTax(income) {
@@ -192,6 +192,7 @@
             if (income < 150000) re = income * 0.03; else if (income >= 150000 && income < 450000) re = income * 0.1 - 10500; else if (income >= 450000 && income < 900000) re = income * 0.2 - 55500; else if (income >= 900000 && income < 3500000) re = income * 0.25 - 100500; else if (income >= 3500000 && income < 5500000) re = income * 0.30 - 275500; else if (income >= 5500000 && income < 8000000) re = income * 0.35 - 550500; else if (income >= 8000000) re = income * 0.45 - 1350500;
             return re;
         }
+
 
     </script>
 
