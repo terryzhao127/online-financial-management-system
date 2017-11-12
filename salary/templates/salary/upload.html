@@ -10,14 +10,24 @@
             font-size: 15px;
             width: 70px;
         }
+        .float-style2 {
+            float: inherit;
+        }
     </style>
 {% endblock %}
 
 {% block apps_base_content %}
-    <form role="form">
+    <form role="form" >
         <div class="form-group input-style">
             <input type="file" id="input_excel" class="ui input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <br><br>
+            <label for="file-name">文件名</label>
+            <input type="text" id="file-name" class="ui input">
+            <label for="uploader">作者名</label>
+            <input type="text" id="uploader" class="ui input">
         </div>
+        <div>
         <button type="submit" class="btn btn-danger input-style">提交</button>
+        </div>
     </form>
 {% endblock %}

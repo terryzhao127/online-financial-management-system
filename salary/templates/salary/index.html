@@ -15,7 +15,7 @@
         .tr-size {
             height: 50px;
         }
-    .button-size1 {
+        .button-size1 {
             font-size: 4px;
             height: 25px;
         }
@@ -33,6 +33,9 @@
         <option>Shaxian county snacks</option>
         <option>CCTV</option>
         <option>New Oriental Cooking School</option>
+        {% for item in data.select_list %}
+            <option>item</option>
+        {% endfor %}
     </select>
     </div>
     <br>
@@ -41,21 +44,25 @@
             <th width="400">Name</th>
             <th width="200">Date</th>
             <th width="200">Uploader</th>
+            <th width="200">Operation</th>
         </tr>
         <tr class="tr-size">
             <td class="tr-size"><a href="{% url 'salary_details' %}">Salary table (June, 2017)</a></td>
             <td>2017.2.7</td>
             <td>Wang Bo</td>
+            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>
         </tr>
         <tr class="tr-size">
             <td class="tr_size"><a href="{% url 'salary_details' %}">Salary table (July, 2017)</a></td>
             <td>2017.2.7</td>
             <td>Wang Bo</td>
+            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>
         </tr>
         <tr class="tr-size">
             <td class="tr-size"><a href=" {% url 'salary_details' %}">Salary table (Feb, 2016)</a></td>
             <td>2017.2.7</td>
             <td>Wang Bo</td>
+            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>
         </tr>
 
 
@@ -64,6 +71,7 @@
                 <td class="tr-size"><a href="{% url 'salary_details' %}">item.name</a></td>
                 <td>item.date</td>
                 <td>item.uploader</td>
+                <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>
             </tr>
             <% empty %>
             <p>No tables found<p>
