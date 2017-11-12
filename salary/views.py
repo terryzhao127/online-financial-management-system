@@ -4,7 +4,7 @@ from Online_Financial_Management_System.decorators import custom_login_required
 
 @custom_login_required
 def salary(request, data):
-    return render(request, 'salary/salary.html', data)
+    return render(request, 'salary/index.html', data)
 
 
 @custom_login_required
