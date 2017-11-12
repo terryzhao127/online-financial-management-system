@@ -184,3 +184,9 @@ table td {
 table th {
     vertical-align: middle !important;
 }
+
+/* Apps title */
+.apps-base-title {
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+}

@@ -3,7 +3,8 @@ from django.http import HttpResponseRedirect
 # Utility functions
 from django.shortcuts import render
 
-ITEMS_NUMBER_IN_A_PAGE = 10
+# Maximum of number of items in a table page
+ITEMS_NUMBER_IN_A_PAGE = 1
 
 
 def get_alerts(request):

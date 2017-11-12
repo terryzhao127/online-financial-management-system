@@ -19,18 +19,16 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
     if workplaces_page_num == 0 or owned_companies_page_num == 0:
         return custom_error_404(request, data)
 
-    # Calculate the list area indices.
-    workplaces_start = (workplaces_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-    workplaces_end = workplaces_page_num * ITEMS_NUMBER_IN_A_PAGE
-    owned_companies_start = (owned_companies_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-    owned_companies_end = owned_companies_page_num * ITEMS_NUMBER_IN_A_PAGE
-
     # Collect information of companies.
     staff = Staff.objects.get(user=request.user)
     workplaces = staff.workplaces.all()
-    if len(workplaces) == 0:
+    if not workplaces:
         data['no_workplace'] = True
     else:
+        # Calculate the list area indices.
+        workplaces_start = (workplaces_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
+        workplaces_end = workplaces_page_num * ITEMS_NUMBER_IN_A_PAGE
+
         data['no_workplace'] = False
         data['workplaces_page_end'] = math.ceil(len(workplaces) / ITEMS_NUMBER_IN_A_PAGE)
         data['workplaces_page_range'] = range(1, data['workplaces_page_end'] + 1)
@@ -38,9 +36,13 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
         data['workplaces_page_num'] = workplaces_page_num
 
     owned_companies = Company.objects.filter(owner=staff)
-    if len(owned_companies) == 0:
+    if not owned_companies:
         data['no_owned_company'] = True
     else:
+        # Calculate the list area indices.
+        owned_companies_start = (owned_companies_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
+        owned_companies_end = owned_companies_page_num * ITEMS_NUMBER_IN_A_PAGE
+
         data['no_owned_company'] = False
         data['owned_companies_page_end'] = math.ceil(len(owned_companies) / ITEMS_NUMBER_IN_A_PAGE)
         data['owned_companies_page_range'] = range(1, data['owned_companies_page_end'] + 1)

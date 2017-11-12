@@ -4,118 +4,79 @@
 
 {% block apps_base_content %}
     <style>
-    .div_style{
-        height: 600px;
-        width: 792px;
-    }
-    .button_size1{
-        width: 100px;
-    }
-    .button_size2{
-        width: 80px;
-    }
+        .div-style {
+            height: 600px;
+            width: 792px;
+        }
+
+        .button-size1 {
+            width: 100px;
+        }
+
+        .button-size2 {
+            width: 80px;
+        }
     </style>
     <p>This is the receipt</p>
-    <div class="div_style">
-        <table id = "" class="table table-striped table-bordered text-center">
+    <div class="div-style">
+        <table class="table table-striped table-bordered text-center">
+            <thead>
             <tr>
                 <th class="text-center">ID</th>
                 <th class="text-center">Payer</th>
-                <th class="text-center">Amount</th>
+                <th class="text-center">Total Amount</th>
                 <th class="text-center">Payee</th>
                 <th class="text-center">Date</th>
                 <th class="text-center">Address</th>
                 <th class="text-center">Notes</th>
             </tr>
+            </thead>
+            <tbody>
             <tr>
-                <td>1151651959</td>
-                <td>付款人</td>
-                <td>115.10</td>
-                <td>收款人</td>
-                <td>2017.10.21</td>
-                <td>西大直街</td>
-                <td>备注 ( 可为空 )</td>
+                <td>{{ receipt.id }}</td>
+                <td>{{ receipt.payer }}</td>
+                <td>{{ receipt.total_amount }}</td>
+                <td>{{ receipt.payee }}</td>
+                <td>{{ receipt.date }}</td>
+                <td>{{ receipt.address }}</td>
+                <td>{{ receipt.notes }}</td>
             </tr>
+            </tbody>
         </table>
 
-        <table id = "" class="table table-striped table-bordered text-center">
+        <table class="table table-striped table-bordered text-center">
+            <thead>
             <tr>
-                <th class="text-center">商品名称</th>
-                <th class="text-center">规格</th>
-                <th class="text-center">数量</th>
-                <th class="text-center">单位</th>
-                <th class="text-center">单价</th>
-                <th class="text-center">总价</th>
+                <th class="text-center">Item Name</th>
+                <th class="text-center">Spec</th>
+                <th class="text-center">Number</th>
+                <th class="text-center">Unit</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Total Cost</th>
             </tr>
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-                        <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
-
-            <tr>
-                <td>内存</td>
-                <td>8g</td>
-                <td>2</td>
-                <td>个</td>
-                <td>1111</td>
-                <td>2222</td>
-            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.spec }}</td>
+                    <td>{{ item.number }}</td>
+                    <td>{{ item.unit }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.total_cost }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
     </div>
     <br>
     <div>
-    <button class="btn btn-default button_size1" id="download" a href="">Download</button>
-    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-    <button class="btn btn-danger button_size2" id="delete">Delete</button>
-    <button class="btn btn-primary button_size2" id="print">Print</button>
-    <button class="btn btn-primary button_size2" id="update">Update</button>
+        <button class="btn btn-default button-size1" id="download" a href="">Download</button>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <button class="btn btn-danger button-size2" id="delete">Delete</button>
+        <button class="btn btn-primary button-size2" id="print">Print</button>
+        <button class="btn btn-primary button-size2" id="update">Update</button>
     </div>
 {% endblock %}

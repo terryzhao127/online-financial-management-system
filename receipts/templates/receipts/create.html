@@ -4,10 +4,11 @@
 
 {% block apps_base_stylesheets %}
     <style>
-        .form-create-receipt{
+        .form-create-receipt {
             max-width: 950px;
         }
-        .form-create-basic-information{
+
+        .form-create-basic-information {
             float: left;
             max-width: 170px;
             margin-left: 10px;
@@ -16,39 +17,31 @@
 
 {% endblock %}
 
-{% block apps_base_scripts %}
-    <script>
-
-    </script>
-{% endblock %}
-
 {% block apps_base_title %}Create a new receipt{% endblock %}
 
 {% block apps_base_content %}
-
     <form class="form-create-receipt" action="{% url 'create_receipt' %}" method="post">
         {% csrf_token %}
-        <div class="form-create-basic-information text-left" >
+        <div class="form-create-basic-information text-left form-group">
             <label for="payer-name">Payer</label>
-            <input id="payer-name" class="form-control" type="text" name="" maxlength="10" required/>
+            <input id="payer-name" class="form-control" type="text" name="payer" maxlength="30" required/>
         </div>
-        <div class="form-create-basic-information text-left">
+        <div class="form-create-basic-information text-left form-group">
             <label for="payee-name">Payee</label>
-            <input id="payee-name" class="form-control" type="text" name="" maxlength="10" required/>
+            <input id="payee-name" class="form-control" type="text" name="payee" maxlength="30" required/>
         </div>
-        <div class="form-create-basic-information text-left">
+        <div class="form-create-basic-information text-left form-group">
             <label for="address">Address</label>
-            <input id="address" class="form-control" type="text" name="" maxlength="80" required/>
+            <input id="address" class="form-control" type="text" name="address" maxlength="80" required/>
         </div>
-        <div class="form-create-basic-information text-left">
-            <label for="time">Time</label>
-            <input id="time" class="form-control" type="date" name=""  required/>
+        <div class="form-create-basic-information text-left form-group">
+            <label for="date">Date</label>
+            <input id="date" class="form-control" type="date" name="date" required/>
         </div>
-        <div class="form-create-basic-information text-left">
+        <div class="form-create-basic-information text-left form-group">
             <label for="notes">Notes</label>
-            <input id="notes" class="form-control" type="text" name="" maxlength="80" required/>
+            <input id="notes" class="form-control" type="text" name="notes" maxlength="80" required/>
         </div>
-
     </form>
 
     <div class="c">
@@ -59,76 +52,22 @@
     <br/>
     <br/>
 
-    <table id = "" class="table table-striped table-bordered text-center">
+    <table id="" class="table table-striped table-bordered text-center">
         <tr>
-            <th class="text-center">商品名称</th>
-            <th class="text-center">规格</th>
-            <th class="text-center">数量</th>
-            <th class="text-center">单位</th>
-            <th class="text-center">单价</th>
-            <th class="text-center">总价</th>
+            <th class="text-center">Item Name</th>
+            <th class="text-center">Spec</th>
+            <th class="text-center">Number</th>
+            <th class="text-center">Unit</th>
+            <th class="text-center">Price</th>
+            <th class="text-center">Total Cost</th>
         </tr>
         <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-        </tr>
-
-        <tr>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "num" type="text" class="form-control"> </td>
-            <td><input id = "" type="text" class="form-control"> </td>
-            <td><input id = "price" type="text" class="form-control"> </td>
-            <td><input id = "account" type="text" class="form-control"> </td>
+            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="" type="text" class="form-control"></td>
+            <td><input id="" type="text" class="form-control"></td>
         </tr>
     </table>
 
