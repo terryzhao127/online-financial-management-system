@@ -4,19 +4,52 @@ from django.shortcuts import render
 from accounts.models import Staff
 from companies.models import Company
 from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import redirect_with_data
+from Online_Financial_Management_System.utils import redirect_with_data, ITEMS_NUMBER_IN_A_PAGE
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
+import math
 
 
 @custom_login_required
-def companies(request, data):
+def companies(request, data, workplaces_page_num, owned_companies_page_num):
+    workplaces_page_num = int(workplaces_page_num)
+    owned_companies_page_num = int(owned_companies_page_num)
+
+    # If page number is zero.
+    if workplaces_page_num == 0 or owned_companies_page_num == 0:
+        return custom_error_404(request, data)
+
+    # Calculate the list area indices.
+    workplaces_start = (workplaces_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
+    workplaces_end = workplaces_page_num * ITEMS_NUMBER_IN_A_PAGE
+    owned_companies_start = (owned_companies_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
+    owned_companies_end = owned_companies_page_num * ITEMS_NUMBER_IN_A_PAGE
+
     # Collect information of companies.
     staff = Staff.objects.get(user=request.user)
-    data['workplaces'] = staff.workplaces.all()
+    workplaces = staff.workplaces.all()
+    if len(workplaces) == 0:
+        data['no_workplace'] = True
+    else:
+        data['no_workplace'] = False
+        data['workplaces_page_end'] = math.ceil(len(workplaces) / ITEMS_NUMBER_IN_A_PAGE)
+        data['workplaces_page_range'] = range(1, data['workplaces_page_end'] + 1)
+        data['workplaces'] = workplaces[workplaces_start:workplaces_end]
+        data['workplaces_page_num'] = workplaces_page_num
 
     owned_companies = Company.objects.filter(owner=staff)
-    data['owned_companies'] = owned_companies
+    if len(owned_companies) == 0:
+        data['no_owned_company'] = True
+    else:
+        data['no_owned_company'] = False
+        data['owned_companies_page_end'] = math.ceil(len(owned_companies) / ITEMS_NUMBER_IN_A_PAGE)
+        data['owned_companies_page_range'] = range(1, data['owned_companies_page_end'] + 1)
+        data['owned_companies'] = owned_companies[owned_companies_start:owned_companies_end]
+        data['owned_companies_page_num'] = owned_companies_page_num
+
+    # If either table is empty while companies set are not empty...
+    if 'workplaces' in data and not data['workplaces'] or 'owned_companies' in data and not data['owned_companies']:
+        return custom_error_404(request, data)
 
     return render(request, 'companies/index.html', data)
 
