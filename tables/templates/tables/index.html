@@ -7,6 +7,12 @@
 {% block apps_base_stylesheets %}
     {# 这里放样式 #}
     <style>
+        .float-style1 {
+            float: left;
+        }
+        .float-style2 {
+            float: inherit;
+        }
         .tr-size {
             height: 50px;
         }
@@ -15,6 +21,18 @@
 
 {% block apps_base_content %}
     <!-- <a href="{% url 'table_details' %}" style="font-size: 5em">DETAILS</a> -->
+    <div class="float-style1">
+        <p>&nbsp&nbspPlease select your company &nbsp&nbsp</p>
+    </div>
+    <div class="float-style1">
+    <select class="selectpicker" id="select_company">
+        <option>Lanxiang</option>
+        <option>HIT Securities</option>
+        <option>Shaxian county snacks</option>
+        <option>CCTV</option>
+        <option>New Oriental Cooking School</option>
+    </select>
+    </div>
     <table class="table">
         <tr>
             <th width="400">Name</th>
@@ -49,13 +67,16 @@
         {% endfor %}
     </table>
 
+    <div class="float-style1">
+        <button class="btn btn-primary" id="upload" onclick="location='upload'">Upload</button>
+    </div>
+    <div class="float-style2">
     <center>
         <s property="page"></s>
         <button class="btn btn-default" id="previous_page" a href="">Prev</button>
         <button class="btn btn-default" id="next_page" a href="">Next</button>
-        <button class="btn btn-primary" id="upload" a href="">Upload</button>
     </center>
-
+    </div>
 
 
 

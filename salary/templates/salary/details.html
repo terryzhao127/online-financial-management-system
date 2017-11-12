@@ -2,6 +2,79 @@
 
 {% block title %}Salary{% endblock %}
 
-{% block apps_base_stylesheets %}
+{% block apps_base_title %}Salary{% endblock %}
 
+{% block apps_base_stylesheets %}
+    <style>
+        .button_size1 {
+            width: 100px;
+        }
+
+        .button_size2 {
+            width: 70px;
+        }
+
+        .tr-size {
+            height: 35px;
+        }
+    </style>
+{% endblock %}
+
+{% block base_scripts %}
+    <script>
+        function print_doc() {
+
+        }
+    </script>
+{% endblock %}
+
+{% block apps_base_content %}
+    <p>This is the salary table</p>
+    <br>
+    <div>
+    <table class="table" border="1">
+        <tr>
+            <th width="200">Name</th>
+            <th width="100">Base salary</th>
+            <th width="100">Bonus</th>
+            <th width="100">Total</th>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size">1154239</td>
+            <td>5000</td>
+            <td>2000</td>
+            <td>7000</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size">1154239</td>
+            <td>5000</td>
+            <td>2000</td>
+            <td>7000</td>
+        </tr>
+        <tr class="tr-size">
+            <td class="tr-size">1154239</td>
+            <td>5000</td>
+            <td>2000</td>
+            <td>7000</td>
+        </tr>
+
+        {% for item in data %}
+            <tr class="tr-size">
+                <td class="tr-size">item.name</td>
+                <td>item.base_salary</td>
+                <td>item.bonus</td>
+                <td>item.total_salary</td>
+            </tr>
+            <% empty %>
+            <p>The salary table is empty<p>
+        {% endfor %}
+    </table>
+
+    <div>
+        <button class="btn btn-default button_size1" id="download" onclick="location=''">Download</button>
+        <button class="btn btn-default button_size1" id="fresh" onclick="location='upload'">Upload</button>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <button class="btn btn-danger button_size2" id="delete">Delete</button>
+        <button class="btn btn-primary button_size2" id="print">Print</button>
+    </div>
 {% endblock %}

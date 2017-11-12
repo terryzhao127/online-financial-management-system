@@ -10,3 +10,7 @@ def tables(request, data):
 @custom_login_required
 def details(request, data):
     return render(request, 'tables/details.html', data)
+
+@custom_login_required
+def upload(request, data):
+    return render(request, 'tables/upload.html', data)
