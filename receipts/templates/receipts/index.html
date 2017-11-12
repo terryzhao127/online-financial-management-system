@@ -7,4 +7,28 @@
 {% block apps_base_content %}
     <a href="{% url 'receipt_details' %}" style="font-size: 5em">DETAILS</a>
     <a href="{% url 'create_receipt' %}" style="font-size: 5em">CREATE</a>
+
+    <table class="table table-striped table-bordered text-center">
+        <tr>
+            <th class="text-center">ID</th>
+            <th class="text-center">Payer</th>
+            <th class="text-center">Amount</th>
+            <th class="text-center">Payee</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Operation</th>
+        </tr>
+        <tr>
+            <td><a href="">1151651959</a></td>
+            <td>付款人</td>
+            <td>115.10</td>
+            <td>收款人</td>
+            <td>2017.10.21</td>
+            <td>
+                <form style="margin: 0;">
+                    <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
 {% endblock %}
