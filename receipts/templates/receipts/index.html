@@ -4,35 +4,53 @@
 
 {% block apps_base_title %}Receipts{% endblock %}
 
+{% block apps_base_stylesheets %}
+    <style>
+        .table-title {
+            font-size: 1.7em;
+            font-family: Dosis, sans-serif;
+        }
+
+        .receipt-manage-link {
+            font-size: 0.8em;
+            font-style: italic;
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
+
 {% block apps_base_content %}
-{#    <a href="{% url 'receipt_details' %}" style="font-size: 5em">DETAILS</a>#}
-{#    <a href="{% url 'create_receipt' %}" style="font-size: 5em">CREATE</a>#}
     <div class="mb-3">
-        <header class="table-title d-inline-block">Owned Receipts</header>
-        <a class="company-manage-link" href="{% url 'create_receipt' %}">Create a new Receipts</a>
+        <header class="table-title d-inline-block">Created Receipts</header>
+        <a class="receipt-manage-link" href="{% url 'create_receipt' %}">Create a new Receipts</a>
     </div>
-
-    <table class="table table-striped table-bordered text-center">
-        <tr>
-            <th class="text-center">ID</th>
-            <th class="text-center">Payer</th>
-            <th class="text-center">Amount</th>
-            <th class="text-center">Payee</th>
-            <th class="text-center">Date</th>
-            <th class="text-center">Operation</th>
-        </tr>
-        <tr>
-            <td><a href="{% url 'receipt_details' %}">1151651959</a></td>
-            <td>付款人</td>
-            <td>115.10</td>
-            <td>收款人</td>
-            <td>2017.10.21</td>
-            <td>
-                <form style="margin: 0;">
-                    <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-                </form>
-            </td>
-        </tr>
-    </table>
-
+    {% if no_receipt %}
+        <div class="alert alert-warning" role="alert">
+            <strong>No Receipt!</strong>
+            <p>You have no receipts, please create one.</p>
+        </div>
+    {% else %}
+        <table class="table table-striped table-bordered text-center">
+            <thead>
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">Payer</th>
+                <th class="text-center">Total Amount</th>
+                <th class="text-center">Payee</th>
+                <th class="text-center">Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for receipt in created_receipts %}
+                <tr>
+                    <td>{{ receipt.id }}</td>
+                    <td>{{ receipt.payer }}</td>
+                    <td>{{ receipt.total_amount }}</td>
+                    <td>{{ receipt.payee }}</td>
+                    <td>{{ receipt.date }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}

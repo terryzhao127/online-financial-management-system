@@ -4,6 +4,7 @@ from django.db import models
 
 
 class Receipt(models.Model):
+    creator = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE)
     payer = models.CharField(max_length=30)
     payee = models.CharField(max_length=30)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
