@@ -15,7 +15,7 @@
 
 {% block apps_base_content %}
     <table class="table table-striped text-center">
-        <thead class="thead-dark">
+        <thead class="thead-inverse">
         <tr>
             <th class="text-center">Name</th>
             <th class="text-center">UUID</th>
@@ -31,7 +31,7 @@
         </tbody>
     </table>
     {% if is_owner %}
-        <form action="{% url 'delete_company' %}" method="POST" style="margin: 0;">
+        <form action="{% url 'delete_company' %}" class="text-center" method="POST" style="margin: 0;">
             {% csrf_token %}
             <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
             <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>

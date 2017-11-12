@@ -51,13 +51,5 @@
 {% endblock %}
 
 {% block base_scripts %}
-    <script>
-        $('#sidemenu').affix({
-            offset: {
-                top: $('#navbar').offset().top + $('#navbar').outerHeight(),
-                bottom: $('footer').outerHeight() + 50
-            }
-        });
-    </script>
     {% block apps_base_scripts %}{% endblock %}
 {% endblock %}

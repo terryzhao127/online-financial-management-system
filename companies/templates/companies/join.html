@@ -4,9 +4,18 @@
 
 {% block apps_base_title %}Join in a company{% endblock %}
 
+{% block apps_base_stylesheets %}
+    <style>
+        .form-join-company {
+            max-width: 330px;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}
+
 {% block apps_base_content %}
-        <p>Input UUID of the company you are going to join in:</p>
-        <form class="" action="{% url 'join_company' %}" method="post">
+    <p>Input UUID of the company you are going to join in:</p>
+    <form class="form-join-company" action="{% url 'join_company' %}" method="post">
         {% csrf_token %}
         <div class="form-group text-left">
             <label for="unique-id">UUID:</label>
