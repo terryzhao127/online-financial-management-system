@@ -4,7 +4,7 @@ from .models import Receipt, Item
 from accounts.models import Staff
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
-from Online_Financial_Management_System.utils import ITEMS_NUMBER_IN_A_PAGE
+from Online_Financial_Management_System.utils import redirect_with_data, ITEMS_NUMBER_IN_A_PAGE
 import math
 
 
@@ -56,4 +56,59 @@ def details(request, data, receipt_id):
 
 @custom_login_required
 def create(request, data):
-    return render(request, 'receipts/create.html')
+    if request.method == 'POST':
+        # Collect form data.
+        creator = Staff.objects.get(user=request.user)
+        payer = request.POST['payer']
+        payee = request.POST['payee']
+        date = request.POST['date']
+        address = request.POST['address']
+        notes = request.POST['notes']
+
+        # Create new Receipt instance.
+        new_receipt = Receipt(creator=creator, payer=payer, payee=payee, total_amount=0, date=date,
+                              address=address, notes=notes)
+        new_receipt.save()
+
+        for i in range(0, 7):
+            if not 'item-' + str(i) in request.POST:
+                break
+            name = request.POST['item-' + str(i)]
+            spec = request.POST['spec-' + str(i)]
+            number = request.POST['number-' + str(i)]
+            unit = request.POST['unit-' + str(i)]
+            price = request.POST['price-' + str(i)]
+            total_cost = request.POST['total-cost-' + str(i)]
+
+            # Create new Item instance.
+            new_item = Item(name=name, spec=spec, number=number, unit=unit, price=price, total_cost=total_cost)
+            new_item.save()
+
+            # Update receipt instance.
+            new_receipt.items.add(new_item)
+            new_receipt.total_amount += int(total_cost)
+
+        # Success
+        data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new receipt.'))
+        return redirect_with_data(request, data, '/receipts/')
+    else:
+        return render(request, 'receipts/create.html', data)
+
+
+@custom_login_required
+def delete(request, data):
+    if request.method == 'POST':
+        # Collect form data.
+        receipt_id = request.POST['receipt_id']
+
+        # Get Company instance.
+        receipt = Receipt.objects.get(id=receipt_id)
+
+        # Delete
+        receipt.delete()
+
+        # Success
+        data['alerts'].append(('success', 'Delete successfully!', 'You have successfully deleted a receipt.'))
+        return redirect_with_data(request, data, '/receipts/')
+    else:
+        return custom_error_404(request, data)

@@ -57,7 +57,7 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
 
 
 @custom_login_required
-def create_company(request, data):
+def create(request, data):
     if request.method == 'POST':
         # Collect form data.
         company_name = request.POST['company_name']
@@ -78,7 +78,7 @@ def create_company(request, data):
 
 
 @custom_login_required
-def join_company(request, data):
+def join(request, data):
     if request.method == 'POST':
         # Collect form data.
         unique_id = request.POST['unique_id']
@@ -111,7 +111,7 @@ def join_company(request, data):
 
 
 @custom_login_required
-def delete_company(request, data):
+def delete(request, data):
     if request.method == 'POST':
         # Collect form data.
         unique_id = request.POST['unique_id']
@@ -126,7 +126,7 @@ def delete_company(request, data):
         data['alerts'].append(('success', 'Delete successfully!', 'You have successfully deleted a company.'))
         return redirect_with_data(request, data, '/companies/')
     else:
-        return custom_error_404(request)
+        return custom_error_404(request, data)
 
 
 @custom_login_required
