@@ -21,8 +21,8 @@ def salary(request, data, **kwargs):
             data['no_owned_company'] = True
             return render(request, 'salary/index.html', data)
 
-        first_company_uuid_str = owned_companies.all()[0].unique_id
-        return redirect_with_data(request, data, '/salary/' + str(first_company_uuid_str) + '/1/')
+        first_company_uuid = owned_companies.all()[0].unique_id
+        return redirect_with_data(request, data, '/salary/' + str(first_company_uuid) + '/1/')
     else:
         company_uuid = kwargs['company_uuid']
         page_num = kwargs['page_num']
@@ -67,7 +67,7 @@ def salary(request, data, **kwargs):
         data['owned_companies'] = owned_companies
         data['company_uuid'] = company.unique_id
 
-    return render(request, 'salary/index.html', data)
+        return render(request, 'salary/index.html', data)
 
 
 @custom_login_required
@@ -103,8 +103,33 @@ def delete(request, data):
 
 
 @custom_login_required
-def create(request, data):
-    if request.method == 'POST':
-        pass
+def create(request, data, **kwargs):
+    payer = Staff.objects.get(user=request.user)
+    owned_companies = Company.objects.filter(owner=payer)
+    data['ready_to_create_salary_record'] = False
+
+    if 'company_uuid' not in kwargs:
+        first_company_uuid = owned_companies.all()[0].unique_id
+        return redirect_with_data(request, data, '/salary/create/' + str(first_company_uuid) + '/')
     else:
+        company_uuid = kwargs['company_uuid']
+
+        # If company_uuid is invalid...
+        try:
+            company = Company.objects.get(unique_id=company_uuid)
+        except ValidationError:
+            return custom_error_404(request, data)
+        except ObjectDoesNotExist:
+            return custom_error_404(request, data)
+
+        # If the logged staff is not the owner of the company:
+        if company.owner != payer:
+            return custom_error_404(request, data)
+
+        # Get all staff in this company.
+        data['company_staff'] = company.staff.all()
+
+        data['owned_companies'] = owned_companies
+        data['ready_to_create_salary_record'] = True
+
         return render(request, 'salary/create.html', data)

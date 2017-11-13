@@ -10,7 +10,7 @@ class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=30, null=True)
     age = models.PositiveSmallIntegerField(null=True)
-    workplaces = models.ManyToManyField('companies.Company')
+    workplaces = models.ManyToManyField('companies.Company', related_name='workplace_of_staff')
 
     def __str__(self):
         return self.user.username

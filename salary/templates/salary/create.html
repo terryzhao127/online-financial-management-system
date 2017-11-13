@@ -25,7 +25,9 @@
         <div class="form-group">
             <label for="company-name">Select one of your company:</label>
             <select id="company-name" name="company_uuid">
-                <option></option>
+                {% for company in owned_companies %}
+                    <option value="{{ company.unique_id }}">{{ company.name }}</option>
+                {% endfor %}
             </select>
         </div>
         <div class="form-group">
@@ -53,38 +55,28 @@
 
 {% block apps_base_scripts %}
     <script>
-        {# Make date auto set to today #}
-        Date.prototype.toDateInputValue = (function () {
-            var local = new Date(this);
-            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-            return local.toJSON().slice(0, 10);
-        });
-        $(document).ready(function () {
-            $('#date').val(new Date().toDateInputValue());
-        });
-
         {# Auto calculate total cost #}
-        var a, b;
-        $(document).ready(function () {
-            $("#number-0").change(function () {
-                a = this.value;
-                if (isNaN(a)) {
-                    alert("Invalid number!")
-                }
-                if (!isNaN(a) && !isNaN(b)) {
-                    document.getElementById("total-cost-0").value = a * b;
-                }
-            });
-
-            $("#price-0").change(function () {
-                b = this.value;
-                if (isNaN(b)) {
-                    alert("Invalid price!")
-                }
-                if (!isNaN(a) && !isNaN(b)) {
-                    document.getElementById("total-cost-0").value = a * b;
-                }
-            });
-        });
+        {#        var a, b;#}
+        {#        $(document).ready(function () {#}
+        {#            $("#number-0").change(function () {#}
+        {#                a = this.value;#}
+        {#                if (isNaN(a)) {#}
+        {#                    alert("Invalid number!")#}
+        {#                }#}
+        {#                if (!isNaN(a) && !isNaN(b)) {#}
+        {#                    document.getElementById("total-cost-0").value = a * b;#}
+        {#                }#}
+        {#            });#}
+        {##}
+        {#            $("#price-0").change(function () {#}
+        {#                b = this.value;#}
+        {#                if (isNaN(b)) {#}
+        {#                    alert("Invalid price!")#}
+        {#                }#}
+        {#                if (!isNaN(a) && !isNaN(b)) {#}
+        {#                    document.getElementById("total-cost-0").value = a * b;#}
+        {#                }#}
+        {#            });#}
+        {#        });#}
     </script>
 {% endblock %}

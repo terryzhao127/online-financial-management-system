@@ -70,6 +70,9 @@ def create(request, data):
         # Add new company to workplaces.
         owned_by.workplaces.add(new_company)
 
+        # Add owner to staff of new company.
+        new_company.staff.add(owned_by)
+
         # Success
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new company.'))
         return redirect_with_data(request, data, '/companies/')
@@ -95,6 +98,9 @@ def join(request, data):
 
         # Add the company to workplaces.
         staff = Staff.objects.get(user=request.user)
+
+        # Add staff instance to staff field of company.
+        company.staff.add(staff)
 
         # Test whether the user has already joined the company.
         if company in staff.workplaces.all():

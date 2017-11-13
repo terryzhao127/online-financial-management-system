@@ -5,6 +5,8 @@ from .models import Company
 
 
 class CompanyAdmin(admin.ModelAdmin):
+    model = Company
+    filter_horizontal = ('staff',)
     list_display = ['name', 'owner', 'unique_id']
 
 
