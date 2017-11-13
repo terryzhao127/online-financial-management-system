@@ -4,22 +4,6 @@
 
 {% block apps_base_title %}Salary{% endblock %}
 
-{% block apps_base_stylesheets %}
-    <style>
-        .button_size1 {
-            width: 100px;
-        }
-
-        .button_size2 {
-            width: 70px;
-        }
-
-        .tr-size {
-            height: 35px;
-        }
-    </style>
-{% endblock %}
-
 {% block base_scripts %}
     <script>
         function print_doc() {
@@ -77,4 +61,20 @@
         <button class="btn btn-danger button_size2" id="delete">Delete</button>
         <button class="btn btn-primary button_size2" id="print">Print</button>
     </div>
+{% endblock %}
+
+{% block apps_base_stylesheets %}
+    <style>
+        .button_size1 {
+            width: 100px;
+        }
+
+        .button_size2 {
+            width: 70px;
+        }
+
+        .tr-size {
+            height: 35px;
+        }
+    </style>
 {% endblock %}
