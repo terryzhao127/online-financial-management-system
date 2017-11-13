@@ -19,7 +19,7 @@
     </style>
     <p>This is the receipt</p>
     <div class="div-style">
-        <table class="table table-striped table-bordered text-center">
+        <table id = "table2excel" class="table table-striped table-bordered text-center">
             <thead>
             <tr>
                 <th class="text-center">ID</th>
@@ -44,7 +44,7 @@
             </tbody>
         </table>
 
-        <table class="table table-striped table-bordered text-center">
+        <table id = "table2excel" class="table table-striped table-bordered text-center">
             <thead>
             <tr>
                 <th class="text-center">Item Name</th>
@@ -98,6 +98,22 @@
                 }
             })
         });
-
     </script>
+    {% load static %}
+    <script src="{% static "js/jquery.table2excel.js" %}"></script>
+    <script>
+        $(document).ready(function () {
+             $("#download").click(function () {
+                 $("table#table2excel").table2excel({
+                     exclude : ".noExl",
+                     filename : new Date(),
+                     name: "Excel Document Name.xlsx",
+                     exclude_img: true,
+                     exclude_links: true,
+                     exclude_inputs: true
+                 })
+             })
+        })
+    </script>
+
 {% endblock %}
