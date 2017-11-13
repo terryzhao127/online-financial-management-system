@@ -2,16 +2,17 @@
 
 {% block title %}Companies{% endblock %}
 
-{% block apps_base_title %}Details of {{ company.name }}{% endblock %}
-
 {% block apps_base_stylesheets %}
     <style>
         .company-name {
             max-width: 100px;
-            word-break: break-all;
+            -ms-word-wrap: break-word;
+            word-wrap: break-word;
         }
     </style>
 {% endblock %}
+
+{% block apps_base_title %}Details of {{ company.name }}{% endblock %}
 
 {% block apps_base_content %}
     <table class="table table-striped text-center">

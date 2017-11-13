@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 # Utility functions
 from django.shortcuts import render
 
+# Maximum of number of items in a table page
 ITEMS_NUMBER_IN_A_PAGE = 10
 
 

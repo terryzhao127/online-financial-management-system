@@ -9,9 +9,12 @@ class Receipt(models.Model):
     payee = models.CharField(max_length=30)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
-    address = models.TextField()
-    remarks = models.TextField(blank=True)
+    address = models.CharField(max_length=80)
+    notes = models.CharField(max_length=80, blank=True)
     items = models.ManyToManyField('Item')
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Item(models.Model):
@@ -20,4 +23,7 @@ class Item(models.Model):
     number = models.PositiveIntegerField()
     unit = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_mount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
