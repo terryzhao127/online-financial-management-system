@@ -96,22 +96,14 @@
         $(document).ready(function () {
             $("#number-0").change(function () {
                 a = this.value;
-                if (isNaN(a)) {
-                    alert("Invalid number!")
-                }
-                if (!isNaN(a) && !isNaN(b)) {
-                    document.getElementById("total-cost-0").value = a * b;
-                }
+                document.getElementById("total-cost-0").value = a * b;
+
             });
 
             $("#price-0").change(function () {
                 b = this.value;
-                if (isNaN(b)) {
-                    alert("Invalid price!")
-                }
-                if (!isNaN(a) && !isNaN(b)) {
-                    document.getElementById("total-cost-0").value = a * b;
-                }
+                document.getElementById("total-cost-0").value = a * b;
+
             });
         });
     </script>

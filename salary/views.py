@@ -104,14 +104,28 @@ def delete(request, data):
 
 @custom_login_required
 def create(request, data, **kwargs):
-    payer = Staff.objects.get(user=request.user)
-    owned_companies = Company.objects.filter(owner=payer)
-    data['ready_to_create_salary_record'] = False
+    if request.method == 'POST':
+        # Collect form data.
+        company_uuid = request.POST['company_uuid']
+        payee_id = request.POST['payee_id']
+        base_salary = request.POST['base_salary']
+        bonus = request.POST['bonus']
+        total = request.POST['total']
+        date = request.POST['date']
 
-    if 'company_uuid' not in kwargs:
-        first_company_uuid = owned_companies.all()[0].unique_id
-        return redirect_with_data(request, data, '/salary/create/' + str(first_company_uuid) + '/')
+        # Create new salary instance.
+        payee = Staff.objects.get(id=payee_id)
+        payer = Staff.objects.get(user=request.user)
+        company = Company.objects.get(unique_id=company_uuid)
+        new_salary = Salary(payer=payer, payee=payee, company=company, base_salary=base_salary, bonus=bonus,
+                            total=total, date=date)
+        new_salary.save()
+
+        # Success
+        data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new salary record.'))
+        return redirect_with_data(request, data, '/salary/')
     else:
+        payer = Staff.objects.get(user=request.user)
         company_uuid = kwargs['company_uuid']
 
         # If company_uuid is invalid...
@@ -128,8 +142,6 @@ def create(request, data, **kwargs):
 
         # Get all staff in this company.
         data['company_staff'] = company.staff.all()
-
-        data['owned_companies'] = owned_companies
-        data['ready_to_create_salary_record'] = True
+        data['company_uuid'] = company_uuid
 
         return render(request, 'salary/create.html', data)

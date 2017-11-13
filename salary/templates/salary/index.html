@@ -5,21 +5,22 @@
 {% block apps_base_title %}Salary{% endblock %}
 
 {% block apps_base_content %}
-    <form method="get">
-        <div>
-            <label for="salary-owned-companies">Select your company</label>
-            <select class="" id="salary-owned-companies" onchange="reloadCompany()">
+    <div>
+        <label for="salary-owned-companies">Select your company</label>
+        <select class="" id="salary-owned-companies" onchange="reloadCompany()">
 
-                {% for company in owned_companies %}
-                    {% if company.unique_id == company_uuid %}
-                        <option value="{{ company.unique_id }}" selected>{{ company.name }}</option>
-                    {% else %}
-                        <option value="{{ company.unique_id }}">{{ company.name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-    </form>
+            {% for company in owned_companies %}
+                {% if company.unique_id == company_uuid %}
+                    <option value="{{ company.unique_id }}" selected>{{ company.name }}</option>
+                {% else %}
+                    <option value="{{ company.unique_id }}">{{ company.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <a href="{% url 'create_salary_with_params' company_uuid=company_uuid %}" class="ml-3" style="font-style: italic;">ADD</a>
+    </div>
     {% if no_salary_records %}
         <div class="alert alert-warning" role="alert">
             <strong>No salary records!</strong>
