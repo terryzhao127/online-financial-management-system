@@ -33,7 +33,7 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
         data['workplaces_page_end'] = math.ceil(len(workplaces) / ITEMS_NUMBER_IN_A_PAGE)
         data['workplaces_page_range'] = range(1, data['workplaces_page_end'] + 1)
         data['workplaces'] = workplaces[workplaces_start:workplaces_end]
-        data['workplaces_page_num'] = workplaces_page_num
+    data['workplaces_page_num'] = workplaces_page_num
 
     owned_companies = Company.objects.filter(owner=staff)
     if not owned_companies:
@@ -47,9 +47,9 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
         data['owned_companies_page_end'] = math.ceil(len(owned_companies) / ITEMS_NUMBER_IN_A_PAGE)
         data['owned_companies_page_range'] = range(1, data['owned_companies_page_end'] + 1)
         data['owned_companies'] = owned_companies[owned_companies_start:owned_companies_end]
-        data['owned_companies_page_num'] = owned_companies_page_num
+    data['owned_companies_page_num'] = owned_companies_page_num
 
-    # If either table is empty while companies set are not empty...
+    # If either table is empty while companies set are not empty... (Due to invalid page num)
     if 'workplaces' in data and not data['workplaces'] or 'owned_companies' in data and not data['owned_companies']:
         return custom_error_404(request, data)
 

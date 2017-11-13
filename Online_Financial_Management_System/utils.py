@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 # Maximum of number of items in a table page
-ITEMS_NUMBER_IN_A_PAGE = 10
+ITEMS_NUMBER_IN_A_PAGE = 5
 
 
 def get_alerts(request):

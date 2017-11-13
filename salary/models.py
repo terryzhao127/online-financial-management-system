@@ -12,3 +12,6 @@ class Salary(models.Model):
     bonus = models.DecimalField(max_digits=10, decimal_places=2)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
+
+    def __str__(self):
+        return self.payee.full_name

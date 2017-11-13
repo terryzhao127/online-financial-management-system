@@ -15,6 +15,7 @@ def salary(request, data, **kwargs):
     payer = Staff.objects.get(user=request.user)
     owned_companies = Company.objects.filter(owner=payer)
 
+    # Conditions on two kinds of url.
     if 'company_uuid' not in kwargs and 'page_num' not in kwargs:
         # Test whether the staff has companies.
         if not owned_companies:
