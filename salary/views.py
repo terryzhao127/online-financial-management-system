@@ -1,5 +1,4 @@
 import math
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from Online_Financial_Management_System.decorators import custom_login_required
 from Online_Financial_Management_System.utils import ITEMS_NUMBER_IN_A_PAGE, redirect_with_data
@@ -13,12 +12,11 @@ from salary.models import Salary
 @custom_login_required
 def salary(request, data, **kwargs):
     data['no_owned_company'] = False
-    staff = Staff.objects.get(user=request.user)
-    owned_companies = Company.objects.filter(owner=staff)
+    payer = Staff.objects.get(user=request.user)
+    owned_companies = Company.objects.filter(owner=payer)
 
-    # Test whether the staff has company.
     if 'company_uuid' not in kwargs and 'page_num' not in kwargs:
-        # If the staff has no company...
+        # Test whether the staff has companies.
         if not owned_companies:
             data['no_owned_company'] = True
             return render(request, 'salary/index.html', data)
@@ -43,7 +41,7 @@ def salary(request, data, **kwargs):
             return custom_error_404(request, data)
 
         # If the logged staff is not the owner of the company:
-        if company.owner != staff:
+        if company.owner != payer:
             return custom_error_404(request, data)
 
         # Get all salary belonging to staffs in the same company.
@@ -70,11 +68,6 @@ def salary(request, data, **kwargs):
         data['company_uuid'] = company.unique_id
 
     return render(request, 'salary/index.html', data)
-
-
-@custom_login_required
-def upload(request, data):
-    return render(request, 'salary/upload.html', data)
 
 
 @custom_login_required
@@ -107,3 +100,11 @@ def delete(request, data):
         return redirect_with_data(request, data, '/salary/')
     else:
         return custom_error_404(request, data)
+
+
+@custom_login_required
+def create(request, data):
+    if request.method == 'POST':
+        pass
+    else:
+        return render(request, 'salary/create.html', data)

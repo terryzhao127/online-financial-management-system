@@ -2,23 +2,14 @@
 
 {% block title %}Salary{% endblock %}
 
-{% block apps_base_title %}Salary{% endblock %}
+{% block apps_base_title %}Salary of {{ salary.payee.full_name }}{% endblock %}
 
 {% block apps_base_stylesheets %}
 {% endblock %}
 
-{% block base_scripts %}
-    <script>
-        function print_doc() {
-
-        }
-    </script>
-{% endblock %}
-
 {% block apps_base_content %}
-    {#    <p>This is the salary table</p>#}
     <div>
-        <table class="table table-bordered">
+        <table class="table table-bordered table-responsive-md" id="salary-details-table">
             <thead>
             <tr>
                 <th>Name</th>
@@ -29,7 +20,7 @@
             </thead>
             <tbody>
             <tr>
-                <td>{{ salary.staff.full_name }}</td>
+                <td>{{ salary.payee.full_name }}</td>
                 <td>{{ salary.base_salary }}</td>
                 <td>{{ salary.bonus }}</td>
                 <td>{{ salary.total }}</td>
@@ -38,9 +29,8 @@
         </table>
 
         <div role="group">
-            <button class="btn btn-default disabled">Download</button>
             <button class="btn btn-default disabled">Update</button>
-            <button class="btn btn-primary disabled">Print</button>
+            <button class="btn btn-primary" onclick="exportTableToExcel('salary-details-table');">Export</button>
             <form action="{% url 'delete_salary' %}" class="text-center" method="post" style="display: inline-block">
                 {% csrf_token %}
                 <input type="hidden" name="salary_id" value="{{ salary.id }}"/>

@@ -5,8 +5,8 @@ from django.db import models
 
 
 class Salary(models.Model):
-    uploader = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE, related_name="staff_who_upload_salary")
-    staff = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE, related_name="staff_who_get_salary")
+    payer = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE, related_name="staff_who_pay_others")
+    payee = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE, related_name="staff_who_get_salary")
     company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
     base_salary = models.DecimalField(max_digits=10, decimal_places=2)
     bonus = models.DecimalField(max_digits=10, decimal_places=2)

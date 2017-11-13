@@ -81,7 +81,7 @@
             </tbody>
         </table>
     </div>
-    <form action="{% url 'delete_receipt' %}" class="text-center" method="post" style="margin: 0;">
+    <form action="{% url 'delete_receipt' %}" class="text-center mt-2" method="post" style="margin: 0;">
         {% csrf_token %}
         <input type="hidden" name="receipt_id" value="{{ receipt.id }}"/>
         <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
@@ -104,20 +104,5 @@
                 }
             })
         });
-    </script>
-    {% load static %}
-    <script src="{% static 'js/xlsx.core.min.js' %}"></script>
-    <script src="{% static 'js/FileSaver.min.js' %}"></script>
-    <script src="{% static 'js/tableexport.min.js' %}"></script>
-    <script>
-        function exportTableToExcel(id) {
-            var ExportButtons = document.getElementById(id);
-            var instance = new TableExport(ExportButtons, {
-                formats: ['xlsx'],
-                exportButtons: false
-            });
-            var exportData = instance.getExportData()[id]['xlsx'];
-            instance.export2file(exportData.data, exportData.mimeType, exportData.filename, exportData.fileExtension);
-        }
     </script>
 {% endblock %}
