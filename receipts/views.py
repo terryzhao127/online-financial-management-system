@@ -30,8 +30,8 @@ def receipts(request, data, page_num):
         data['no_receipt'] = False
         data['page_end'] = math.ceil(len(created_receipts) / ITEMS_NUMBER_IN_A_PAGE)
         data['page_range'] = range(1, data['page_end'] + 1)
-        data['created_receipts'] = created_receipts[start:end]
         data['page_num'] = page_num
+        data['created_receipts'] = created_receipts[start:end]
 
         if not data['created_receipts']:
             return custom_error_404(request, data)

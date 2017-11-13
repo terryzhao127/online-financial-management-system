@@ -4,6 +4,11 @@
 
 {% block apps_base_stylesheets %}
     <style>
+        #create-receipt-btn {
+            max-width: 330px;
+            margin: 0 auto;
+        }
+
         .create-receipt-header {
             font-family: Dosis, sans-serif;
             font-size: 1.4em;
@@ -37,37 +42,37 @@
             </div>
             <div class="form-group col-md-12" style="margin: 0 auto">
                 <label for="notes">Notes</label>
-                <input id="notes" class="form-control" type="text" name="notes" maxlength="80" required/>
+                <input id="notes" class="form-control" type="text" name="notes" maxlength="80"/>
             </div>
         </div>
         <header class="create-receipt-header mt-3 text-muted">Items in Receipt</header>
         <div class="item-form row">
             <div class="form-group col-md-4">
                 <label for="name-0">Item Name</label>
-                <input id="name-0" name="item-0" type="text" class="form-control">
+                <input id="name-0" name="item-0" type="text" class="form-control" maxlength="10">
             </div>
             <div class="form-group col-md-4">
                 <label for="spec-0">Spec</label>
-                <input id="spec-0" name="spec-0" type="text" class="form-control">
+                <input id="spec-0" name="spec-0" type="text" class="form-control" maxlength="10">
             </div>
             <div class="form-group col-md-4">
                 <label for="number-0">Number</label>
-                <input id="number-0" name="number-0" type="text" class="form-control">
+                <input id="number-0" name="number-0" type="number" class="form-control" min="1" step="1">
             </div>
             <div class="form-group col-md-4">
                 <label for="unit-0">Unit</label>
-                <input id="unit-0" name="unit-0" type="text" class="form-control">
+                <input id="unit-0" name="unit-0" type="text" class="form-control" maxlength="10">
             </div>
             <div class="form-group col-md-4">
                 <label for="price-0">Price</label>
-                <input id="price-0" name="price-0" type="text" class="form-control">
+                <input id="price-0" name="price-0" type="number" class="form-control" min="0" step="0.01">
             </div>
             <div class="form-group col-md-4">
                 <label for="total-cost-0">Total Cost</label>
-                <input id="total-cost-0" name="total-cost-0" type="text" class="form-control">
+                <input id="total-cost-0" name="total-cost-0" type="number" class="form-control" min="0" step="0.01">
             </div>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+        <button id="create-receipt-btn" class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
     </form>
 
 
@@ -75,6 +80,17 @@
 
 {% block apps_base_scripts %}
     <script>
+        {# Make date auto set to today #}
+        Date.prototype.toDateInputValue = (function () {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0, 10);
+        });
+        $(document).ready(function () {
+            $('#date').val(new Date().toDateInputValue());
+        });
+
+        {# Auto calculate total cost #}
         var a, b;
         $(document).ready(function () {
             $("#number-0").change(function () {

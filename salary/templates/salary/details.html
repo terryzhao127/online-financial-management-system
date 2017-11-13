@@ -5,19 +5,6 @@
 {% block apps_base_title %}Salary{% endblock %}
 
 {% block apps_base_stylesheets %}
-    <style>
-        .button-size1 {
-            width: 100px;
-        }
-
-        .button-size2 {
-            width: 70px;
-        }
-
-        .tr-size {
-            height: 35px;
-        }
-    </style>
 {% endblock %}
 
 {% block base_scripts %}
@@ -29,52 +16,35 @@
 {% endblock %}
 
 {% block apps_base_content %}
-    <p>This is the salary table</p>
-    <br>
+    {#    <p>This is the salary table</p>#}
     <div>
-    <table class="table table-bordered" border="1">
-        <tr>
-            <th width="200">Name</th>
-            <th width="100">Base salary</th>
-            <th width="100">Bonus</th>
-            <th width="100">Total</th>
-        </tr>
-        <tr class="tr-size">
-            <td class="tr-size">1154239</td>
-            <td>5000</td>
-            <td>2000</td>
-            <td>7000</td>
-        </tr>
-        <tr class="tr-size">
-            <td class="tr-size">1154239</td>
-            <td>5000</td>
-            <td>2000</td>
-            <td>7000</td>
-        </tr>
-        <tr class="tr-size">
-            <td class="tr-size">1154239</td>
-            <td>5000</td>
-            <td>2000</td>
-            <td>7000</td>
-        </tr>
-
-        {% for item in data %}
-            <tr class="tr-size">
-                <td class="tr-size">item.name</td>
-                <td>item.base_salary</td>
-                <td>item.bonus</td>
-                <td>item.total_salary</td>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Base Salary</th>
+                <th>Bonus</th>
+                <th>Total</th>
             </tr>
-            <% empty %>
-            <p>The salary table is empty<p>
-        {% endfor %}
-    </table>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ salary.staff.full_name }}</td>
+                <td>{{ salary.base_salary }}</td>
+                <td>{{ salary.bonus }}</td>
+                <td>{{ salary.total }}</td>
+            </tr>
+            </tbody>
+        </table>
 
-    <div>
-        <button class="btn btn-default button_size1" id="download" onclick="location=''">Download</button>
-        <button class="btn btn-default button_size1" id="fresh" onclick="location='upload'">Update</button>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-        <button class="btn btn-danger button_size2" id="delete">Delete</button>
-        <button class="btn btn-primary button_size2" id="print">Print</button>
-    </div>
+        <div role="group">
+            <button class="btn btn-default disabled">Download</button>
+            <button class="btn btn-default disabled">Update</button>
+            <button class="btn btn-primary disabled">Print</button>
+            <form action="{% url 'delete_salary' %}" class="text-center" method="post" style="display: inline-block">
+                {% csrf_token %}
+                <input type="hidden" name="salary_id" value="{{ salary.id }}"/>
+                <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+            </form>
+        </div>
 {% endblock %}
