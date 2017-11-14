@@ -157,5 +157,6 @@ def create(request, data, **kwargs):
                 raw_payees = raw_payees.exclude(user=temp_salary.payee.user)
 
         data['company_payees'] = raw_payees
+        data['company_name'] = company.name
 
         return render(request, 'salary/create.html', data)

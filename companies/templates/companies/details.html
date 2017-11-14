@@ -21,21 +21,61 @@
         </tr>
         </tbody>
     </table>
-    {% if is_owner %}
-        <div class="text-center">
-            <form action="{% url 'delete_company' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
-                <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-            </form>
+
+    <!-- Delete Modal Trigger -->
+    <div class="text-center">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-or-quit-confirmation">
+            {% if is_owner %}
+                DELETE
+            {% else %}
+                QUIT
+            {% endif %}
+        </button>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete-or-quit-confirmation" tabindex="-1" role="dialog"
+         aria-labelledby="delete-or-quit-confirmation-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% if is_owner %}
+                        Delete this company?
+                    {% else %}
+                        Quit this company?
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="text-center">
+                        {% if is_owner %}
+                            <div class="text-center">
+                                <form action="{% url 'delete_company' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
+                                    <button class="btn btn-danger" data-toggle="confirmation" type="submit">Confirm
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="text-center">
+                                <form action="{% url 'quit_company' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
+                                    <button class="btn btn-danger" data-toggle="confirmation" type="submit">Confirm
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-    {% else %}
-        <div class="text-center">
-            <form action="{% url 'quit_company' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
-                <button class="btn btn-danger" data-toggle="confirmation" type="submit">Quit</button>
-            </form>
-        </div>
-    {% endif %}
+    </div>
 {% endblock %}

@@ -8,15 +8,10 @@
     {% if company_payees %}
         <form action="{% url 'create_salary' %}" method="post" class="form-block">
             {% csrf_token %}
+            <input name="company_uuid" type="hidden" value="{{ company_uuid }}" readonly required/>
             <div class="form-group">
-                <label for="create-salary-company-uuid">Company UUID</label>
-                <input id="create-salary-company-uuid" name="company_uuid" class="form-control" type="text"
-                       value="{{ company_uuid }}"
-                       readonly required/>
-            </div>
-            <div class="form-group">
-                <label for="create-salary-payee">Select a staff</label>
-                <select id="create-salary-payee" class="custom-select" name="payee_id" required>
+                <label for="create-salary-payee">Select a staff in {{ company_name }}</label>
+                <select id="create-salary-payee" class="custom-select form-control" name="payee_id" required>
                     <option value="">None</option>
                     {% for payee in company_payees %}
                         <option value="{{ payee.id }}">{{ payee.full_name }}</option>
