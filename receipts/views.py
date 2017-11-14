@@ -88,6 +88,7 @@ def create(request, data):
             # Update receipt instance.
             new_receipt.items.add(new_item)
             new_receipt.total_amount += int(total_cost)
+            new_receipt.save()
 
         # Success
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new receipt.'))
