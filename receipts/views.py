@@ -3,7 +3,7 @@ from Online_Financial_Management_System.decorators import custom_login_required
 from .models import Receipt, Item
 from accounts.models import Staff
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from errors.views import error_404 as custom_error_404
+from errors.views import custom_error_404
 from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE
 import math
 

@@ -4,7 +4,7 @@ from Online_Financial_Management_System.utils import get_slice_and_page_end, red
 from accounts.models import Staff
 from companies.models import Company
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from errors.views import error_404 as custom_error_404
+from errors.views import custom_error_404
 from salary.models import Salary
 
 

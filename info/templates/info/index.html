@@ -32,18 +32,34 @@
             <td>{{ age }}</td>
         </tr>
     </table>
-    <header class="info-title">Workplaces</header>
-    <ul class="list-group custom-list-group">
-        {% for workplace in workplaces %}
-            <li class="list-group-item">{{ workplace.name }}</li>
-        {% endfor %}
-    </ul>
-    <header class="info-title">Owned Companies</header>
-    <ul class="list-group custom-list-group">
-        {% for company in owned_companies %}
-            <li class="list-group-item">{{ company.name }}</li>
-        {% endfor %}
-    </ul>
+    {% if workplaces %}
+        <header class="info-title">Workplaces</header>
+        <div class="list-group custom-list-group">
+            {% for workplace in workplaces %}
+                <a href="{% url 'company_details' company_uuid=workplace.unique_id %}"
+                   class="list-group-item list-group-item-action">{{ workplace.name }}</a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info my-2">
+            <strong>No joined workplaces!</strong>
+            <p class="my-0">You can join in one.</p>
+        </div>
+    {% endif %}
+    {% if owned_companies %}
+        <header class="info-title">Owned Companies</header>
+        <div class="list-group custom-list-group">
+            {% for company in owned_companies %}
+                <a href="{% url 'company_details' company_uuid=company.unique_id %}"
+                   class="list-group-item list-group-item-action">{{ company.name }}</a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info my-2">
+            <strong>No owned companies!</strong>
+            <p class="my-0">You can create one.</p>
+        </div>
+    {% endif %}
     {% if salary_records %}
         {% for salary_record in salary_records %}
             <div class="table-title">

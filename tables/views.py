@@ -2,7 +2,7 @@ from django.shortcuts import render
 from Online_Financial_Management_System.decorators import custom_login_required
 from Online_Financial_Management_System.utils import redirect_with_data, get_slice_and_page_end
 from accounts.models import Staff
-from errors.views import error_404 as custom_error_404
+from errors.views import custom_error_404
 from companies.models import Company
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from .models import Table, Item
