@@ -116,7 +116,7 @@ def create(request, data, **kwargs):
 
         # Success
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new table.'))
-        return redirect_with_data(request, data, '/tables/')
+        return redirect_with_data(request, data, '/tables/' + request.POST['workplace_uuid'] + '/1/')
     else:
         workplace_uuid = kwargs['workplace_uuid']
 
@@ -132,3 +132,22 @@ def create(request, data, **kwargs):
         data['workplace_uuid'] = workplace.unique_id
 
     return render(request, 'tables/create.html', data)
+
+
+@custom_login_required
+def delete(request, data):
+    if request.method == 'POST':
+        # Collect form data.
+        table_id = request.POST['table_id']
+
+        # Get Salary instance.
+        table_record = Table.objects.get(id=table_id)
+
+        # Delete
+        table_record.delete()
+
+        # Success
+        data['alerts'].append(('success', 'Delete successfully!', 'You have successfully deleted a table.'))
+        return redirect_with_data(request, data, '/tables/' + request.POST['workplace_uuid'] + '/1/')
+    else:
+        return custom_error_404(request, data)

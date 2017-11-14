@@ -21,11 +21,22 @@
         </tr>
         </tbody>
     </table>
-        {#    <div>#}
-        {#        <button class="btn btn-default button_size1" id="download" a href="">Download</button>#}
-        {#        <button class="btn btn-default button_size1" id="fresh" onclick="location='upload'">Update</button>#}
-        {#        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp#}
-        {#        <button class="btn btn-danger button_size2" id="delete">Delete</button>#}
-        {#        <button class="btn btn-primary button_size2 save-print-img" id="print" data-href="">Print</button>#}
-        {#    </div>#}
+
+    <div role="group">
+        <button class="btn btn-default disabled">Update</button>
+        <button class="btn btn-primary" onclick="exportTableToExcel('salary-details-table');">Export</button>
+        <form action="{% url 'delete_table' %}" class="text-center" method="post" style="display: inline-block">
+            {% csrf_token %}
+            <input type="hidden" name="workplace_uuid" value="{{ table.company.unique_id }}"/>
+            <input type="hidden" name="table_id" value="{{ table.id }}"/>
+            <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+        </form>
+    </div>
+    {#    <div>#}
+    {#        <button class="btn btn-default button_size1" id="download" a href="">Download</button>#}
+    {#        <button class="btn btn-default button_size1" id="fresh" onclick="location='upload'">Update</button>#}
+    {#        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp#}
+    {#        <button class="btn btn-danger button_size2" id="delete">Delete</button>#}
+    {#        <button class="btn btn-primary button_size2 save-print-img" id="print" data-href="">Print</button>#}
+    {#    </div>#}
 {% endblock %}

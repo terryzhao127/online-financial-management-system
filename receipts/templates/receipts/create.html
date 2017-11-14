@@ -46,30 +46,30 @@
             </div>
         </div>
         <header class="create-receipt-header mt-3 text-muted">Items in Receipt</header>
-        <div class="item-form row">
+        <div class="row">
             <div class="form-group col-md-4">
-                <label for="name-0">Item Name</label>
-                <input id="name-0" name="item-0" type="text" class="form-control" maxlength="10" required>
+                <label for="receipt-item-name-0">Item Name</label>
+                <input id="receipt-item-name-0" name="name_0" type="text" class="form-control" maxlength="10" required>
             </div>
             <div class="form-group col-md-4">
-                <label for="spec-0">Spec</label>
-                <input id="spec-0" name="spec-0" type="text" class="form-control" maxlength="10" required>
+                <label for="receipt-item-spec-0">Spec</label>
+                <input id="receipt-item-spec-0" name="spec_0" type="text" class="form-control" maxlength="10" required>
             </div>
             <div class="form-group col-md-4">
-                <label for="number-0">Number</label>
-                <input id="number-0" name="number-0" type="number" class="form-control" min="1" step="1" required>
+                <label for="receipt-item-number-0">Number</label>
+                <input id="receipt-item-number-0" name="number_0" type="number" class="form-control" min="1" step="1" required>
             </div>
             <div class="form-group col-md-4">
-                <label for="unit-0">Unit</label>
-                <input id="unit-0" name="unit-0" type="text" class="form-control" maxlength="10" required>
+                <label for="receipt-item-unit-0">Unit</label>
+                <input id="receipt-item-unit-0" name="unit_0" type="text" class="form-control" maxlength="10" required>
             </div>
             <div class="form-group col-md-4">
-                <label for="price-0">Price</label>
-                <input id="price-0" name="price-0" type="number" class="form-control" min="0" step="0.01" required>
+                <label for="receipt-item-price-0">Price</label>
+                <input id="receipt-item-price-0" name="price_0" type="number" class="form-control" min="0" step="0.01" required>
             </div>
             <div class="form-group col-md-4">
-                <label for="total-cost-0">Total Cost</label>
-                <input id="total-cost-0" name="total-cost-0" type="number" class="form-control" min="0" step="0.01"
+                <label for="receipt-item-total-cost-0">Total Cost</label>
+                <input id="receipt-item-total-cost-0" name="total_cost_0" type="number" class="form-control" min="0" step="0.01"
                        readonly required>
             </div>
         </div>
@@ -94,15 +94,15 @@
         {# Auto calculate total cost #}
         var a, b;
         $(document).ready(function () {
-            $("#number-0").change(function () {
+            $("#receipt-item-number-0").change(function () {
                 a = this.value;
-                document.getElementById("total-cost-0").value = a * b;
+                document.getElementById("receipt-item-total-cost-0").value = a * b;
 
             });
 
-            $("#price-0").change(function () {
+            $("#receipt-item-price-0").change(function () {
                 b = this.value;
-                document.getElementById("total-cost-0").value = a * b;
+                document.getElementById("receipt-item-total-cost-0").value = a * b;
 
             });
         });

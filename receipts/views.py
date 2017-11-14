@@ -72,14 +72,14 @@ def create(request, data):
 
         # Get items data.
         for i in range(0, 7):
-            if 'item-' + str(i) not in request.POST:
+            if 'name_' + str(i) not in request.POST:
                 break
-            name = request.POST['item-' + str(i)]
-            spec = request.POST['spec-' + str(i)]
-            number = request.POST['number-' + str(i)]
-            unit = request.POST['unit-' + str(i)]
-            price = request.POST['price-' + str(i)]
-            total_cost = request.POST['total-cost-' + str(i)]
+            name = request.POST['name_' + str(i)]
+            spec = request.POST['spec_' + str(i)]
+            number = request.POST['number_' + str(i)]
+            unit = request.POST['unit_' + str(i)]
+            price = request.POST['price_' + str(i)]
+            total_cost = request.POST['total_cost_' + str(i)]
 
             # Create new Item instance.
             new_item = Item(name=name, spec=spec, number=number, unit=unit, price=price, total_cost=total_cost)
