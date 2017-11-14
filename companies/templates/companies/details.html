@@ -32,10 +32,12 @@
         </tbody>
     </table>
     {% if is_owner %}
-        <form action="{% url 'delete_company' %}" class="text-center" method="POST" style="margin: 0;">
-            {% csrf_token %}
-            <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
-            <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-        </form>
+        <div class="text-center">
+            <form action="{% url 'delete_company' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
+                <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+            </form>
+        </div>
     {% endif %}
 {% endblock %}

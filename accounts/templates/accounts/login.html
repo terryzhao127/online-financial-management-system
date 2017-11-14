@@ -2,28 +2,6 @@
 
 {% block title %}Financial Management System{% endblock %}
 
-{% block outer_base_stylesheets %}
-    <style>
-        .form-login {
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
-        }
-
-        .jumbotron {
-            background-color: transparent;
-        }
-
-        input {
-            margin-bottom: 1em;
-        }
-
-        body {
-            margin: 0;
-        }
-    </style>
-{% endblock %}
-
 {% block outer_base_content %}
     <!-- Jumbotron -->
     <section class="jumbotron text-center">
@@ -39,7 +17,7 @@
                 </div>
             {% endif %}
 
-            <form class="form-login" id="login-form" action="{% url 'login' %}" method="post">
+            <form class="form-accounts" id="login-form" action="{% url 'login' %}" method="post">
                 {% csrf_token %}
                 <div class="form-group text-left">
                     {{ form.username.label_tag }}

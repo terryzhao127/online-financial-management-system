@@ -2,78 +2,70 @@
 
 {% block title %}Create receipt{% endblock %}
 
-{% block apps_base_stylesheets %}
-    <style>
-        .form-create-salary {
-            max-width: 500px;
-            padding: 15px;
-            margin: 0 auto;
-        }
-    </style>
-{% endblock %}
-
 {% block apps_base_title %}Create a new salary record{% endblock %}
 
 {% block apps_base_content %}
-    <form action="{% url 'create_salary' %}" method="post" class="form-create-salary">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="company-uuid">Company UUID</label>
-            <input id="company-uuid" name="company_uuid" class="form-control" type="text" value="{{ company_uuid }}"
-                   readonly required/>
+    {% if company_payees %}
+        <form action="{% url 'create_salary' %}" method="post" class="form-block">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="create-salary-company-uuid">Company UUID</label>
+                <input id="create-salary-company-uuid" name="company_uuid" class="form-control" type="text"
+                       value="{{ company_uuid }}"
+                       readonly required/>
+            </div>
+            <div class="form-group">
+                <label for="create-salary-payee">Select a staff</label>
+                <select id="create-salary-payee" class="custom-select" name="payee_id" required>
+                    <option value="">None</option>
+                    {% for payee in company_payees %}
+                        <option value="{{ payee.id }}">{{ payee.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="create-salary-base-salary">Base Salary</label>
+                <input id="create-salary-base-salary" name="base_salary" class="form-control" type="number" min="0"
+                       step="0.01"
+                       required/>
+            </div>
+            <div class="form-group">
+                <label for="create-salary-bonus">Bonus</label>
+                <input id="create-salary-bonus" name="bonus" class="form-control" type="number" min="0" step="0.01"
+                       required/>
+            </div>
+            <div class="form-group">
+                <label for="create-salary-total-salary">Total</label>
+                <input id="create-salary-total-salary" name="total" class="form-control" type="number" readonly
+                       required/>
+            </div>
+            <div class="form-group">
+                <label for="create-salary-date">Date</label>
+                <input id="create-salary-date" name="date" class="form-control auto-set-to-today" type="date" required/>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+        </form>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            <strong>No staff to be paid!</strong>
+            <p>All staff in your company are paid.</p>
         </div>
-        <div class="form-group">
-            <label for="create-salary-payee">Select a staff:</label>
-            <select id="create-salary-payee" class="custom-select" name="payee_id">
-                {% for payee in company_staff %}
-                    <option value="{{ payee.id }}">{{ payee.full_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="base-salary">Base Salary</label>
-            <input id="base-salary" name="base_salary" class="form-control" type="number" min="0" step="0.01" required/>
-        </div>
-        <div class="form-group">
-            <label for="bonus">Bonus</label>
-            <input id="bonus" name="bonus" class="form-control" type="number" min="0" step="0.01" required/>
-        </div>
-        <div class="form-group">
-            <label for="total-salary">Total</label>
-            <input id="total-salary" name="total" class="form-control" type="number" readonly required/>
-        </div>
-        <div class="form-group">
-            <label for="date">Date</label>
-            <input id="date" name="date" class="form-control" type="date"/>
-        </div>
-        <button id="create-salary-btn" class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
-    </form>
+    {% endif %}
 {% endblock %}
 
 {% block apps_base_scripts %}
     <script>
-        {# Make date auto set to today #}
-        Date.prototype.toDateInputValue = (function () {
-            var local = new Date(this);
-            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-            return local.toJSON().slice(0, 10);
-        });
-        $(document).ready(function () {
-            $('#date').val(new Date().toDateInputValue());
-        });
-
         {# Auto calculate total cost #}
         var a, b;
         $(document).ready(function () {
-            $("#base-salary").change(function () {
+            $("#create-salary-base-salary").change(function () {
                 a = Number(this.value);
-                document.getElementById("total-salary").value = a + b;
+                document.getElementById("create-salary-total-salary").value = a + b;
             });
 
-            $("#bonus").change(function () {
+            $("#create-salary-bonus").change(function () {
                 b = Number(this.value);
-                document.getElementById("total-salary").value = a + b;
+                document.getElementById("create-salary-total-salary").value = a + b;
             });
         });
     </script>

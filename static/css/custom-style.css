@@ -179,14 +179,71 @@ body {
 /* Tables */
 table td {
     vertical-align: middle !important;
+    text-align: center;
 }
 
 table th {
     vertical-align: middle !important;
+    text-align: center;
+}
+
+.table-title {
+    margin-bottom: 1em;
+}
+
+.table-title > a {
+    font-size: 0.8em;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+.table-title > header {
+    display: inline-block;
+    font-size: 1.7em;
+    font-family: Dosis, sans-serif;
+}
+
+.table-select-company {
+    margin-bottom: 1.2em;
+    margin-left: 0.1em;
+}
+
+/* Form */
+.form-title {
+    font-family: Dosis, sans-serif;
+    font-size: 1.4em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+.form-block {
+    max-width: 500px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-accounts {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-accounts input {
+    margin-bottom: 1em;
+}
+
+.form-fluid button {
+    margin: 1em auto;
+    max-width: 300px;
 }
 
 /* Apps title */
 .apps-base-title {
     -ms-word-wrap: break-word;
     word-wrap: break-word;
+}
+
+/* Pagination */
+.pagination {
+    margin: 0 auto;
 }

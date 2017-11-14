@@ -103,7 +103,7 @@ def delete(request, data):
 
         # Success
         data['alerts'].append(('success', 'Delete successfully!', 'You have successfully deleted a record of salary.'))
-        return redirect_with_data(request, data, '/salary/')
+        return redirect_with_data(request, data, '/salary/' + request.POST['company_uuid'] + '/1/')
     else:
         return custom_error_404(request, data)
 
@@ -129,7 +129,7 @@ def create(request, data, **kwargs):
 
         # Success
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new salary record.'))
-        return redirect_with_data(request, data, '/salary/')
+        return redirect_with_data(request, data, '/salary/' + request.POST['company_uuid'] + '/1/')
     else:
         payer = Staff.objects.get(user=request.user)
         company_uuid = kwargs['company_uuid']
@@ -149,7 +149,13 @@ def create(request, data, **kwargs):
         # Get UUID.
         data['company_uuid'] = company.unique_id
 
-        # Get all staff in this company.
-        data['company_staff'] = company.staff.all()
+        # Get all staff WHO HAS NOT BEEN PAID in this company.
+        salaries_in_company = Salary.objects.filter(company=company)
+        raw_payees = company.staff.all()
+        for temp_salary in salaries_in_company:
+            if temp_salary.payee in raw_payees:
+                raw_payees = raw_payees.exclude(user=temp_salary.payee.user)
+
+        data['company_payees'] = raw_payees
 
         return render(request, 'salary/create.html', data)
