@@ -2,16 +2,6 @@
 
 {% block title %}Companies{% endblock %}
 
-{% block apps_base_stylesheets %}
-    <style>
-        .company-name {
-            max-width: 100px;
-            -ms-word-wrap: break-word;
-            word-wrap: break-word;
-        }
-    </style>
-{% endblock %}
-
 {% block apps_base_title %}Details of {{ company.name }}{% endblock %}
 
 {% block apps_base_content %}
@@ -24,7 +14,7 @@
         </thead>
         <tbody>
         <tr>
-            <td class="company-name">
+            <td>
                 {{ company.name }}
             </td>
             <td>{{ company.unique_id }}</td>
@@ -37,6 +27,14 @@
                 {% csrf_token %}
                 <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
                 <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <form action="{% url 'quit_company' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="unique_id" value="{{ company.unique_id }}"/>
+                <button class="btn btn-danger" data-toggle="confirmation" type="submit">Quit</button>
             </form>
         </div>
     {% endif %}

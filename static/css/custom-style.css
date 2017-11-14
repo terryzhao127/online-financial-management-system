@@ -180,6 +180,8 @@ body {
 table td {
     vertical-align: middle !important;
     text-align: center;
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
 }
 
 table th {
