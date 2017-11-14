@@ -4,7 +4,7 @@ from .models import Receipt, Item
 from accounts.models import Staff
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
-from Online_Financial_Management_System.utils import redirect_with_data, ITEMS_NUMBER_IN_A_PAGE
+from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE
 import math
 
 
@@ -24,11 +24,11 @@ def receipts(request, data, page_num):
         data['no_receipt'] = True
     else:
         # Calculate the list area indices.
-        start = (page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-        end = page_num * ITEMS_NUMBER_IN_A_PAGE
+        start = (page_num - 1) * __ITEMS_NUMBER_IN_A_PAGE
+        end = page_num * __ITEMS_NUMBER_IN_A_PAGE
 
         data['no_receipt'] = False
-        data['page_end'] = math.ceil(len(created_receipts) / ITEMS_NUMBER_IN_A_PAGE)
+        data['page_end'] = math.ceil(len(created_receipts) / __ITEMS_NUMBER_IN_A_PAGE)
         data['page_range'] = range(1, data['page_end'] + 1)
         data['page_num'] = page_num
         data['created_receipts'] = created_receipts[start:end]
@@ -57,7 +57,7 @@ def details(request, data, receipt_id):
 @custom_login_required
 def create(request, data):
     if request.method == 'POST':
-        # Collect form data.
+        # Get receipt data.
         creator = Staff.objects.get(user=request.user)
         payer = request.POST['payer']
         payee = request.POST['payee']
@@ -70,8 +70,9 @@ def create(request, data):
                               address=address, notes=notes)
         new_receipt.save()
 
+        # Get items data.
         for i in range(0, 7):
-            if not 'item-' + str(i) in request.POST:
+            if 'item-' + str(i) not in request.POST:
                 break
             name = request.POST['item-' + str(i)]
             spec = request.POST['spec-' + str(i)]

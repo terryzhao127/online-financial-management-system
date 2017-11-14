@@ -25,7 +25,6 @@
         <div class="mb-2">
             <label for="salary-owned-companies">Select your company</label>
             <select class="custom-select" id="salary-owned-companies" onchange="reloadCompany()">
-
                 {% for company in owned_companies %}
                     {% if company.unique_id == company_uuid %}
                         <option value="{{ company.unique_id }}" selected>{{ company.name }}</option>
@@ -34,8 +33,7 @@
                     {% endif %}
                 {% endfor %}
             </select>
-            <a href="{% url 'create_salary_with_params' company_uuid=company_uuid %}" class="add-salary-link"
-               style="font-style: italic;">ADD</a>
+            <a href="{% url 'create_salary_with_params' company_uuid=company_uuid %}" class="add-salary-link">ADD</a>
         </div>
         {% if no_salary_records %}
             <div class="alert alert-warning" role="alert">

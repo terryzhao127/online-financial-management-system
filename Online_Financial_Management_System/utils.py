@@ -2,10 +2,21 @@ from django.http import HttpResponseRedirect
 
 # Utility functions
 from django.shortcuts import render
+import math
 
 # Maximum of number of items in a table page
-ITEMS_NUMBER_IN_A_PAGE = 5
+__ITEMS_NUMBER_IN_A_PAGE = 5
 
+
+def get_slice_and_page_end(data_set, page_num):
+    start = (page_num - 1) * __ITEMS_NUMBER_IN_A_PAGE
+    end = page_num * __ITEMS_NUMBER_IN_A_PAGE
+
+    # Slice
+    slice_result = data_set[start:end]
+    page_end = math.ceil(len(data_set) / __ITEMS_NUMBER_IN_A_PAGE)
+
+    return slice_result, page_end
 
 def get_alerts(request):
     """

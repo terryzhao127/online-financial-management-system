@@ -1,7 +1,6 @@
-import math
 from django.shortcuts import render
 from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import ITEMS_NUMBER_IN_A_PAGE, redirect_with_data
+from Online_Financial_Management_System.utils import get_slice_and_page_end, redirect_with_data
 from accounts.models import Staff
 from companies.models import Company
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -11,20 +10,25 @@ from salary.models import Salary
 
 @custom_login_required
 def salary(request, data, **kwargs):
-    data['no_owned_company'] = False
     payer = Staff.objects.get(user=request.user)
     owned_companies = Company.objects.filter(owner=payer)
 
     # Conditions on two kinds of url.
     if 'company_uuid' not in kwargs and 'page_num' not in kwargs:
+        # No parameters
+
         # Test whether the staff has companies.
         if not owned_companies:
             data['no_owned_company'] = True
             return render(request, 'salary/index.html', data)
 
-        first_company_uuid = owned_companies.all()[0].unique_id
+        first_company_uuid = owned_companies[0].unique_id
         return redirect_with_data(request, data, '/salary/' + str(first_company_uuid) + '/1/')
     else:
+        # Two parameters
+        data['no_owned_company'] = False
+        data['owned_companies'] = owned_companies
+
         company_uuid = kwargs['company_uuid']
         page_num = kwargs['page_num']
         page_num = int(page_num)
@@ -45,34 +49,35 @@ def salary(request, data, **kwargs):
         if company.owner != payer:
             return custom_error_404(request, data)
 
-        # Get all salary belonging to staffs in the same company.
+        # Get UUID.
+        data['company_uuid'] = company.unique_id
+
+        # Get all salary belonging to staffs in the company.
         salary_records = Salary.objects.filter(company=company)
 
+        # If there is no salary record in company...
         if not salary_records:
             data['no_salary_records'] = True
         else:
             data['no_salary_records'] = False
 
-            # Calculate the list area indices.
-            start = (page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-            end = page_num * ITEMS_NUMBER_IN_A_PAGE
+            # Get sliced records.
+            data['salary_records'], data['page_end'] = get_slice_and_page_end(salary_records, page_num)
 
-            data['page_end'] = math.ceil(len(salary_records) / ITEMS_NUMBER_IN_A_PAGE)
+            # Get other necessary data.
             data['page_range'] = range(1, data['page_end'] + 1)
             data['page_num'] = page_num
-            data['salary_records'] = salary_records[start:end]
 
+            # If sliced records are empty...
             if not data['salary_records']:
                 return custom_error_404(request, data)
-
-        data['owned_companies'] = owned_companies
-        data['company_uuid'] = company.unique_id
 
         return render(request, 'salary/index.html', data)
 
 
 @custom_login_required
 def details(request, data, salary_id):
+    # If salary_id is invalid...
     try:
         salary_record = Salary.objects.get(id=salary_id)
     except ValidationError:
@@ -141,8 +146,10 @@ def create(request, data, **kwargs):
         if company.owner != payer:
             return custom_error_404(request, data)
 
+        # Get UUID.
+        data['company_uuid'] = company.unique_id
+
         # Get all staff in this company.
         data['company_staff'] = company.staff.all()
-        data['company_uuid'] = company_uuid
 
         return render(request, 'salary/create.html', data)

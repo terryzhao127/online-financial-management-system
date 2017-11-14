@@ -1,0 +1,61 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Tables{% endblock %}
+
+{% block apps_base_title %}Tables{% endblock %}
+
+{% block apps_base_stylesheets %}
+    <style>
+        .create-table-header {
+            font-family: Dosis, sans-serif;
+            font-size: 1.4em;
+            margin-bottom: 1em;
+        }
+    </style>
+{% endblock %}
+
+
+{% block apps_base_content %}
+    <form action="{% url 'create_table' %}" method="post" class="form-create-table">
+        {% csrf_token %}
+        <header class="create-table-header text-muted">Table Information</header>
+        <div class="container row">
+            <input id="workplace-uuid" name="workplace_uuid" type="hidden" value="{{ workplace_uuid }}"/>
+            <div class="form-group col-md-6">
+                <label for="table-name">Name</label>
+                <input id="table-name" class="form-control" type="text" name="table_name" maxlength="40" required/>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="date">Date</label>
+                <input id="date" class="form-control" type="date" name="date" required/>
+            </div>
+        </div>
+        <header class="create-table-header mt-3 text-muted">Items in Receipt</header>
+        <div class="container row">
+            <div class="form-group col-md-6">
+                <label for="item-name-0">Name</label>
+                <input id="item-name-0" name="item_name_0" type="text" class="form-control" maxlength="40" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="item-money-change-0">Money Change</label>
+                <input id="item-money-change-0" name="item_money_change_0" type="number" class="form-control"
+                       step="0.01" required>
+            </div>
+        </div>
+        <button id="create-receipt-btn" class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+    </form>
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        {# Make date auto set to today #}
+        Date.prototype.toDateInputValue = (function () {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0, 10);
+        });
+        $(document).ready(function () {
+            $('#date').val(new Date().toDateInputValue());
+        });
+    </script>
+{% endblock %}

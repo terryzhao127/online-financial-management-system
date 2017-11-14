@@ -4,37 +4,33 @@
 
 {% block apps_base_title %}Salary of {{ salary.payee.full_name }}{% endblock %}
 
-{% block apps_base_stylesheets %}
-{% endblock %}
-
 {% block apps_base_content %}
-    <div>
-        <table class="table table-bordered table-responsive-md" id="salary-details-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Base Salary</th>
-                <th>Bonus</th>
-                <th>Total</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>{{ salary.payee.full_name }}</td>
-                <td>{{ salary.base_salary }}</td>
-                <td>{{ salary.bonus }}</td>
-                <td>{{ salary.total }}</td>
-            </tr>
-            </tbody>
-        </table>
+    <table class="table table-bordered table-responsive-md" id="salary-details-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Base Salary</th>
+            <th>Bonus</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ salary.payee.full_name }}</td>
+            <td>{{ salary.base_salary }}</td>
+            <td>{{ salary.bonus }}</td>
+            <td>{{ salary.total }}</td>
+        </tr>
+        </tbody>
+    </table>
 
-        <div role="group">
-            <button class="btn btn-default disabled">Update</button>
-            <button class="btn btn-primary" onclick="exportTableToExcel('salary-details-table');">Export</button>
-            <form action="{% url 'delete_salary' %}" class="text-center" method="post" style="display: inline-block">
-                {% csrf_token %}
-                <input type="hidden" name="salary_id" value="{{ salary.id }}"/>
-                <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-            </form>
-        </div>
+    <div role="group">
+        <button class="btn btn-default disabled">Update</button>
+        <button class="btn btn-primary" onclick="exportTableToExcel('salary-details-table');">Export</button>
+        <form action="{% url 'delete_salary' %}" class="text-center" method="post" style="display: inline-block">
+            {% csrf_token %}
+            <input type="hidden" name="salary_id" value="{{ salary.id }}"/>
+            <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
+        </form>
+    </div>
 {% endblock %}

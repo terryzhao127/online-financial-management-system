@@ -4,7 +4,7 @@ from django.shortcuts import render
 from accounts.models import Staff
 from companies.models import Company
 from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import redirect_with_data, ITEMS_NUMBER_IN_A_PAGE
+from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import error_404 as custom_error_404
 import math
@@ -26,11 +26,11 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
         data['no_workplace'] = True
     else:
         # Calculate the list area indices.
-        workplaces_start = (workplaces_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-        workplaces_end = workplaces_page_num * ITEMS_NUMBER_IN_A_PAGE
+        workplaces_start = (workplaces_page_num - 1) * __ITEMS_NUMBER_IN_A_PAGE
+        workplaces_end = workplaces_page_num * __ITEMS_NUMBER_IN_A_PAGE
 
         data['no_workplace'] = False
-        data['workplaces_page_end'] = math.ceil(len(workplaces) / ITEMS_NUMBER_IN_A_PAGE)
+        data['workplaces_page_end'] = math.ceil(len(workplaces) / __ITEMS_NUMBER_IN_A_PAGE)
         data['workplaces_page_range'] = range(1, data['workplaces_page_end'] + 1)
         data['workplaces'] = workplaces[workplaces_start:workplaces_end]
     data['workplaces_page_num'] = workplaces_page_num
@@ -40,11 +40,11 @@ def companies(request, data, workplaces_page_num, owned_companies_page_num):
         data['no_owned_company'] = True
     else:
         # Calculate the list area indices.
-        owned_companies_start = (owned_companies_page_num - 1) * ITEMS_NUMBER_IN_A_PAGE
-        owned_companies_end = owned_companies_page_num * ITEMS_NUMBER_IN_A_PAGE
+        owned_companies_start = (owned_companies_page_num - 1) * __ITEMS_NUMBER_IN_A_PAGE
+        owned_companies_end = owned_companies_page_num * __ITEMS_NUMBER_IN_A_PAGE
 
         data['no_owned_company'] = False
-        data['owned_companies_page_end'] = math.ceil(len(owned_companies) / ITEMS_NUMBER_IN_A_PAGE)
+        data['owned_companies_page_end'] = math.ceil(len(owned_companies) / __ITEMS_NUMBER_IN_A_PAGE)
         data['owned_companies_page_range'] = range(1, data['owned_companies_page_end'] + 1)
         data['owned_companies'] = owned_companies[owned_companies_start:owned_companies_end]
     data['owned_companies_page_num'] = owned_companies_page_num
