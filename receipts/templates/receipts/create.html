@@ -7,6 +7,7 @@
 {% block apps_base_content %}
     <form action="{% url 'create_receipt' %}" class="form-fluid" method="post">
         {% csrf_token %}
+        <input type="hidden" name="workplace_uuid" value="{{ workplace_uuid }}"/>
         <header class="form-title text-muted">Receipt Information</header>
         <div class="container row">
             <div class="form-group col-md-6">

@@ -132,6 +132,9 @@ def create(request, data, **kwargs):
         return redirect_with_data(request, data, '/salary/' + request.POST['company_uuid'] + '/1/')
     else:
         payer = Staff.objects.get(user=request.user)
+
+        if 'company_uuid' not in kwargs:
+            return custom_error_404(request, data)
         company_uuid = kwargs['company_uuid']
 
         # If company_uuid is invalid...

@@ -7,6 +7,7 @@ class Receipt(models.Model):
     creator = models.ForeignKey('accounts.Staff', on_delete=models.CASCADE)
     payer = models.CharField(max_length=30)
     payee = models.CharField(max_length=30)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     address = models.CharField(max_length=80)

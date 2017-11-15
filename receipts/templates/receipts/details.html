@@ -89,6 +89,7 @@
                     <div class="text-center">
                         <form action="{% url 'delete_receipt' %}" class="d-inline-block" method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="workplace_uuid" value="{{ receipt.company.unique_id }}"/>
                             <input type="hidden" name="receipt_id" value="{{ receipt.id }}"/>
                             <button class="btn btn-danger" data-toggle="confirmation" type="submit">Confirm</button>
                         </form>
