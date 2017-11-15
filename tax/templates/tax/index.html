@@ -2,108 +2,39 @@
 
 {% block title %}Tax{% endblock %}
 
-{% block apps_base_title %} Tax {% endblock %}
+{% block apps_base_title %}Tax Calculation{% endblock %}
 
 {% block apps_base_content %}
     <div class="cb">
-        <div class="cleft">
-            <div class="lbox" style="text-align:center;">
-                <select style="width:320px; margin:20px; line-height:20px;  text-indent:10px; font-size:25px;"
-                        id="taxType"
-                        onchange="
+    <div class="cleft">
+    <div class="lbox container">
+        <label for="taxType" class="text-muted">Select type of tax</label>
+        <select class="custom-select" id="taxType"
+                onchange="
                       if(document.all.taxType.value===0)
                       {
                           location = location.href;
                           return;
                       }location=document.all.taxType.value;">
-                    <option value="index.html" selected="selected">Wages </option>
-                </select><br/>
-                <input id="txtIncome" name="" type="text"
-                       style="width:320px; margin:20px; line-height:40px;  text-indent:10px;font-size:18px;"
-                       placeholder="Please enter the pre-tax income"/><br/>
-                <input type="button" style="padding:5px 30px; font-size:18px;"
-                       value="Calculate" onclick="btnCalc_onClick()"/></div>
+            <option value="index.html" selected="selected">Wages</option>
+        </select>
+        <input id="txtIncome" class="form-control single-input mt-4" style="margin: 0 auto;max-width: 400px" name=""
+               type="number" min="0" step="0.01" placeholder="Please enter the pre-tax income"/>
+        <button class="btn btn-primary btn-block" style="max-width: 110px; margin: 2em auto"
+                onclick="btnCalc_onClick()">Calculate
+        </button>
 
-            <div class="lbox2"><h4>Result</h4>
-                <div id="resultCon" style="text-align:center; font-size:16px; line-height:200%;"></div>
-            </div>
-{#            <div class="lbox2"><h4>个税计算器税率表</h4>#}
-{#                <div class="content">#}
-{#                    <table class="tbclass">#}
-{#                        <tbody>#}
-{#                        <tr>#}
-{#                            <th>级数</th>#}
-{#                            <th>当月应纳税所得额</th>#}
-{#                            <th>税率(%)</th>#}
-{#                            <th>速算扣除数</th>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>1</td>#}
-{#                            <td>不超过1,500元</td>#}
-{#                            <td>3</td>#}
-{#                            <td>0</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>2</td>#}
-{#                            <td>超过1,500元至4,500元的部分</td>#}
-{#                            <td>10</td>#}
-{#                            <td>105</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>3</td>#}
-{#                            <td>超过4,500元至9,000元的部分</td>#}
-{#                            <td>20</td>#}
-{#                            <td>555</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>4</td>#}
-{#                            <td>超过9,000元至35,000元的部分</td>#}
-{#                            <td>25</td>#}
-{#                            <td>1,005</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>5</td>#}
-{#                            <td>超过35,000元至55,000元的部分</td>#}
-{#                            <td>30</td>#}
-{#                            <td>2,755</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>6</td>#}
-{#                            <td>超过55,000元至80,000元的部分</td>#}
-{#                            <td>35</td>#}
-{#                            <td>5,505</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td>7</td>#}
-{#                            <td>超过80,000元的部分</td>#}
-{#                            <td>45</td>#}
-{#                            <td>13,505</td>#}
-{#                        </tr>#}
-{#                        </tbody>#}
-{#                    </table>#}
-{#                    <p>说明：</p>#}
-{#                    <p>1、对照个税税率表时，不要以当前月工资收入所得来比照，要先计算出本月的应纳税所得额， 再用此应纳税所得额与上表比照，方能得到正确的税率和速算扣除数。</p>#}
-{#                    <p>2、上表是2011年个税改革后，起征点由2000元调整至3500元后的七级超额累进个人所得税税率表，2011年9月1日起开始使用。</p></div>#}
-{#            </div>#}
-{#            <div class="lbox2"><h4>个税计算器案例说明</h4>#}
-{#                <div class="content"><p>1、张天乐2017年1月份工资收入4800元，各项社会保险费用为600元，则张天乐这个朋应纳多少个人所得税？</p>#}
-{#                    <p>那么应纳税所得额 = 工资收入金额 － 各项社会保险费 － 起征点(3500元) = 4800 － 600 － 3500 =#}
-{#                        700元，应纳税所得额700元不超过1500元，适用税率表一级，对应税率为3%，速算扣除数为0元。应纳税额= 应纳税所得额 x 税率 － 速算扣除数 = 700 x 3% － 0 =#}
-{#                        21元。</p></div>#}
-{##}
-{#            </div>#}
-{##}
-{#            <div class="c"></div>#}
-{#        </div>#}
+        <div class="lbox2">
+            <h4 style="display: none;" id="result-title">Result</h4>
+            <div id="resultCon" style="text-align:center; font-size:16px; line-height:200%;"></div>
+        </div>
     </div>
 {% endblock %}
 
 {% block apps_base_scripts %}
     <script>
-
         function btnCalc_onClick() {
-            {#        document.write(document.getElementById("txtIncome").value);#}
-            if (isNaN(document.getElementById("txtIncome").value)) {
+            if (isNaN(document.getElementById("txtIncome").value) || !document.getElementById("txtIncome").value) {
                 alert("Please enter the correct salary");
                 return;
             }
@@ -111,7 +42,9 @@
             var v = parseInt(document.getElementById("txtIncome").value);
             var bx = 0;
             if (v < 3500) {
-                result = '<p style="color:#f00; font-size:3em;">No need to pay taxes</p>';
+                result = '<div class="alert alert-danger">\n' +
+                    '<p class="my-0">No need to pay taxes!</p>\n' +
+                    '</div>';
             } else {
                 v = v * 100;
                 result = '<table id="restb" style="width:100%;"><tr style="color:#999;"><td></td><td>Individual payment</td><td>Company payment</td></tr>';
@@ -184,12 +117,13 @@
                 result += '<tr><td colspan="3"><div style="background:#f90;height:30px;"><div style="height:30px;background:#090;color:#fff;float:left;width:' + lastpercent + '%">Wage ' + lastsalary + ' Yuan</div><div style="color:#fff;float:right;margin-right:20px;">Pay ' + jnall + ' Yuan</div></div></td></tr>';
                 result += '</table>';
             }
+            document.getElementById("result-title").style.display = "block";
             document.getElementById("resultCon").innerHTML = result;
         }
 
         function GetTax(income) {
             var re = 0;
-            if(income < 0) return 0;
+            if (income < 0) return 0;
             if (income < 150000)
                 re = income * 0.03;
             else if (income >= 150000 && income < 450000)

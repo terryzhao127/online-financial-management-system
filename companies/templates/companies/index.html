@@ -12,17 +12,6 @@
             word-wrap: break-word;
         }
 
-        .table-title {
-            font-size: 1.7em;
-            font-family: Dosis, sans-serif;
-        }
-
-        .company-manage-link {
-            font-size: 0.8em;
-            font-style: italic;
-            white-space: nowrap;
-        }
-
         .nav-tabs {
             font-weight: bold;
             font-size: 1em;
@@ -31,6 +20,7 @@
 {% endblock %}
 
 {% block apps_base_content %}
+    {# Tab Control #}
     <ul class="nav nav-tabs small" role="tablist">
         <li class="nav-item">
             <a class="nav-link text-uppercase active text-info" data-toggle="tab" href="#tab1" role="tab">Workplaces</a>
@@ -39,11 +29,14 @@
             <a class="nav-link text-uppercase text-info" data-toggle="tab" href="#tab2" role="tab">Owned Companies</a>
         </li>
     </ul>
+
+    {# Tab Content #}
     <div class="tab-content py-3">
+        {# Joined Companies Tab #}
         <div class="tab-pane active" id="tab1" role="tabpanel">
-            <div class="mb-3">
-                <header class="table-title d-inline">Workplaces</header>
-                <a class="company-manage-link" href="{% url 'join_company' %}">Join in a company</a>
+            <div class="table-title">
+                <header>Workplaces</header>
+                <a href="{% url 'join_company' %}">Join in a company</a>
             </div>
             {% if no_workplace %}
                 <div class="alert alert-warning" role="alert">
@@ -51,11 +44,11 @@
                     <p>You have no workplaces, please join in one.</p>
                 </div>
             {% else %}
-                <table class="table table-striped table-bordered text-center">
+                <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th class="text-center">Company Name</th>
-                        <th class="text-center">UUID</th>
+                        <th>Company Name</th>
+                        <th>UUID</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -71,7 +64,9 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <ul class="pagination justify-content-center" style="margin: 0 auto;">
+
+                {# Pagination #}
+                <ul class="pagination justify-content-center">
                     {% if workplaces_page_num == 1 %}
                         <li class="page-item disabled"><a class="page-link">Previous</a></li>
                     {% else %}
@@ -104,10 +99,12 @@
                 </ul>
             {% endif %}
         </div>
+
+        {# Created Companies Tab #}
         <div class="tab-pane" id="tab2" role="tabpanel">
-            <div class="mb-3">
-                <header class="table-title d-inline-block">Owned Companies</header>
-                <a class="company-manage-link" href="{% url 'create_company' %}">Create a new company</a>
+            <div class="table-title">
+                <header>Owned Companies</header>
+                <a href="{% url 'create_company' %}">Create a new company</a>
             </div>
             {% if no_owned_company %}
                 <div class="alert alert-warning" role="alert">
@@ -115,11 +112,11 @@
                     <p>You have no owned companies, please create one.</p>
                 </div>
             {% else %}
-                <table class="table table-striped table-bordered text-center">
+                <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th class="text-center">Company Name</th>
-                        <th class="text-center">UUID</th>
+                        <th>Company Name</th>
+                        <th>UUID</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -135,7 +132,9 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <ul class="pagination justify-content-center" style="margin: 0 auto;">
+
+                {# Pagination #}
+                <ul class="pagination justify-content-center">
                     {% if owned_companies_page_num == 1 %}
                         <li class="page-item disabled"><a class="page-link">Previous</a></li>
                     {% else %}
@@ -167,7 +166,6 @@
                     {% endif %}
                 </ul>
             {% endif %}
-
         </div>
     </div>
 

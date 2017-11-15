@@ -2,28 +2,6 @@
 
 {% block title %}Sign up{% endblock %}
 
-{% block outer_base_stylesheets %}
-    <style>
-        .form-signup {
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
-        }
-
-        .jumbotron {
-            background-color: transparent;
-        }
-
-        input {
-            margin-bottom: 1em;
-        }
-
-        body {
-            margin: 0;
-        }
-    </style>
-{% endblock %}
-
 {% block outer_base_content %}
     <!-- Jumbotron -->
     <section class="jumbotron text-center">
@@ -32,7 +10,7 @@
                 <h1 class="jumbotron-heading">Sign up</h1>
                 <p class="lead text-muted">Join up to work on financial affairs efficiently:</p>
             </div>
-            <form class="form-signup" id="signup-form" method="post">
+            <form class="form-accounts" id="signup-form" method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group text-left">

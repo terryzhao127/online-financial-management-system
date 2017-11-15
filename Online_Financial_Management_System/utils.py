@@ -5,7 +5,7 @@ from django.shortcuts import render
 import math
 
 # Maximum of number of items in a table page
-__ITEMS_NUMBER_IN_A_PAGE = 5
+__ITEMS_NUMBER_IN_A_PAGE = 8
 
 
 def get_slice_and_page_end(data_set, page_num):

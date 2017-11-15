@@ -2,7 +2,7 @@ from django.shortcuts import render
 from Online_Financial_Management_System.decorators import custom_login_required
 from Online_Financial_Management_System.utils import redirect_with_data, get_slice_and_page_end
 from accounts.models import Staff
-from errors.views import error_404 as custom_error_404
+from errors.views import custom_error_404
 from companies.models import Company
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from .models import Table, Item
@@ -118,6 +118,9 @@ def create(request, data, **kwargs):
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new table.'))
         return redirect_with_data(request, data, '/tables/' + request.POST['workplace_uuid'] + '/1/')
     else:
+        if 'workplace_uuid' not in kwargs:
+            return custom_error_404(request, data)
+
         workplace_uuid = kwargs['workplace_uuid']
 
         # If workplace_uuid is invalid...

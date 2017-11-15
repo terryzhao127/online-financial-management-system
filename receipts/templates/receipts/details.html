@@ -2,43 +2,25 @@
 
 {% block title %}Details of receipt{% endblock %}
 
-{% block apps_base_title %}Details of Receipt-{{ receipt.id }}{% endblock %}
-
-{% block apps_base_stylesheets %}
-    <style>
-        .receipt-details-header {
-            font-family: Dosis, sans-serif;
-            font-size: 1.7em;
-            margin-bottom: 1em;
-            display: inline-block;
-        }
-
-        .receipt-export-link {
-            font-size: 0.8em;
-            font-style: italic;
-            white-space: nowrap;
-        }
-    </style>
-{% endblock %}
+{% block apps_base_title %}Details of Receipt and Items{% endblock %}
 
 {% block apps_base_content %}
-    <div>
-        <header class="receipt-details-header text-muted">Receipt Information</header>
-        <a class="receipt-export-link" href="" onclick="exportTableToExcel('receipt-details-table')">Export</a>
+    <div class="table-title">
+        <header>Receipt Information</header>
+        <a href="" onclick="exportTableToExcel('receipt-details-table')">Export</a>
     </div>
-    <table id="receipt-details-table" class="table table-striped table-responsive table-bordered text-center">
+    <table id="receipt-details-table" class="table table-striped table-responsive table-bordered">
         <thead>
         <tr>
-            <th class="text-center">ID</th>
-            <th class="text-center">Payer</th>
-            <th class="text-center">Total Amount</th>
-            <th class="text-center">Payee</th>
-            <th class="text-center">Date</th>
-            <th class="text-center">Address</th>
-            <th class="text-center">Notes</th>
+            <th>ID</th>
+            <th>Payer</th>
+            <th>Total Amount</th>
+            <th>Payee</th>
+            <th>Date</th>
+            <th>Address</th>
+            <th>Notes</th>
         </tr>
         </thead>
-
         <tbody>
         <tr>
             <td>{{ receipt.id }}</td>
@@ -51,20 +33,20 @@
         </tr>
         </tbody>
     </table>
-    <div>
-        <header class="receipt-details-header text-muted">Items Information</header>
-        <a class="receipt-export-link" href="" onclick="exportTableToExcel('items-details-table')">Export</a>
+    <div class="table-title">
+        <header>Items Information</header>
+        <a href="" onclick="exportTableToExcel('receipt-items-details-table')">Export</a>
     </div>
     <div style="overflow: auto">
-        <table class="table table-striped table-bordered text-center" id="items-details-table">
+        <table class="table table-striped table-bordered" id="receipt-items-details-table">
             <thead>
             <tr>
-                <th class="text-center">Item Name</th>
-                <th class="text-center">Spec</th>
-                <th class="text-center">Number</th>
-                <th class="text-center">Unit</th>
-                <th class="text-center">Price</th>
-                <th class="text-center">Total Cost</th>
+                <th>Item Name</th>
+                <th>Spec</th>
+                <th>Number</th>
+                <th>Unit</th>
+                <th>Price</th>
+                <th>Total Cost</th>
             </tr>
             </thead>
             <tbody>
@@ -81,28 +63,39 @@
             </tbody>
         </table>
     </div>
-    <form action="{% url 'delete_receipt' %}" class="text-center mt-2" method="post" style="margin: 0;">
-        {% csrf_token %}
-        <input type="hidden" name="receipt_id" value="{{ receipt.id }}"/>
-        <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-    </form>
-{% endblock %}
 
-{% block apps_base_scripts %}
-    <script>
-        var change_flag = false;
-        $(document).ready(function () {
-            $(".form-control").change(function () {
-                change_flag = true;
-            })
-        });
-
-        $(document).ready(function () {
-            $("#update").click(function () {
-                if (!change_flag) {
-                    alert("没有项目修改过")
-                }
-            })
-        });
-    </script>
+    <!-- Delete Modal Trigger -->
+    <div class="text-center">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-confirmation">DELETE
+        </button>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete-confirmation" tabindex="-1" role="dialog"
+         aria-labelledby="delete-confirmation-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Delete this receipt?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="text-center">
+                        <form action="{% url 'delete_receipt' %}" class="d-inline-block" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="workplace_uuid" value="{{ receipt.company.unique_id }}"/>
+                            <input type="hidden" name="receipt_id" value="{{ receipt.id }}"/>
+                            <button class="btn btn-danger" data-toggle="confirmation" type="submit">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

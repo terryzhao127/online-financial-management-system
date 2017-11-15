@@ -2,14 +2,18 @@
 
 {% block title %}Tables{% endblock %}
 
-{% block apps_base_title %}Table of {{ table.name }}{% endblock %}
+{% block apps_base_title %}Details of Table{% endblock %}
 
 {% block apps_base_content %}
-    <table class="table table-bordered table-responsive-md" id="salary-details-table">
+    <div class="table-title">
+        <header>Items Information</header>
+        <a href="" onclick="exportTableToExcel('table-details-table')">Export</a>
+    </div>
+    <table class="table table-bordered table-striped table-responsive-md" id="table-details-table">
         <thead>
         <tr>
-            <th class="text-center">Item</th>
-            <th class="text-center">Income / expenditure</th>
+            <th>Item</th>
+            <th>Income / expenditure</th>
         </tr>
         </thead>
         <tbody class="text-center">
@@ -22,21 +26,39 @@
         </tbody>
     </table>
 
-    <div role="group">
+    <!-- Delete Modal Trigger -->
+    <div class="text-center">
         <button class="btn btn-default disabled">Update</button>
-        <button class="btn btn-primary" onclick="exportTableToExcel('salary-details-table');">Export</button>
-        <form action="{% url 'delete_table' %}" class="text-center" method="post" style="display: inline-block">
-            {% csrf_token %}
-            <input type="hidden" name="workplace_uuid" value="{{ table.company.unique_id }}"/>
-            <input type="hidden" name="table_id" value="{{ table.id }}"/>
-            <button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button>
-        </form>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-confirmation">DELETE
+        </button>
     </div>
-    {#    <div>#}
-    {#        <button class="btn btn-default button_size1" id="download" a href="">Download</button>#}
-    {#        <button class="btn btn-default button_size1" id="fresh" onclick="location='upload'">Update</button>#}
-    {#        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp#}
-    {#        <button class="btn btn-danger button_size2" id="delete">Delete</button>#}
-    {#        <button class="btn btn-primary button_size2 save-print-img" id="print" data-href="">Print</button>#}
-    {#    </div>#}
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete-confirmation" tabindex="-1" role="dialog"
+         aria-labelledby="delete-confirmation-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Delete this table?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="text-center">
+                        <form action="{% url 'delete_table' %}" class="text-center d-inline-block" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="workplace_uuid" value="{{ table.company.unique_id }}"/>
+                            <input type="hidden" name="table_id" value="{{ table.id }}"/>
+                            <button class="btn btn-danger" data-toggle="confirmation" type="submit">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

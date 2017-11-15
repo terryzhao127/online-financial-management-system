@@ -2,19 +2,7 @@
 
 {% block title %}Tables{% endblock %}
 
-{% block apps_base_title %}Tables{% endblock %}
-
-{% block apps_base_stylesheets %}
-    {# 这里放样式 #}
-    <style>
-        .add-table-link {
-            font-size: 0.8em;
-            font-style: italic;
-            white-space: nowrap;
-            margin-left: 10px;
-        }
-    </style>
-{% endblock %}
+{% block apps_base_title %}Manage your tables{% endblock %}
 
 {% block apps_base_content %}
     {% if no_workplaces %}
@@ -23,9 +11,14 @@
             <p>There are no companies you have joined, you can join one.</p>
         </div>
     {% else %}
-        <div class="mb-2">
-            <label for="tables-joined-workplaces">Select your workplace</label>
-            <select class="custom-select" id="tables-joined-workplaces" onchange="reloadCompany()">
+        <div class="table-title">
+            <header>Created Tables</header>
+            <a href="{% url 'create_table_with_params' workplace_uuid=workplace_uuid %}"
+               class="add-table-link">Add a new table</a>
+        </div>
+        <div class="table-select-company">
+            <label for="tables-joined-workplaces" class="text-muted">Select your workplace</label>
+            <select class="custom-select" id="tables-joined-workplaces" onchange="reloadWorkplace()">
                 {% for workplace in joined_workplaces %}
                     {% if workplace.unique_id == workplace_uuid %}
                         <option value="{{ workplace.unique_id }}" selected>{{ workplace.name }}</option>
@@ -34,8 +27,6 @@
                     {% endif %}
                 {% endfor %}
             </select>
-            <a href="{% url 'create_table_with_params' workplace_uuid=workplace_uuid %}"
-               class="add-table-link">ADD</a>
         </div>
         {% if no_table_records %}
             <div class="alert alert-warning" role="alert">
@@ -61,67 +52,47 @@
                 {% endfor %}
                 </tbody>
             </table>
+
+            {# Pagination #}
+            <ul class="pagination justify-content-center">
+                {% if page_num == 1 %}
+                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{% url 'tables_with_params' workplace_uuid=workplace_uuid page_num=page_num|add:'-1' %}">Previous</a>
+                    </li>
+                {% endif %}
+                {% for i in page_range %}
+                    {% if i == page_num %}
+                        <li class="page-item active">
+                            <a class="page-link"
+                               href="{% url 'tables_with_params' workplace_uuid=workplace_uuid page_num=i %}">{{ forloop.counter }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'tables_with_params' workplace_uuid=workplace_uuid page_num=i %}">{{ forloop.counter }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_num == page_end %}
+                    <li class="page-item disabled"><a class="page-link">Next</a></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{% url 'tables_with_params' workplace_uuid=workplace_uuid page_num=page_num|add:'1' %}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
         {% endif %}
     {% endif %}
-    {#    <div class="float-style1">#}
-    {#        <p>&nbsp&nbspPlease select your company &nbsp&nbsp</p>#}
-    {#    </div>#}
-    {#    <table class="table">#}
-    {#        <tr>#}
-    {#            <th width="400">Name</th>#}
-    {#            <th width="200">Date</th>#}
-    {#            <th width="200">Author</th>#}
-    {#            <th width="200">Operatoin</th>#}
-    {#        </tr>#}
-    {#        <tr class="tr-size">#}
-    {#            <td class="tr-size"><a href="{% url 'table_details' %}">Financial report (June)</a></td>#}
-    {#            <td>2017.2.7</td>#}
-    {#            <td>Wang Bo</td>#}
-    {#            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>#}
-    {#        </tr>#}
-    {#        <tr class="tr-size">#}
-    {#            <td class="tr_size"><a href="{% url 'table_details' %}">Financial report (June)</a></td>#}
-    {#            <td>2017.2.7</td>#}
-    {#            <td>Wang Bo</td>#}
-    {#            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>#}
-    {#        </tr>#}
-    {#        <tr class="tr-size">#}
-    {#            <td class="tr-size"><a href=" {% url 'table_details' %}">Financial report (June)</a></td>#}
-    {#            <td>2017.2.7</td>#}
-    {#            <td>Wang Bo</td>#}
-    {#            <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>#}
-    {#        </tr>#}
-    {##}
-    {##}
-    {#        {% for item in data %}#}
-    {#            <tr class="tr-size">#}
-    {#                <td class="tr-size"><a href="{% url 'table_details' %}">item.name</a></td>#}
-    {#                <td>item.date</td>#}
-    {#                <td>item.author</td>#}
-    {#                <td><button class="btn btn-danger" data-toggle="confirmation" type="submit">DELETE</button></td>#}
-    {#            </tr>#}
-    {#            <% empty %>#}
-    {#            <p>No tables found<p>#}
-    {#        {% endfor %}#}
-    {#    </table>#}
-    {##}
-    {#    <div class="float-style1">#}
-    {#        <button class="btn btn-primary" id="upload" onclick="location='upload'">Upload</button>#}
-    {#    </div>#}
-    {#    <div class="float-style2">#}
-    {#    <center>#}
-    {#        <s property="page"></s>#}
-    {#        <button class="btn btn-default" id="previous_page" a href="">Prev</button>#}
-    {#        <button class="btn btn-default" id="next_page" a href="">Next</button>#}
-    {#    </center>#}
-    {#    </div>#}
 {% endblock %}
 
 {% block apps_base_scripts %}
     <script>
         {# Reload page when another company is selected. #}
-
-        function reloadCompany() {
+        function reloadWorkplace() {
             var company_uuid = $('#tables-joined-workplaces').find(":selected").val();
             window.location.replace("/tables/" + company_uuid + "/1/");
         }
