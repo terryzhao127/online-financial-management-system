@@ -1,0 +1,300 @@
+function weekParser(isoWeek, existingDate) {
+  if (isDate(isoWeek)) {
+    return isoWeek;
+  }
+
+  if (isString(isoWeek)) {
+    WEEK_REGEXP.lastIndex = 0;
+    var parts = WEEK_REGEXP.exec(isoWeek);
+    if (parts) {
+      var year = +parts[1],
+          week = +parts[2],
+          hours = 0,
+          minutes = 0,
+          seconds = 0,
+          milliseconds = 0,
+          firstThurs = getFirstThursdayOfYear(year),
+          addDays = (week - 1) * 7;
+
+      if (existingDate) {
+        hours = existingDate.getHours();
+        minutes = existingDate.getMinutes();
+        seconds = existingDate.getSeconds();
+        milliseconds = existingDate.getMilliseconds();
+      }
+
+      return new Date(year, 0, firstThurs.getDate() + addDays, hours, minutes, seconds, milliseconds);
+    }
+  }
+
+  return NaN;
+}
+
+function createDateParser(regexp, mapping) {
+  return function(iso, date) {
+    var parts, map;
+
+    if (isDate(iso)) {
+      return iso;
+    }
+
+    if (isString(iso)) {
+      // When a date is JSON'ified to wraps itself inside of an extra
+      // set of double quotes. This makes the date parsing code unable
+      // to match the date string and parse it as a date.
+      if (iso.charAt(0) === '"' && iso.charAt(iso.length - 1) === '"') {
+        iso = iso.substring(1, iso.length - 1);
+      }
+      if (ISO_DATE_REGEXP.test(iso)) {
+        return new Date(iso);
+      }
+      regexp.lastIndex = 0;
+      parts = regexp.exec(iso);
+
+      if (parts) {
+        parts.shift();
+        if (date) {
+          map = {
+            yyyy: date.getFullYear(),
+            MM: date.getMonth() + 1,
+            dd: date.getDate(),
+            HH: date.getHours(),
+            mm: date.getMinutes(),
+            ss: date.getSeconds(),
+            sss: date.getMilliseconds() / 1000
+          };
+        } else {
+          map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0, sss: 0 };
+        }
+
+        forEach(parts, function(part, index) {
+          if (index < mapping.length) {
+            map[mapping[index]] = +part;
+          }
+        });
+        return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm, map.ss || 0, map.sss * 1000 || 0);
+      }
+    }
+
+    return NaN;
+  };
+}
+
+function createDateInputType(type, regexp, parseDate, format) {
+  return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
+    badInputChecker(scope, element, attr, ctrl);
+    baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+    var timezone = ctrl && ctrl.$options.getOption('timezone');
+    var previousDate;
+
+    ctrl.$$parserName = type;
+    ctrl.$parsers.push(function(value) {
+      if (ctrl.$isEmpty(value)) return null;
+      if (regexp.test(value)) {
+        // Note: We cannot read ctrl.$modelValue, as there might be a different
+        // parser/formatter in the processing chain so that the model
+        // contains some different data format!
+        var parsedDate = parseDate(value, previousDate);
+        if (timezone) {
+          parsedDate = convertTimezoneToLocal(parsedDate, timezone);
+        }
+        return parsedDate;
+      }
+      return undefined;
+    });
+
+    ctrl.$formatters.push(function(value) {
+      if (value && !isDate(value)) {
+        throw ngModelMinErr('datefmt', 'Expected `{0}` to be a date', value);
+      }
+      if (isValidDate(value)) {
+        previousDate = value;
+        if (previousDate && timezone) {
+          previousDate = convertTimezoneToLocal(previousDate, timezone, true);
+        }
+        return $filter('date')(value, format, timezone);
+      } else {
+        previousDate = null;
+        return '';
+      }
+    });
+
+    if (isDefined(attr.min) || attr.ngMin) {
+      var minVal;
+      ctrl.$validators.min = function(value) {
+        return !isValidDate(value) || isUndefined(minVal) || parseDate(value) >= minVal;
+      };
+      attr.$observe('min', function(val) {
+        minVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
+    }
+
+    if (isDefined(attr.max) || attr.ngMax) {
+      var maxVal;
+      ctrl.$validators.max = function(value) {
+        return !isValidDate(value) || isUndefined(maxVal) || parseDate(value) <= maxVal;
+      };
+      attr.$observe('max', function(val) {
+        maxVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
+    }
+
+    function isValidDate(value) {
+      // Invalid Date: getTime() returns NaN
+      return value && !(value.getTime && value.getTime() !== value.getTime());
+    }
+
+    function parseObservedDateValue(val) {
+      return isDefined(val) && !isDate(val) ? parseDate(val) || undefined : val;
+    }
+  };
+}
+
+function badInputChecker(scope, element, attr, ctrl) {
+  var node = element[0];
+  var nativeValidation = ctrl.$$hasNativeValidators = isObject(node.validity);
+  if (nativeValidation) {
+    ctrl.$parsers.push(function(value) {
+      var validity = element.prop(VALIDITY_STATE_PROPERTY) || {};
+      return validity.badInput || validity.typeMismatch ? undefined : value;
+    });
+  }
+}
+
+function numberFormatterParser(ctrl) {
+  ctrl.$$parserName = 'number';
+  ctrl.$parsers.push(function(value) {
+    if (ctrl.$isEmpty(value))      return null;
+    if (NUMBER_REGEXP.test(value)) return parseFloat(value);
+    return undefined;
+  });
+
+  ctrl.$formatters.push(function(value) {
+    if (!ctrl.$isEmpty(value)) {
+      if (!isNumber(value)) {
+        throw ngModelMinErr('numfmt', 'Expected `{0}` to be a number', value);
+      }
+      value = value.toString();
+    }
+    return value;
+  });
+}
+
+function parseNumberAttrVal(val) {
+  if (isDefined(val) && !isNumber(val)) {
+    val = parseFloat(val);
+  }
+  return !isNumberNaN(val) ? val : undefined;
+}
+
+function isNumberInteger(num) {
+  // See http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript#14794066
+  // (minus the assumption that `num` is a number)
+
+  // eslint-disable-next-line no-bitwise
+  return (num | 0) === num;
+}
+
+function countDecimals(num) {
+  var numString = num.toString();
+  var decimalSymbolIndex = numString.indexOf('.');
+
+  if (decimalSymbolIndex === -1) {
+    if (-1 < num && num < 1) {
+      // It may be in the exponential notation format (`1e-X`)
+      var match = /e-(\d+)$/.exec(numString);
+
+      if (match) {
+        return Number(match[1]);
+      }
+    }
+
+    return 0;
+  }
+
+  return numString.length - decimalSymbolIndex - 1;
+}
+
+function isValidForStep(viewValue, stepBase, step) {
+  // At this point `stepBase` and `step` are expected to be non-NaN values
+  // and `viewValue` is expected to be a valid stringified number.
+  var value = Number(viewValue);
+
+  var isNonIntegerValue = !isNumberInteger(value);
+  var isNonIntegerStepBase = !isNumberInteger(stepBase);
+  var isNonIntegerStep = !isNumberInteger(step);
+
+  // Due to limitations in Floating Point Arithmetic (e.g. `0.3 - 0.2 !== 0.1` or
+  // `0.5 % 0.1 !== 0`), we need to convert all numbers to integers.
+  if (isNonIntegerValue || isNonIntegerStepBase || isNonIntegerStep) {
+    var valueDecimals = isNonIntegerValue ? countDecimals(value) : 0;
+    var stepBaseDecimals = isNonIntegerStepBase ? countDecimals(stepBase) : 0;
+    var stepDecimals = isNonIntegerStep ? countDecimals(step) : 0;
+
+    var decimalCount = Math.max(valueDecimals, stepBaseDecimals, stepDecimals);
+    var multiplier = Math.pow(10, decimalCount);
+
+    value = value * multiplier;
+    stepBase = stepBase * multiplier;
+    step = step * multiplier;
+
+    if (isNonIntegerValue) value = Math.round(value);
+    if (isNonIntegerStepBase) stepBase = Math.round(stepBase);
+    if (isNonIntegerStep) step = Math.round(step);
+  }
+
+  return (value - stepBase) % step === 0;
+}
+
+function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  badInputChecker(scope, element, attr, ctrl);
+  numberFormatterParser(ctrl);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+  var minVal;
+  var maxVal;
+
+  if (isDefined(attr.min) || attr.ngMin) {
+    ctrl.$validators.min = function(value) {
+      return ctrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
+    };
+
+    attr.$observe('min', function(val) {
+      minVal = parseNumberAttrVal(val);
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
+  }
+
+  if (isDefined(attr.max) || attr.ngMax) {
+    ctrl.$validators.max = function(value) {
+      return ctrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
+    };
+
+    attr.$observe('max', function(val) {
+      maxVal = parseNumberAttrVal(val);
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
+  }
+
+  if (isDefined(attr.step) || attr.ngStep) {
+    var stepVal;
+    ctrl.$validators.step = function(modelValue, viewValue) {
+      return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+             isValidForStep(viewValue, minVal || 0, stepVal);
+    };
+
+    attr.$observe('step', function(val) {
+      stepVal = parseNumberAttrVal(val);
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
+  }
+}
+
+function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  badInputChecker(scope, element, attr, ctrl);
+  numberFormatterParser(ctrl);

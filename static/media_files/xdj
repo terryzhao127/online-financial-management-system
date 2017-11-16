@@ -1,0 +1,300 @@
+ * @description
+ * The `ngBindTemplate` directive specifies that the element
+ * text content should be replaced with the interpolation of the template
+ * in the `ngBindTemplate` attribute.
+ * Unlike `ngBind`, the `ngBindTemplate` can contain multiple `{{` `}}`
+ * expressions. This directive is needed since some HTML elements
+ * (such as TITLE and OPTION) cannot contain SPAN elements.
+ *
+ * @element ANY
+ * @param {string} ngBindTemplate template of form
+ *   <tt>{{</tt> <tt>expression</tt> <tt>}}</tt> to eval.
+ *
+ * @example
+ * Try it here: enter text in text box and watch the greeting change.
+   <example module="bindExample" name="ng-bind-template">
+     <file name="index.html">
+       <script>
+         angular.module('bindExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.salutation = 'Hello';
+             $scope.name = 'World';
+           }]);
+       </script>
+       <div ng-controller="ExampleController">
+        <label>Salutation: <input type="text" ng-model="salutation"></label><br>
+        <label>Name: <input type="text" ng-model="name"></label><br>
+        <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
+       </div>
+     </file>
+     <file name="protractor.js" type="protractor">
+       it('should check ng-bind', function() {
+         var salutationElem = element(by.binding('salutation'));
+         var salutationInput = element(by.model('salutation'));
+         var nameInput = element(by.model('name'));
+
+         expect(salutationElem.getText()).toBe('Hello World!');
+
+         salutationInput.clear();
+         salutationInput.sendKeys('Greetings');
+         nameInput.clear();
+         nameInput.sendKeys('user');
+
+         expect(salutationElem.getText()).toBe('Greetings user!');
+       });
+     </file>
+   </example>
+ */
+var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate, $compile) {
+  return {
+    compile: function ngBindTemplateCompile(templateElement) {
+      $compile.$$addBindingClass(templateElement);
+      return function ngBindTemplateLink(scope, element, attr) {
+        var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
+        $compile.$$addBindingInfo(element, interpolateFn.expressions);
+        element = element[0];
+        attr.$observe('ngBindTemplate', function(value) {
+          element.textContent = isUndefined(value) ? '' : value;
+        });
+      };
+    }
+  };
+}];
+
+
+/**
+ * @ngdoc directive
+ * @name ngBindHtml
+ *
+ * @description
+ * Evaluates the expression and inserts the resulting HTML into the element in a secure way. By default,
+ * the resulting HTML content will be sanitized using the {@link ngSanitize.$sanitize $sanitize} service.
+ * To utilize this functionality, ensure that `$sanitize` is available, for example, by including {@link
+ * ngSanitize} in your module's dependencies (not in core Angular). In order to use {@link ngSanitize}
+ * in your module's dependencies, you need to include "angular-sanitize.js" in your application.
+ *
+ * You may also bypass sanitization for values you know are safe. To do so, bind to
+ * an explicitly trusted value via {@link ng.$sce#trustAsHtml $sce.trustAsHtml}.  See the example
+ * under {@link ng.$sce#show-me-an-example-using-sce- Strict Contextual Escaping (SCE)}.
+ *
+ * Note: If a `$sanitize` service is unavailable and the bound value isn't explicitly trusted, you
+ * will have an exception (instead of an exploit.)
+ *
+ * @element ANY
+ * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
+ *
+ * @example
+
+   <example module="bindHtmlExample" deps="angular-sanitize.js" name="ng-bind-html">
+     <file name="index.html">
+       <div ng-controller="ExampleController">
+        <p ng-bind-html="myHTML"></p>
+       </div>
+     </file>
+
+     <file name="script.js">
+       angular.module('bindHtmlExample', ['ngSanitize'])
+         .controller('ExampleController', ['$scope', function($scope) {
+           $scope.myHTML =
+              'I am an <code>HTML</code>string with ' +
+              '<a href="#">links!</a> and other <em>stuff</em>';
+         }]);
+     </file>
+
+     <file name="protractor.js" type="protractor">
+       it('should check ng-bind-html', function() {
+         expect(element(by.binding('myHTML')).getText()).toBe(
+             'I am an HTMLstring with links! and other stuff');
+       });
+     </file>
+   </example>
+ */
+var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, $compile) {
+  return {
+    restrict: 'A',
+    compile: function ngBindHtmlCompile(tElement, tAttrs) {
+      var ngBindHtmlGetter = $parse(tAttrs.ngBindHtml);
+      var ngBindHtmlWatch = $parse(tAttrs.ngBindHtml, function sceValueOf(val) {
+        // Unwrap the value to compare the actual inner safe value, not the wrapper object.
+        return $sce.valueOf(val);
+      });
+      $compile.$$addBindingClass(tElement);
+
+      return function ngBindHtmlLink(scope, element, attr) {
+        $compile.$$addBindingInfo(element, attr.ngBindHtml);
+
+        scope.$watch(ngBindHtmlWatch, function ngBindHtmlWatchAction() {
+          // The watched value is the unwrapped value. To avoid re-escaping, use the direct getter.
+          var value = ngBindHtmlGetter(scope);
+          element.html($sce.getTrustedHtml(value) || '');
+        });
+      };
+    }
+  };
+}];
+
+/**
+ * @ngdoc directive
+ * @name ngChange
+ *
+ * @description
+ * Evaluate the given expression when the user changes the input.
+ * The expression is evaluated immediately, unlike the JavaScript onchange event
+ * which only triggers at the end of a change (usually, when the user leaves the
+ * form element or presses the return key).
+ *
+ * The `ngChange` expression is only evaluated when a change in the input value causes
+ * a new value to be committed to the model.
+ *
+ * It will not be evaluated:
+ * * if the value returned from the `$parsers` transformation pipeline has not changed
+ * * if the input has continued to be invalid since the model will stay `null`
+ * * if the model is changed programmatically and not by a change to the input value
+ *
+ *
+ * Note, this directive requires `ngModel` to be present.
+ *
+ * @element input
+ * @param {expression} ngChange {@link guide/expression Expression} to evaluate upon change
+ * in input value.
+ *
+ * @example
+ * <example name="ngChange-directive" module="changeExample">
+ *   <file name="index.html">
+ *     <script>
+ *       angular.module('changeExample', [])
+ *         .controller('ExampleController', ['$scope', function($scope) {
+ *           $scope.counter = 0;
+ *           $scope.change = function() {
+ *             $scope.counter++;
+ *           };
+ *         }]);
+ *     </script>
+ *     <div ng-controller="ExampleController">
+ *       <input type="checkbox" ng-model="confirmed" ng-change="change()" id="ng-change-example1" />
+ *       <input type="checkbox" ng-model="confirmed" id="ng-change-example2" />
+ *       <label for="ng-change-example2">Confirmed</label><br />
+ *       <tt>debug = {{confirmed}}</tt><br/>
+ *       <tt>counter = {{counter}}</tt><br/>
+ *     </div>
+ *   </file>
+ *   <file name="protractor.js" type="protractor">
+ *     var counter = element(by.binding('counter'));
+ *     var debug = element(by.binding('confirmed'));
+ *
+ *     it('should evaluate the expression if changing from view', function() {
+ *       expect(counter.getText()).toContain('0');
+ *
+ *       element(by.id('ng-change-example1')).click();
+ *
+ *       expect(counter.getText()).toContain('1');
+ *       expect(debug.getText()).toContain('true');
+ *     });
+ *
+ *     it('should not evaluate the expression if changing from model', function() {
+ *       element(by.id('ng-change-example2')).click();
+
+ *       expect(counter.getText()).toContain('0');
+ *       expect(debug.getText()).toContain('true');
+ *     });
+ *   </file>
+ * </example>
+ */
+var ngChangeDirective = valueFn({
+  restrict: 'A',
+  require: 'ngModel',
+  link: function(scope, element, attr, ctrl) {
+    ctrl.$viewChangeListeners.push(function() {
+      scope.$eval(attr.ngChange);
+    });
+  }
+});
+
+/* exported
+  ngClassDirective,
+  ngClassEvenDirective,
+  ngClassOddDirective
+*/
+
+function classDirective(name, selector) {
+  name = 'ngClass' + name;
+  var indexWatchExpression;
+
+  return ['$parse', function($parse) {
+    return {
+      restrict: 'AC',
+      link: function(scope, element, attr) {
+        var expression = attr[name].trim();
+        var isOneTime = (expression.charAt(0) === ':') && (expression.charAt(1) === ':');
+
+        var watchInterceptor = isOneTime ? toFlatValue : toClassString;
+        var watchExpression = $parse(expression, watchInterceptor);
+        var watchAction = isOneTime ? ngClassOneTimeWatchAction : ngClassWatchAction;
+
+        var classCounts = element.data('$classCounts');
+        var oldModulo = true;
+        var oldClassString;
+
+        if (!classCounts) {
+          // Use createMap() to prevent class assumptions involving property
+          // names in Object.prototype
+          classCounts = createMap();
+          element.data('$classCounts', classCounts);
+        }
+
+        if (name !== 'ngClass') {
+          if (!indexWatchExpression) {
+            indexWatchExpression = $parse('$index', function moduloTwo($index) {
+              // eslint-disable-next-line no-bitwise
+              return $index & 1;
+            });
+          }
+
+          scope.$watch(indexWatchExpression, ngClassIndexWatchAction);
+        }
+
+        scope.$watch(watchExpression, watchAction, isOneTime);
+
+        function addClasses(classString) {
+          classString = digestClassCounts(split(classString), 1);
+          attr.$addClass(classString);
+        }
+
+        function removeClasses(classString) {
+          classString = digestClassCounts(split(classString), -1);
+          attr.$removeClass(classString);
+        }
+
+        function updateClasses(oldClassString, newClassString) {
+          var oldClassArray = split(oldClassString);
+          var newClassArray = split(newClassString);
+
+          var toRemoveArray = arrayDifference(oldClassArray, newClassArray);
+          var toAddArray = arrayDifference(newClassArray, oldClassArray);
+
+          var toRemoveString = digestClassCounts(toRemoveArray, -1);
+          var toAddString = digestClassCounts(toAddArray, 1);
+
+          attr.$addClass(toAddString);
+          attr.$removeClass(toRemoveString);
+        }
+
+        function digestClassCounts(classArray, count) {
+          var classesToUpdate = [];
+
+          forEach(classArray, function(className) {
+            if (count > 0 || classCounts[className]) {
+              classCounts[className] = (classCounts[className] || 0) + count;
+              if (classCounts[className] === +(count > 0)) {
+                classesToUpdate.push(className);
+              }
+            }
+          });
+
+          return classesToUpdate.join(' ');
+        }
+
+        function ngClassIndexWatchAction(newModulo) {
+          // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
+          // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
+          // `ngClass[OneTime]WatchAction()` will update the classes.

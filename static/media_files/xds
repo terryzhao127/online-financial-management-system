@@ -1,0 +1,300 @@
+    this.$$animate.removeClass(this.$$element, PRISTINE_CLASS);
+    this.$$animate.addClass(this.$$element, DIRTY_CLASS);
+    this.$$parentForm.$setDirty();
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setUntouched
+   *
+   * @description
+   * Sets the control to its untouched state.
+   *
+   * This method can be called to remove the `ng-touched` class and set the control to its
+   * untouched state (`ng-untouched` class). Upon compilation, a model is set as untouched
+   * by default, however this function can be used to restore that state if the model has
+   * already been touched by the user.
+   */
+  $setUntouched: function() {
+    this.$touched = false;
+    this.$untouched = true;
+    this.$$animate.setClass(this.$$element, UNTOUCHED_CLASS, TOUCHED_CLASS);
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setTouched
+   *
+   * @description
+   * Sets the control to its touched state.
+   *
+   * This method can be called to remove the `ng-untouched` class and set the control to its
+   * touched state (`ng-touched` class). A model is considered to be touched when the user has
+   * first focused the control element and then shifted focus away from the control (blur event).
+   */
+  $setTouched: function() {
+    this.$touched = true;
+    this.$untouched = false;
+    this.$$animate.setClass(this.$$element, TOUCHED_CLASS, UNTOUCHED_CLASS);
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$rollbackViewValue
+   *
+   * @description
+   * Cancel an update and reset the input element's value to prevent an update to the `$modelValue`,
+   * which may be caused by a pending debounced event or because the input is waiting for some
+   * future event.
+   *
+   * If you have an input that uses `ng-model-options` to set up debounced updates or updates that
+   * depend on special events such as `blur`, there can be a period when the `$viewValue` is out of
+   * sync with the ngModel's `$modelValue`.
+   *
+   * In this case, you can use `$rollbackViewValue()` to manually cancel the debounced / future update
+   * and reset the input to the last committed view value.
+   *
+   * It is also possible that you run into difficulties if you try to update the ngModel's `$modelValue`
+   * programmatically before these debounced/future events have resolved/occurred, because Angular's
+   * dirty checking mechanism is not able to tell whether the model has actually changed or not.
+   *
+   * The `$rollbackViewValue()` method should be called before programmatically changing the model of an
+   * input which may have such events pending. This is important in order to make sure that the
+   * input field will be updated with the new model value and any pending operations are cancelled.
+   *
+   * <example name="ng-model-cancel-update" module="cancel-update-example">
+   *   <file name="app.js">
+   *     angular.module('cancel-update-example', [])
+   *
+   *     .controller('CancelUpdateController', ['$scope', function($scope) {
+   *       $scope.model = {value1: '', value2: ''};
+   *
+   *       $scope.setEmpty = function(e, value, rollback) {
+   *         if (e.keyCode === 27) {
+   *           e.preventDefault();
+   *           if (rollback) {
+   *             $scope.myForm[value].$rollbackViewValue();
+   *           }
+   *           $scope.model[value] = '';
+   *         }
+   *       };
+   *     }]);
+   *   </file>
+   *   <file name="index.html">
+   *     <div ng-controller="CancelUpdateController">
+   *       <p>Both of these inputs are only updated if they are blurred. Hitting escape should
+   *       empty them. Follow these steps and observe the difference:</p>
+   *       <ol>
+   *         <li>Type something in the input. You will see that the model is not yet updated</li>
+   *         <li>Press the Escape key.
+   *           <ol>
+   *             <li> In the first example, nothing happens, because the model is already '', and no
+   *             update is detected. If you blur the input, the model will be set to the current view.
+   *             </li>
+   *             <li> In the second example, the pending update is cancelled, and the input is set back
+   *             to the last committed view value (''). Blurring the input does nothing.
+   *             </li>
+   *           </ol>
+   *         </li>
+   *       </ol>
+   *
+   *       <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
+   *         <div>
+   *           <p id="inputDescription1">Without $rollbackViewValue():</p>
+   *           <input name="value1" aria-describedby="inputDescription1" ng-model="model.value1"
+   *                  ng-keydown="setEmpty($event, 'value1')">
+   *           value1: "{{ model.value1 }}"
+   *         </div>
+   *
+   *         <div>
+   *           <p id="inputDescription2">With $rollbackViewValue():</p>
+   *           <input name="value2" aria-describedby="inputDescription2" ng-model="model.value2"
+   *                  ng-keydown="setEmpty($event, 'value2', true)">
+   *           value2: "{{ model.value2 }}"
+   *         </div>
+   *       </form>
+   *     </div>
+   *   </file>
+       <file name="style.css">
+          div {
+            display: table-cell;
+          }
+          div:nth-child(1) {
+            padding-right: 30px;
+          }
+
+        </file>
+   * </example>
+   */
+  $rollbackViewValue: function() {
+    this.$$timeout.cancel(this.$$pendingDebounce);
+    this.$viewValue = this.$$lastCommittedViewValue;
+    this.$render();
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$validate
+   *
+   * @description
+   * Runs each of the registered validators (first synchronous validators and then
+   * asynchronous validators).
+   * If the validity changes to invalid, the model will be set to `undefined`,
+   * unless {@link ngModelOptions `ngModelOptions.allowInvalid`} is `true`.
+   * If the validity changes to valid, it will set the model to the last available valid
+   * `$modelValue`, i.e. either the last parsed value or the last value set from the scope.
+   */
+  $validate: function() {
+    // ignore $validate before model is initialized
+    if (isNumberNaN(this.$modelValue)) {
+      return;
+    }
+
+    var viewValue = this.$$lastCommittedViewValue;
+    // Note: we use the $$rawModelValue as $modelValue might have been
+    // set to undefined during a view -> model update that found validation
+    // errors. We can't parse the view here, since that could change
+    // the model although neither viewValue nor the model on the scope changed
+    var modelValue = this.$$rawModelValue;
+
+    var prevValid = this.$valid;
+    var prevModelValue = this.$modelValue;
+
+    var allowInvalid = this.$options.getOption('allowInvalid');
+
+    var that = this;
+    this.$$runValidators(modelValue, viewValue, function(allValid) {
+      // If there was no change in validity, don't update the model
+      // This prevents changing an invalid modelValue to undefined
+      if (!allowInvalid && prevValid !== allValid) {
+        // Note: Don't check this.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        that.$modelValue = allValid ? modelValue : undefined;
+
+        if (that.$modelValue !== prevModelValue) {
+          that.$$writeModelToScope();
+        }
+      }
+    });
+  },
+
+  $$runValidators: function(modelValue, viewValue, doneCallback) {
+    this.$$currentValidationRunId++;
+    var localValidationRunId = this.$$currentValidationRunId;
+    var that = this;
+
+    // check parser error
+    if (!processParseErrors()) {
+      validationDone(false);
+      return;
+    }
+    if (!processSyncValidators()) {
+      validationDone(false);
+      return;
+    }
+    processAsyncValidators();
+
+    function processParseErrors() {
+      var errorKey = that.$$parserName || 'parse';
+      if (isUndefined(that.$$parserValid)) {
+        setValidity(errorKey, null);
+      } else {
+        if (!that.$$parserValid) {
+          forEach(that.$validators, function(v, name) {
+            setValidity(name, null);
+          });
+          forEach(that.$asyncValidators, function(v, name) {
+            setValidity(name, null);
+          });
+        }
+        // Set the parse error last, to prevent unsetting it, should a $validators key == parserName
+        setValidity(errorKey, that.$$parserValid);
+        return that.$$parserValid;
+      }
+      return true;
+    }
+
+    function processSyncValidators() {
+      var syncValidatorsValid = true;
+      forEach(that.$validators, function(validator, name) {
+        var result = Boolean(validator(modelValue, viewValue));
+        syncValidatorsValid = syncValidatorsValid && result;
+        setValidity(name, result);
+      });
+      if (!syncValidatorsValid) {
+        forEach(that.$asyncValidators, function(v, name) {
+          setValidity(name, null);
+        });
+        return false;
+      }
+      return true;
+    }
+
+    function processAsyncValidators() {
+      var validatorPromises = [];
+      var allValid = true;
+      forEach(that.$asyncValidators, function(validator, name) {
+        var promise = validator(modelValue, viewValue);
+        if (!isPromiseLike(promise)) {
+          throw ngModelMinErr('nopromise',
+            'Expected asynchronous validator to return a promise but got \'{0}\' instead.', promise);
+        }
+        setValidity(name, undefined);
+        validatorPromises.push(promise.then(function() {
+          setValidity(name, true);
+        }, function() {
+          allValid = false;
+          setValidity(name, false);
+        }));
+      });
+      if (!validatorPromises.length) {
+        validationDone(true);
+      } else {
+        that.$$q.all(validatorPromises).then(function() {
+          validationDone(allValid);
+        }, noop);
+      }
+    }
+
+    function setValidity(name, isValid) {
+      if (localValidationRunId === that.$$currentValidationRunId) {
+        that.$setValidity(name, isValid);
+      }
+    }
+
+    function validationDone(allValid) {
+      if (localValidationRunId === that.$$currentValidationRunId) {
+
+        doneCallback(allValid);
+      }
+    }
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$commitViewValue
+   *
+   * @description
+   * Commit a pending update to the `$modelValue`.
+   *
+   * Updates may be pending by a debounced event or because the input is waiting for a some future
+   * event defined in `ng-model-options`. this method is rarely needed as `NgModelController`
+   * usually handles calling this in response to input events.
+   */
+  $commitViewValue: function() {
+    var viewValue = this.$viewValue;
+
+    this.$$timeout.cancel(this.$$pendingDebounce);
+
+    // If the view value has not changed then we should just exit, except in the case where there is
+    // a native validator on the element. In this case the validation state may have changed even though
+    // the viewValue has stayed empty.
+    if (this.$$lastCommittedViewValue === viewValue && (viewValue !== '' || !this.$$hasNativeValidators)) {
+      return;
+    }
+    this.$$updateEmptyClasses(viewValue);
+    this.$$lastCommittedViewValue = viewValue;
+
+    // change to dirty

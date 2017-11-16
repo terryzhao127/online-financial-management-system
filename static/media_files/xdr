@@ -1,0 +1,300 @@
+ * in order to fulfill the validation and a status level of `4xx` in order to reject the validation.
+ *
+ * ```js
+ * ngModel.$asyncValidators.uniqueUsername = function(modelValue, viewValue) {
+ *   var value = modelValue || viewValue;
+ *
+ *   // Lookup user by username
+ *   return $http.get('/api/users/' + value).
+ *      then(function resolved() {
+ *        //username exists, this means validation fails
+ *        return $q.reject('exists');
+ *      }, function rejected() {
+ *        //username does not exist, therefore this validation passes
+ *        return true;
+ *      });
+ * };
+ * ```
+ *
+ * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
+ *     view value has changed. It is called with no arguments, and its return value is ignored.
+ *     This can be used in place of additional $watches against the model value.
+ *
+ * @property {Object} $error An object hash with all failing validator ids as keys.
+ * @property {Object} $pending An object hash with all pending validator ids as keys.
+ *
+ * @property {boolean} $untouched True if control has not lost focus yet.
+ * @property {boolean} $touched True if control has lost focus.
+ * @property {boolean} $pristine True if user has not interacted with the control yet.
+ * @property {boolean} $dirty True if user has already interacted with the control.
+ * @property {boolean} $valid True if there is no error.
+ * @property {boolean} $invalid True if at least one error on the control.
+ * @property {string} $name The name attribute of the control.
+ *
+ * @description
+ *
+ * `NgModelController` provides API for the {@link ngModel `ngModel`} directive.
+ * The controller contains services for data-binding, validation, CSS updates, and value formatting
+ * and parsing. It purposefully does not contain any logic which deals with DOM rendering or
+ * listening to DOM events.
+ * Such DOM related logic should be provided by other directives which make use of
+ * `NgModelController` for data-binding to control elements.
+ * Angular provides this DOM logic for most {@link input `input`} elements.
+ * At the end of this page you can find a {@link ngModel.NgModelController#custom-control-example
+ * custom control example} that uses `ngModelController` to bind to `contenteditable` elements.
+ *
+ * @example
+ * ### Custom Control Example
+ * This example shows how to use `NgModelController` with a custom control to achieve
+ * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
+ * collaborate together to achieve the desired result.
+ *
+ * `contenteditable` is an HTML5 attribute, which tells the browser to let the element
+ * contents be edited in place by the user.
+ *
+ * We are using the {@link ng.service:$sce $sce} service here and include the {@link ngSanitize $sanitize}
+ * module to automatically remove "bad" content like inline event listener (e.g. `<span onclick="...">`).
+ * However, as we are using `$sce` the model can still decide to provide unsafe content if it marks
+ * that content using the `$sce` service.
+ *
+ * <example name="NgModelController" module="customControl" deps="angular-sanitize.js">
+    <file name="style.css">
+      [contenteditable] {
+        border: 1px solid black;
+        background-color: white;
+        min-height: 20px;
+      }
+
+      .ng-invalid {
+        border: 1px solid red;
+      }
+
+    </file>
+    <file name="script.js">
+      angular.module('customControl', ['ngSanitize']).
+        directive('contenteditable', ['$sce', function($sce) {
+          return {
+            restrict: 'A', // only activate on element attribute
+            require: '?ngModel', // get a hold of NgModelController
+            link: function(scope, element, attrs, ngModel) {
+              if (!ngModel) return; // do nothing if no ng-model
+
+              // Specify how UI should be updated
+              ngModel.$render = function() {
+                element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+              };
+
+              // Listen for change events to enable binding
+              element.on('blur keyup change', function() {
+                scope.$evalAsync(read);
+              });
+              read(); // initialize
+
+              // Write data to the model
+              function read() {
+                var html = element.html();
+                // When we clear the content editable the browser leaves a <br> behind
+                // If strip-br attribute is provided then we strip this out
+                if (attrs.stripBr && html === '<br>') {
+                  html = '';
+                }
+                ngModel.$setViewValue(html);
+              }
+            }
+          };
+        }]);
+    </file>
+    <file name="index.html">
+      <form name="myForm">
+       <div contenteditable
+            name="myWidget" ng-model="userContent"
+            strip-br="true"
+            required>Change me!</div>
+        <span ng-show="myForm.myWidget.$error.required">Required!</span>
+       <hr>
+       <textarea ng-model="userContent" aria-label="Dynamic textarea"></textarea>
+      </form>
+    </file>
+    <file name="protractor.js" type="protractor">
+    it('should data-bind and become invalid', function() {
+      if (browser.params.browser === 'safari' || browser.params.browser === 'firefox') {
+        // SafariDriver can't handle contenteditable
+        // and Firefox driver can't clear contenteditables very well
+        return;
+      }
+      var contentEditable = element(by.css('[contenteditable]'));
+      var content = 'Change me!';
+
+      expect(contentEditable.getText()).toEqual(content);
+
+      contentEditable.clear();
+      contentEditable.sendKeys(protractor.Key.BACK_SPACE);
+      expect(contentEditable.getText()).toEqual('');
+      expect(contentEditable.getAttribute('class')).toMatch(/ng-invalid-required/);
+    });
+    </file>
+ * </example>
+ *
+ *
+ */
+NgModelController.$inject = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$q', '$interpolate'];
+function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $q, $interpolate) {
+  this.$viewValue = Number.NaN;
+  this.$modelValue = Number.NaN;
+  this.$$rawModelValue = undefined; // stores the parsed modelValue / model set from scope regardless of validity.
+  this.$validators = {};
+  this.$asyncValidators = {};
+  this.$parsers = [];
+  this.$formatters = [];
+  this.$viewChangeListeners = [];
+  this.$untouched = true;
+  this.$touched = false;
+  this.$pristine = true;
+  this.$dirty = false;
+  this.$valid = true;
+  this.$invalid = false;
+  this.$error = {}; // keep invalid keys here
+  this.$$success = {}; // keep valid keys here
+  this.$pending = undefined; // keep pending keys here
+  this.$name = $interpolate($attr.name || '', false)($scope);
+  this.$$parentForm = nullFormCtrl;
+  this.$options = defaultModelOptions;
+
+  this.$$parsedNgModel = $parse($attr.ngModel);
+  this.$$parsedNgModelAssign = this.$$parsedNgModel.assign;
+  this.$$ngModelGet = this.$$parsedNgModel;
+  this.$$ngModelSet = this.$$parsedNgModelAssign;
+  this.$$pendingDebounce = null;
+  this.$$parserValid = undefined;
+
+  this.$$currentValidationRunId = 0;
+
+  // https://github.com/angular/angular.js/issues/15833
+  // Prevent `$$scope` from being iterated over by `copy` when NgModelController is deep watched
+  Object.defineProperty(this, '$$scope', {value: $scope});
+  this.$$attr = $attr;
+  this.$$element = $element;
+  this.$$animate = $animate;
+  this.$$timeout = $timeout;
+  this.$$parse = $parse;
+  this.$$q = $q;
+  this.$$exceptionHandler = $exceptionHandler;
+
+  setupValidity(this);
+  setupModelWatcher(this);
+}
+
+NgModelController.prototype = {
+  $$initGetterSetters: function() {
+    if (this.$options.getOption('getterSetter')) {
+      var invokeModelGetter = this.$$parse(this.$$attr.ngModel + '()'),
+          invokeModelSetter = this.$$parse(this.$$attr.ngModel + '($$$p)');
+
+      this.$$ngModelGet = function($scope) {
+        var modelValue = this.$$parsedNgModel($scope);
+        if (isFunction(modelValue)) {
+          modelValue = invokeModelGetter($scope);
+        }
+        return modelValue;
+      };
+      this.$$ngModelSet = function($scope, newValue) {
+        if (isFunction(this.$$parsedNgModel($scope))) {
+          invokeModelSetter($scope, {$$$p: newValue});
+        } else {
+          this.$$parsedNgModelAssign($scope, newValue);
+        }
+      };
+    } else if (!this.$$parsedNgModel.assign) {
+      throw ngModelMinErr('nonassign', 'Expression \'{0}\' is non-assignable. Element: {1}',
+          this.$$attr.ngModel, startingTag(this.$$element));
+    }
+  },
+
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$render
+   *
+   * @description
+   * Called when the view needs to be updated. It is expected that the user of the ng-model
+   * directive will implement this method.
+   *
+   * The `$render()` method is invoked in the following situations:
+   *
+   * * `$rollbackViewValue()` is called.  If we are rolling back the view value to the last
+   *   committed value then `$render()` is called to update the input control.
+   * * The value referenced by `ng-model` is changed programmatically and both the `$modelValue` and
+   *   the `$viewValue` are different from last time.
+   *
+   * Since `ng-model` does not do a deep watch, `$render()` is only invoked if the values of
+   * `$modelValue` and `$viewValue` are actually different from their previous values. If `$modelValue`
+   * or `$viewValue` are objects (rather than a string or number) then `$render()` will not be
+   * invoked if you only change a property on the objects.
+   */
+  $render: noop,
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$isEmpty
+   *
+   * @description
+   * This is called when we need to determine if the value of an input is empty.
+   *
+   * For instance, the required directive does this to work out if the input has data or not.
+   *
+   * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
+   *
+   * You can override this for input directives whose concept of being empty is different from the
+   * default. The `checkboxInputType` directive does this because in its case a value of `false`
+   * implies empty.
+   *
+   * @param {*} value The value of the input to check for emptiness.
+   * @returns {boolean} True if `value` is "empty".
+   */
+  $isEmpty: function(value) {
+    // eslint-disable-next-line no-self-compare
+    return isUndefined(value) || value === '' || value === null || value !== value;
+  },
+
+  $$updateEmptyClasses: function(value) {
+    if (this.$isEmpty(value)) {
+      this.$$animate.removeClass(this.$$element, NOT_EMPTY_CLASS);
+      this.$$animate.addClass(this.$$element, EMPTY_CLASS);
+    } else {
+      this.$$animate.removeClass(this.$$element, EMPTY_CLASS);
+      this.$$animate.addClass(this.$$element, NOT_EMPTY_CLASS);
+    }
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setPristine
+   *
+   * @description
+   * Sets the control to its pristine state.
+   *
+   * This method can be called to remove the `ng-dirty` class and set the control to its pristine
+   * state (`ng-pristine` class). A model is considered to be pristine when the control
+   * has not been changed from when first compiled.
+   */
+  $setPristine: function() {
+    this.$dirty = false;
+    this.$pristine = true;
+    this.$$animate.removeClass(this.$$element, DIRTY_CLASS);
+    this.$$animate.addClass(this.$$element, PRISTINE_CLASS);
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setDirty
+   *
+   * @description
+   * Sets the control to its dirty state.
+   *
+   * This method can be called to remove the `ng-pristine` class and set the control to its dirty
+   * state (`ng-dirty` class). A model is considered to be dirty when the control has been changed
+   * from when first compiled.
+   */
+  $setDirty: function() {
+    this.$dirty = true;
+    this.$pristine = false;

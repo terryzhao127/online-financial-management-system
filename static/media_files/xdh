@@ -1,0 +1,300 @@
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+  var supportsRange = ctrl.$$hasNativeValidators && element[0].type === 'range',
+      minVal = supportsRange ? 0 : undefined,
+      maxVal = supportsRange ? 100 : undefined,
+      stepVal = supportsRange ? 1 : undefined,
+      validity = element[0].validity,
+      hasMinAttr = isDefined(attr.min),
+      hasMaxAttr = isDefined(attr.max),
+      hasStepAttr = isDefined(attr.step);
+
+  var originalRender = ctrl.$render;
+
+  ctrl.$render = supportsRange && isDefined(validity.rangeUnderflow) && isDefined(validity.rangeOverflow) ?
+    //Browsers that implement range will set these values automatically, but reading the adjusted values after
+    //$render would cause the min / max validators to be applied with the wrong value
+    function rangeRender() {
+      originalRender();
+      ctrl.$setViewValue(element.val());
+    } :
+    originalRender;
+
+  if (hasMinAttr) {
+    ctrl.$validators.min = supportsRange ?
+      // Since all browsers set the input to a valid value, we don't need to check validity
+      function noopMinValidator() { return true; } :
+      // non-support browsers validate the min val
+      function minValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
+      };
+
+    setInitialValueAndObserver('min', minChange);
+  }
+
+  if (hasMaxAttr) {
+    ctrl.$validators.max = supportsRange ?
+      // Since all browsers set the input to a valid value, we don't need to check validity
+      function noopMaxValidator() { return true; } :
+      // non-support browsers validate the max val
+      function maxValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
+      };
+
+    setInitialValueAndObserver('max', maxChange);
+  }
+
+  if (hasStepAttr) {
+    ctrl.$validators.step = supportsRange ?
+      function nativeStepValidator() {
+        // Currently, only FF implements the spec on step change correctly (i.e. adjusting the
+        // input element value to a valid value). It's possible that other browsers set the stepMismatch
+        // validity error instead, so we can at least report an error in that case.
+        return !validity.stepMismatch;
+      } :
+      // ngStep doesn't set the setp attr, so the browser doesn't adjust the input value as setting step would
+      function stepValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+               isValidForStep(viewValue, minVal || 0, stepVal);
+      };
+
+    setInitialValueAndObserver('step', stepChange);
+  }
+
+  function setInitialValueAndObserver(htmlAttrName, changeFn) {
+    // interpolated attributes set the attribute value only after a digest, but we need the
+    // attribute value when the input is first rendered, so that the browser can adjust the
+    // input value based on the min/max value
+    element.attr(htmlAttrName, attr[htmlAttrName]);
+    attr.$observe(htmlAttrName, changeFn);
+  }
+
+  function minChange(val) {
+    minVal = parseNumberAttrVal(val);
+    // ignore changes before model is initialized
+    if (isNumberNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    if (supportsRange) {
+      var elVal = element.val();
+      // IE11 doesn't set the el val correctly if the minVal is greater than the element value
+      if (minVal > elVal) {
+        elVal = minVal;
+        element.val(elVal);
+      }
+      ctrl.$setViewValue(elVal);
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
+
+  function maxChange(val) {
+    maxVal = parseNumberAttrVal(val);
+    // ignore changes before model is initialized
+    if (isNumberNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    if (supportsRange) {
+      var elVal = element.val();
+      // IE11 doesn't set the el val correctly if the maxVal is less than the element value
+      if (maxVal < elVal) {
+        element.val(maxVal);
+        // IE11 and Chrome don't set the value to the minVal when max < min
+        elVal = maxVal < minVal ? minVal : maxVal;
+      }
+      ctrl.$setViewValue(elVal);
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
+
+  function stepChange(val) {
+    stepVal = parseNumberAttrVal(val);
+    // ignore changes before model is initialized
+    if (isNumberNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    // Some browsers don't adjust the input value correctly, but set the stepMismatch error
+    if (supportsRange && ctrl.$viewValue !== element.val()) {
+      ctrl.$setViewValue(element.val());
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
+}
+
+function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
+
+  ctrl.$$parserName = 'url';
+  ctrl.$validators.url = function(modelValue, viewValue) {
+    var value = modelValue || viewValue;
+    return ctrl.$isEmpty(value) || URL_REGEXP.test(value);
+  };
+}
+
+function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
+
+  ctrl.$$parserName = 'email';
+  ctrl.$validators.email = function(modelValue, viewValue) {
+    var value = modelValue || viewValue;
+    return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
+  };
+}
+
+function radioInputType(scope, element, attr, ctrl) {
+  var doTrim = !attr.ngTrim || trim(attr.ngTrim) !== 'false';
+  // make the name unique, if not defined
+  if (isUndefined(attr.name)) {
+    element.attr('name', nextUid());
+  }
+
+  var listener = function(ev) {
+    var value;
+    if (element[0].checked) {
+      value = attr.value;
+      if (doTrim) {
+        value = trim(value);
+      }
+      ctrl.$setViewValue(value, ev && ev.type);
+    }
+  };
+
+  element.on('click', listener);
+
+  ctrl.$render = function() {
+    var value = attr.value;
+    if (doTrim) {
+      value = trim(value);
+    }
+    element[0].checked = (value === ctrl.$viewValue);
+  };
+
+  attr.$observe('value', ctrl.$render);
+}
+
+function parseConstantExpr($parse, context, name, expression, fallback) {
+  var parseFn;
+  if (isDefined(expression)) {
+    parseFn = $parse(expression);
+    if (!parseFn.constant) {
+      throw ngModelMinErr('constexpr', 'Expected constant expression for `{0}`, but saw ' +
+                                   '`{1}`.', name, expression);
+    }
+    return parseFn(context);
+  }
+  return fallback;
+}
+
+function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter, $parse) {
+  var trueValue = parseConstantExpr($parse, scope, 'ngTrueValue', attr.ngTrueValue, true);
+  var falseValue = parseConstantExpr($parse, scope, 'ngFalseValue', attr.ngFalseValue, false);
+
+  var listener = function(ev) {
+    ctrl.$setViewValue(element[0].checked, ev && ev.type);
+  };
+
+  element.on('click', listener);
+
+  ctrl.$render = function() {
+    element[0].checked = ctrl.$viewValue;
+  };
+
+  // Override the standard `$isEmpty` because the $viewValue of an empty checkbox is always set to `false`
+  // This is because of the parser below, which compares the `$modelValue` with `trueValue` to convert
+  // it to a boolean.
+  ctrl.$isEmpty = function(value) {
+    return value === false;
+  };
+
+  ctrl.$formatters.push(function(value) {
+    return equals(value, trueValue);
+  });
+
+  ctrl.$parsers.push(function(value) {
+    return value ? trueValue : falseValue;
+  });
+}
+
+
+/**
+ * @ngdoc directive
+ * @name textarea
+ * @restrict E
+ *
+ * @description
+ * HTML textarea element control with angular data-binding. The data-binding and validation
+ * properties of this element are exactly the same as those of the
+ * {@link ng.directive:input input element}.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
+ * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
+ *    length.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+ *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
+ *    If the expression evaluates to a RegExp object, then this is used directly.
+ *    If the expression evaluates to a string, then it will be converted to a RegExp
+ *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+ *    `new RegExp('^abc$')`.<br />
+ *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+ *    start at the index of the last search's match, thus not taking the whole input value into
+ *    account.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
+ *
+ * @knownIssue
+ *
+ * When specifying the `placeholder` attribute of `<textarea>`, Internet Explorer will temporarily
+ * insert the placeholder value as the textarea's content. If the placeholder value contains
+ * interpolation (`{{ ... }}`), an error will be logged in the console when Angular tries to update
+ * the value of the by-then-removed text node. This doesn't affect the functionality of the
+ * textarea, but can be undesirable.
+ *
+ * You can work around this Internet Explorer issue by using `ng-attr-placeholder` instead of
+ * `placeholder` on textareas, whenever you need interpolation in the placeholder value. You can
+ * find more details on `ngAttr` in the
+ * [Interpolation](guide/interpolation#-ngattr-for-binding-to-arbitrary-attributes) section of the
+ * Developer Guide.
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name input
+ * @restrict E
+ *
+ * @description
+ * HTML input element control. When used together with {@link ngModel `ngModel`}, it provides data-binding,
+ * input state control, and validation.
+ * Input control follows HTML5 input types and polyfills the HTML5 validation behavior for older browsers.
+ *
+ * <div class="alert alert-warning">
+ * **Note:** Not every feature offered is available for all input types.
+ * Specifically, data binding and event handling via `ng-model` is unsupported for `input[file]`.
+ * </div>
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.

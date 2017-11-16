@@ -1,0 +1,300 @@
+    if (this.$pristine) {
+      this.$setDirty();
+    }
+    this.$$parseAndValidate();
+  },
+
+  $$parseAndValidate: function() {
+    var viewValue = this.$$lastCommittedViewValue;
+    var modelValue = viewValue;
+    var that = this;
+
+    this.$$parserValid = isUndefined(modelValue) ? undefined : true;
+
+    if (this.$$parserValid) {
+      for (var i = 0; i < this.$parsers.length; i++) {
+        modelValue = this.$parsers[i](modelValue);
+        if (isUndefined(modelValue)) {
+          this.$$parserValid = false;
+          break;
+        }
+      }
+    }
+    if (isNumberNaN(this.$modelValue)) {
+      // this.$modelValue has not been touched yet...
+      this.$modelValue = this.$$ngModelGet(this.$$scope);
+    }
+    var prevModelValue = this.$modelValue;
+    var allowInvalid = this.$options.getOption('allowInvalid');
+    this.$$rawModelValue = modelValue;
+
+    if (allowInvalid) {
+      this.$modelValue = modelValue;
+      writeToModelIfNeeded();
+    }
+
+    // Pass the $$lastCommittedViewValue here, because the cached viewValue might be out of date.
+    // This can happen if e.g. $setViewValue is called from inside a parser
+    this.$$runValidators(modelValue, this.$$lastCommittedViewValue, function(allValid) {
+      if (!allowInvalid) {
+        // Note: Don't check this.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        that.$modelValue = allValid ? modelValue : undefined;
+        writeToModelIfNeeded();
+      }
+    });
+
+    function writeToModelIfNeeded() {
+      if (that.$modelValue !== prevModelValue) {
+        that.$$writeModelToScope();
+      }
+    }
+  },
+
+  $$writeModelToScope: function() {
+    this.$$ngModelSet(this.$$scope, this.$modelValue);
+    forEach(this.$viewChangeListeners, function(listener) {
+      try {
+        listener();
+      } catch (e) {
+        // eslint-disable-next-line no-invalid-this
+        this.$$exceptionHandler(e);
+      }
+    }, this);
+  },
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setViewValue
+   *
+   * @description
+   * Update the view value.
+   *
+   * This method should be called when a control wants to change the view value; typically,
+   * this is done from within a DOM event handler. For example, the {@link ng.directive:input input}
+   * directive calls it when the value of the input changes and {@link ng.directive:select select}
+   * calls it when an option is selected.
+   *
+   * When `$setViewValue` is called, the new `value` will be staged for committing through the `$parsers`
+   * and `$validators` pipelines. If there are no special {@link ngModelOptions} specified then the staged
+   * value is sent directly for processing through the `$parsers` pipeline. After this, the `$validators` and
+   * `$asyncValidators` are called and the value is applied to `$modelValue`.
+   * Finally, the value is set to the **expression** specified in the `ng-model` attribute and
+   * all the registered change listeners, in the `$viewChangeListeners` list are called.
+   *
+   * In case the {@link ng.directive:ngModelOptions ngModelOptions} directive is used with `updateOn`
+   * and the `default` trigger is not listed, all those actions will remain pending until one of the
+   * `updateOn` events is triggered on the DOM element.
+   * All these actions will be debounced if the {@link ng.directive:ngModelOptions ngModelOptions}
+   * directive is used with a custom debounce for this particular event.
+   * Note that a `$digest` is only triggered once the `updateOn` events are fired, or if `debounce`
+   * is specified, once the timer runs out.
+   *
+   * When used with standard inputs, the view value will always be a string (which is in some cases
+   * parsed into another type, such as a `Date` object for `input[date]`.)
+   * However, custom controls might also pass objects to this method. In this case, we should make
+   * a copy of the object before passing it to `$setViewValue`. This is because `ngModel` does not
+   * perform a deep watch of objects, it only looks for a change of identity. If you only change
+   * the property of the object then ngModel will not realize that the object has changed and
+   * will not invoke the `$parsers` and `$validators` pipelines. For this reason, you should
+   * not change properties of the copy once it has been passed to `$setViewValue`.
+   * Otherwise you may cause the model value on the scope to change incorrectly.
+   *
+   * <div class="alert alert-info">
+   * In any case, the value passed to the method should always reflect the current value
+   * of the control. For example, if you are calling `$setViewValue` for an input element,
+   * you should pass the input DOM value. Otherwise, the control and the scope model become
+   * out of sync. It's also important to note that `$setViewValue` does not call `$render` or change
+   * the control's DOM value in any way. If we want to change the control's DOM value
+   * programmatically, we should update the `ngModel` scope expression. Its new value will be
+   * picked up by the model controller, which will run it through the `$formatters`, `$render` it
+   * to update the DOM, and finally call `$validate` on it.
+   * </div>
+   *
+   * @param {*} value value from the view.
+   * @param {string} trigger Event that triggered the update.
+   */
+  $setViewValue: function(value, trigger) {
+    this.$viewValue = value;
+    if (this.$options.getOption('updateOnDefault')) {
+      this.$$debounceViewValueCommit(trigger);
+    }
+  },
+
+  $$debounceViewValueCommit: function(trigger) {
+    var debounceDelay = this.$options.getOption('debounce');
+
+    if (isNumber(debounceDelay[trigger])) {
+      debounceDelay = debounceDelay[trigger];
+    } else if (isNumber(debounceDelay['default'])) {
+      debounceDelay = debounceDelay['default'];
+    }
+
+    this.$$timeout.cancel(this.$$pendingDebounce);
+    var that = this;
+    if (debounceDelay > 0) { // this fails if debounceDelay is an object
+      this.$$pendingDebounce = this.$$timeout(function() {
+        that.$commitViewValue();
+      }, debounceDelay);
+    } else if (this.$$scope.$root.$$phase) {
+      this.$commitViewValue();
+    } else {
+      this.$$scope.$apply(function() {
+        that.$commitViewValue();
+      });
+    }
+  },
+
+  /**
+   * @ngdoc method
+   *
+   * @name ngModel.NgModelController#$overrideModelOptions
+   *
+   * @description
+   *
+   * Override the current model options settings programmatically.
+   *
+   * The previous `ModelOptions` value will not be modified. Instead, a
+   * new `ModelOptions` object will inherit from the previous one overriding
+   * or inheriting settings that are defined in the given parameter.
+   *
+   * See {@link ngModelOptions} for information about what options can be specified
+   * and how model option inheritance works.
+   *
+   * @param {Object} options a hash of settings to override the previous options
+   *
+   */
+  $overrideModelOptions: function(options) {
+    this.$options = this.$options.createChild(options);
+  }
+};
+
+function setupModelWatcher(ctrl) {
+  // model -> value
+  // Note: we cannot use a normal scope.$watch as we want to detect the following:
+  // 1. scope value is 'a'
+  // 2. user enters 'b'
+  // 3. ng-change kicks in and reverts scope value to 'a'
+  //    -> scope value did not change since the last digest as
+  //       ng-change executes in apply phase
+  // 4. view should be changed back to 'a'
+  ctrl.$$scope.$watch(function ngModelWatch(scope) {
+    var modelValue = ctrl.$$ngModelGet(scope);
+
+    // if scope model value and ngModel value are out of sync
+    // TODO(perf): why not move this to the action fn?
+    if (modelValue !== ctrl.$modelValue &&
+       // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
+        // eslint-disable-next-line no-self-compare
+       (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
+    ) {
+      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
+      ctrl.$$parserValid = undefined;
+
+      var formatters = ctrl.$formatters,
+          idx = formatters.length;
+
+      var viewValue = modelValue;
+      while (idx--) {
+        viewValue = formatters[idx](viewValue);
+      }
+      if (ctrl.$viewValue !== viewValue) {
+        ctrl.$$updateEmptyClasses(viewValue);
+        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+        ctrl.$render();
+
+        // It is possible that model and view value have been updated during render
+        ctrl.$$runValidators(ctrl.$modelValue, ctrl.$viewValue, noop);
+      }
+    }
+
+    return modelValue;
+  });
+}
+
+/**
+ * @ngdoc method
+ * @name ngModel.NgModelController#$setValidity
+ *
+ * @description
+ * Change the validity state, and notify the form.
+ *
+ * This method can be called within $parsers/$formatters or a custom validation implementation.
+ * However, in most cases it should be sufficient to use the `ngModel.$validators` and
+ * `ngModel.$asyncValidators` collections which will call `$setValidity` automatically.
+ *
+ * @param {string} validationErrorKey Name of the validator. The `validationErrorKey` will be assigned
+ *        to either `$error[validationErrorKey]` or `$pending[validationErrorKey]`
+ *        (for unfulfilled `$asyncValidators`), so that it is available for data-binding.
+ *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+ *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+ *        classes and can be bound to as `{{ someForm.someControl.$error.myError }}`.
+ * @param {boolean} isValid Whether the current state is valid (true), invalid (false), pending (undefined),
+ *                          or skipped (null). Pending is used for unfulfilled `$asyncValidators`.
+ *                          Skipped is used by Angular when validators do not run because of parse errors and
+ *                          when `$asyncValidators` do not run because any of the `$validators` failed.
+ */
+addSetValidityMethod({
+  clazz: NgModelController,
+  set: function(object, property) {
+    object[property] = true;
+  },
+  unset: function(object, property) {
+    delete object[property];
+  }
+});
+
+
+/**
+ * @ngdoc directive
+ * @name ngModel
+ *
+ * @element input
+ * @priority 1
+ *
+ * @description
+ * The `ngModel` directive binds an `input`,`select`, `textarea` (or custom form control) to a
+ * property on the scope using {@link ngModel.NgModelController NgModelController},
+ * which is created and exposed by this directive.
+ *
+ * `ngModel` is responsible for:
+ *
+ * - Binding the view into the model, which other directives such as `input`, `textarea` or `select`
+ *   require.
+ * - Providing validation behavior (i.e. required, number, email, url).
+ * - Keeping the state of the control (valid/invalid, dirty/pristine, touched/untouched, validation errors).
+ * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`, `ng-touched`,
+ *   `ng-untouched`, `ng-empty`, `ng-not-empty`) including animations.
+ * - Registering the control with its parent {@link ng.directive:form form}.
+ *
+ * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
+ * current scope. If the property doesn't already exist on this scope, it will be created
+ * implicitly and added to the scope.
+ *
+ * For best practices on using `ngModel`, see:
+ *
+ *  - [Understanding Scopes](https://github.com/angular/angular.js/wiki/Understanding-Scopes)
+ *
+ * For basic examples, how to use `ngModel`, see:
+ *
+ *  - {@link ng.directive:input input}
+ *    - {@link input[text] text}
+ *    - {@link input[checkbox] checkbox}
+ *    - {@link input[radio] radio}
+ *    - {@link input[number] number}
+ *    - {@link input[email] email}
+ *    - {@link input[url] url}
+ *    - {@link input[date] date}
+ *    - {@link input[datetime-local] datetime-local}
+ *    - {@link input[time] time}
+ *    - {@link input[month] month}
+ *    - {@link input[week] week}
+ *  - {@link ng.directive:select select}
+ *  - {@link ng.directive:textarea textarea}
+ *
+ * # Complex Models (objects or collections)
+ *
+ * By default, `ngModel` watches the model by reference, not value. This is important to know when
+ * binding inputs to models that are objects (e.g. `Date`) or collections (e.g. arrays). If only properties of the

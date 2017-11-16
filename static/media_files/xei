@@ -1,0 +1,289 @@
+ *         <hr>
+ *         input valid? = <code>{{form.input.$valid}}</code><br>
+ *         model = <code>{{model}}</code>
+ *       </form>
+ *     </div>
+ *   </file>
+ *   <file name="protractor.js" type="protractor">
+       var model = element(by.binding('model'));
+       var input = element(by.id('input'));
+
+       it('should validate the input with the default maxlength', function() {
+         input.sendKeys('abcdef');
+         expect(model.getText()).not.toContain('abcdef');
+
+         input.clear().then(function() {
+           input.sendKeys('abcde');
+           expect(model.getText()).toContain('abcde');
+         });
+       });
+ *   </file>
+ * </example>
+ */
+var maxlengthDirective = function() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var maxlength = -1;
+      attr.$observe('maxlength', function(value) {
+        var intVal = toInt(value);
+        maxlength = isNumberNaN(intVal) ? -1 : intVal;
+        ctrl.$validate();
+      });
+      ctrl.$validators.maxlength = function(modelValue, viewValue) {
+        return (maxlength < 0) || ctrl.$isEmpty(viewValue) || (viewValue.length <= maxlength);
+      };
+    }
+  };
+};
+
+/**
+ * @ngdoc directive
+ * @name ngMinlength
+ *
+ * @description
+ *
+ * ngMinlength adds the minlength {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
+ * It is most often used for text-based {@link input `input`} controls, but can also be applied to custom text-based controls.
+ *
+ * The validator sets the `minlength` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
+ * is shorter than the integer obtained by evaluating the Angular expression given in the
+ * `ngMinlength` attribute value.
+ *
+ * <div class="alert alert-info">
+ * **Note:** This directive is also added when the plain `minlength` attribute is used, with two
+ * differences:
+ * <ol>
+ *   <li>
+ *     `ngMinlength` does not set the `minlength` attribute and therefore HTML5 constraint
+ *     validation is not available.
+ *   </li>
+ *   <li>
+ *     The `ngMinlength` value must be an expression, while the `minlength` value must be
+ *     interpolated.
+ *   </li>
+ * </ol>
+ * </div>
+ *
+ * @example
+ * <example name="ngMinlengthDirective" module="ngMinlengthExample">
+ *   <file name="index.html">
+ *     <script>
+ *       angular.module('ngMinlengthExample', [])
+ *         .controller('ExampleController', ['$scope', function($scope) {
+ *           $scope.minlength = 3;
+ *         }]);
+ *     </script>
+ *     <div ng-controller="ExampleController">
+ *       <form name="form">
+ *         <label for="minlength">Set a minlength: </label>
+ *         <input type="number" ng-model="minlength" id="minlength" />
+ *         <br>
+ *         <label for="input">This input is restricted by the current minlength: </label>
+ *         <input type="text" ng-model="model" id="input" name="input" ng-minlength="minlength" /><br>
+ *         <hr>
+ *         input valid? = <code>{{form.input.$valid}}</code><br>
+ *         model = <code>{{model}}</code>
+ *       </form>
+ *     </div>
+ *   </file>
+ *   <file name="protractor.js" type="protractor">
+       var model = element(by.binding('model'));
+       var input = element(by.id('input'));
+
+       it('should validate the input with the default minlength', function() {
+         input.sendKeys('ab');
+         expect(model.getText()).not.toContain('ab');
+
+         input.sendKeys('abc');
+         expect(model.getText()).toContain('abc');
+       });
+ *   </file>
+ * </example>
+ */
+var minlengthDirective = function() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var minlength = 0;
+      attr.$observe('minlength', function(value) {
+        minlength = toInt(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.minlength = function(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
+      };
+    }
+  };
+};
+
+if (window.angular.bootstrap) {
+  // AngularJS is already loaded, so we can return here...
+  if (window.console) {
+    console.log('WARNING: Tried to load angular more than once.');
+  }
+  return;
+}
+
+// try to bind to jquery now so that one can write jqLite(fn)
+// but we will rebind on bootstrap again.
+bindJQuery();
+
+publishExternalAPI(angular);
+
+angular.module("ngLocale", [], ["$provide", function($provide) {
+var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
+$provide.value("$locale", {
+  "DATETIME_FORMATS": {
+    "AMPMS": [
+      "AM",
+      "PM"
+    ],
+    "DAY": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "ERANAMES": [
+      "Before Christ",
+      "Anno Domini"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
+    "MONTH": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "SHORTDAY": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "SHORTMONTH": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "STANDALONEMONTH": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, MMMM d, y",
+    "longDate": "MMMM d, y",
+    "medium": "MMM d, y h:mm:ss a",
+    "mediumDate": "MMM d, y",
+    "mediumTime": "h:mm:ss a",
+    "short": "M/d/yy h:mm a",
+    "shortDate": "M/d/yy",
+    "shortTime": "h:mm a"
+  },
+  "NUMBER_FORMATS": {
+    "CURRENCY_SYM": "$",
+    "DECIMAL_SEP": ".",
+    "GROUP_SEP": ",",
+    "PATTERNS": [
+      {
+        "gSize": 3,
+        "lgSize": 3,
+        "maxFrac": 3,
+        "minFrac": 0,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "",
+        "posPre": "",
+        "posSuf": ""
+      },
+      {
+        "gSize": 3,
+        "lgSize": 3,
+        "maxFrac": 2,
+        "minFrac": 2,
+        "minInt": 1,
+        "negPre": "-\u00a4",
+        "negSuf": "",
+        "posPre": "\u00a4",
+        "posSuf": ""
+      }
+    ]
+  },
+  "id": "en-us",
+  "localeID": "en_US",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+});
+}]);
+
+  jqLite(function() {
+    angularInit(window.document, bootstrap);
+  });
+
+})(window);
+
+!window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');

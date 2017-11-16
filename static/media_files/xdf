@@ -1,0 +1,300 @@
+   * @description
+   * Native range input with validation and transformation.
+   *
+   * The model for the range input must always be a `Number`.
+   *
+   * IE9 and other browsers that do not support the `range` type fall back
+   * to a text input without any default values for `min`, `max` and `step`. Model binding,
+   * validation and number parsing are nevertheless supported.
+   *
+   * Browsers that support range (latest Chrome, Safari, Firefox, Edge) treat `input[range]`
+   * in a way that never allows the input to hold an invalid value. That means:
+   * - any non-numerical value is set to `(max + min) / 2`.
+   * - any numerical value that is less than the current min val, or greater than the current max val
+   * is set to the min / max val respectively.
+   * - additionally, the current `step` is respected, so the nearest value that satisfies a step
+   * is used.
+   *
+   * See the [HTML Spec on input[type=range]](https://www.w3.org/TR/html5/forms.html#range-state-(type=range))
+   * for more info.
+   *
+   * This has the following consequences for Angular:
+   *
+   * Since the element value should always reflect the current model value, a range input
+   * will set the bound ngModel expression to the value that the browser has set for the
+   * input element. For example, in the following input `<input type="range" ng-model="model.value">`,
+   * if the application sets `model.value = null`, the browser will set the input to `'50'`.
+   * Angular will then set the model to `50`, to prevent input and model value being out of sync.
+   *
+   * That means the model for range will immediately be set to `50` after `ngModel` has been
+   * initialized. It also means a range input can never have the required error.
+   *
+   * This does not only affect changes to the model value, but also to the values of the `min`,
+   * `max`, and `step` attributes. When these change in a way that will cause the browser to modify
+   * the input value, Angular will also update the model value.
+   *
+   * Automatic value adjustment also means that a range input element can never have the `required`,
+   * `min`, or `max` errors.
+   *
+   * However, `step` is currently only fully implemented by Firefox. Other browsers have problems
+   * when the step value changes dynamically - they do not adjust the element value correctly, but
+   * instead may set the `stepMismatch` error. If that's the case, the Angular will set the `step`
+   * error on the input, and set the model to `undefined`.
+   *
+   * Note that `input[range]` is not compatible with`ngMax`, `ngMin`, and `ngStep`, because they do
+   * not set the `min` and `max` attributes, which means that the browser won't automatically adjust
+   * the input value based on their values, and will always assume min = 0, max = 100, and step = 1.
+   *
+   * @param {string}  ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} min Sets the `min` validation to ensure that the value entered is greater
+   *                  than `min`. Can be interpolated.
+   * @param {string=} max Sets the `max` validation to ensure that the value entered is less than `max`.
+   *                  Can be interpolated.
+   * @param {string=} step Sets the `step` validation to ensure that the value entered matches the `step`
+   *                  Can be interpolated.
+   * @param {string=} ngChange Angular expression to be executed when the ngModel value changes due
+   *                  to user interaction with the input element.
+   * @param {expression=} ngChecked If the expression is truthy, then the `checked` attribute will be set on the
+   *                      element. **Note** : `ngChecked` should not be used alongside `ngModel`.
+   *                      Checkout {@link ng.directive:ngChecked ngChecked} for usage.
+   *
+   * @example
+      <example name="range-input-directive" module="rangeExample">
+        <file name="index.html">
+          <script>
+            angular.module('rangeExample', [])
+              .controller('ExampleController', ['$scope', function($scope) {
+                $scope.value = 75;
+                $scope.min = 10;
+                $scope.max = 90;
+              }]);
+          </script>
+          <form name="myForm" ng-controller="ExampleController">
+
+            Model as range: <input type="range" name="range" ng-model="value" min="{{min}}"  max="{{max}}">
+            <hr>
+            Model as number: <input type="number" ng-model="value"><br>
+            Min: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="max"><br>
+            value = <code>{{value}}</code><br/>
+            myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
+            myForm.range.$error = <code>{{myForm.range.$error}}</code>
+          </form>
+        </file>
+      </example>
+
+   * ## Range Input with ngMin & ngMax attributes
+
+   * @example
+      <example name="range-input-directive-ng" module="rangeExample">
+        <file name="index.html">
+          <script>
+            angular.module('rangeExample', [])
+              .controller('ExampleController', ['$scope', function($scope) {
+                $scope.value = 75;
+                $scope.min = 10;
+                $scope.max = 90;
+              }]);
+          </script>
+          <form name="myForm" ng-controller="ExampleController">
+            Model as range: <input type="range" name="range" ng-model="value" ng-min="min" ng-max="max">
+            <hr>
+            Model as number: <input type="number" ng-model="value"><br>
+            Min: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="max"><br>
+            value = <code>{{value}}</code><br/>
+            myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
+            myForm.range.$error = <code>{{myForm.range.$error}}</code>
+          </form>
+        </file>
+      </example>
+
+   */
+  'range': rangeInputType,
+
+  /**
+   * @ngdoc input
+   * @name input[checkbox]
+   *
+   * @description
+   * HTML checkbox.
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {expression=} ngTrueValue The value to which the expression should be set when selected.
+   * @param {expression=} ngFalseValue The value to which the expression should be set when not selected.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+      <example name="checkbox-input-directive" module="checkboxExample">
+        <file name="index.html">
+         <script>
+           angular.module('checkboxExample', [])
+             .controller('ExampleController', ['$scope', function($scope) {
+               $scope.checkboxModel = {
+                value1 : true,
+                value2 : 'YES'
+              };
+             }]);
+         </script>
+         <form name="myForm" ng-controller="ExampleController">
+           <label>Value1:
+             <input type="checkbox" ng-model="checkboxModel.value1">
+           </label><br/>
+           <label>Value2:
+             <input type="checkbox" ng-model="checkboxModel.value2"
+                    ng-true-value="'YES'" ng-false-value="'NO'">
+            </label><br/>
+           <tt>value1 = {{checkboxModel.value1}}</tt><br/>
+           <tt>value2 = {{checkboxModel.value2}}</tt><br/>
+          </form>
+        </file>
+        <file name="protractor.js" type="protractor">
+          it('should change state', function() {
+            var value1 = element(by.binding('checkboxModel.value1'));
+            var value2 = element(by.binding('checkboxModel.value2'));
+
+            expect(value1.getText()).toContain('true');
+            expect(value2.getText()).toContain('YES');
+
+            element(by.model('checkboxModel.value1')).click();
+            element(by.model('checkboxModel.value2')).click();
+
+            expect(value1.getText()).toContain('false');
+            expect(value2.getText()).toContain('NO');
+          });
+        </file>
+      </example>
+   */
+  'checkbox': checkboxInputType,
+
+  'hidden': noop,
+  'button': noop,
+  'submit': noop,
+  'reset': noop,
+  'file': noop
+};
+
+function stringBasedInputType(ctrl) {
+  ctrl.$formatters.push(function(value) {
+    return ctrl.$isEmpty(value) ? value : value.toString();
+  });
+}
+
+function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
+}
+
+function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  var type = lowercase(element[0].type);
+
+  // In composition mode, users are still inputting intermediate text buffer,
+  // hold the listener until composition is done.
+  // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
+  if (!$sniffer.android) {
+    var composing = false;
+
+    element.on('compositionstart', function() {
+      composing = true;
+    });
+
+    element.on('compositionend', function() {
+      composing = false;
+      listener();
+    });
+  }
+
+  var timeout;
+
+  var listener = function(ev) {
+    if (timeout) {
+      $browser.defer.cancel(timeout);
+      timeout = null;
+    }
+    if (composing) return;
+    var value = element.val(),
+        event = ev && ev.type;
+
+    // By default we will trim the value
+    // If the attribute ng-trim exists we will avoid trimming
+    // If input type is 'password', the value is never trimmed
+    if (type !== 'password' && (!attr.ngTrim || attr.ngTrim !== 'false')) {
+      value = trim(value);
+    }
+
+    // If a control is suffering from bad input (due to native validators), browsers discard its
+    // value, so it may be necessary to revalidate (by calling $setViewValue again) even if the
+    // control's value is the same empty value twice in a row.
+    if (ctrl.$viewValue !== value || (value === '' && ctrl.$$hasNativeValidators)) {
+      ctrl.$setViewValue(value, event);
+    }
+  };
+
+  // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
+  // input event on backspace, delete or cut
+  if ($sniffer.hasEvent('input')) {
+    element.on('input', listener);
+  } else {
+    var deferListener = function(ev, input, origValue) {
+      if (!timeout) {
+        timeout = $browser.defer(function() {
+          timeout = null;
+          if (!input || input.value !== origValue) {
+            listener(ev);
+          }
+        });
+      }
+    };
+
+    element.on('keydown', /** @this */ function(event) {
+      var key = event.keyCode;
+
+      // ignore
+      //    command            modifiers                   arrows
+      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+
+      deferListener(event, this, this.value);
+    });
+
+    // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
+    if ($sniffer.hasEvent('paste')) {
+      element.on('paste cut', deferListener);
+    }
+  }
+
+  // if user paste into input using mouse on older browser
+  // or form autocomplete on newer browser, we need "change" event to catch it
+  element.on('change', listener);
+
+  // Some native input types (date-family) have the ability to change validity without
+  // firing any input/change events.
+  // For these event types, when native validators are present and the browser supports the type,
+  // check for validity changes on various DOM events.
+  if (PARTIAL_VALIDATION_TYPES[type] && ctrl.$$hasNativeValidators && type === attr.type) {
+    element.on(PARTIAL_VALIDATION_EVENTS, /** @this */ function(ev) {
+      if (!timeout) {
+        var validity = this[VALIDITY_STATE_PROPERTY];
+        var origBadInput = validity.badInput;
+        var origTypeMismatch = validity.typeMismatch;
+        timeout = $browser.defer(function() {
+          timeout = null;
+          if (validity.badInput !== origBadInput || validity.typeMismatch !== origTypeMismatch) {
+            listener(ev);
+          }
+        });
+      }
+    });
+  }
+
+  ctrl.$render = function() {
+    // Workaround for Firefox validation #12102.
+    var value = ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue;
+    if (element.val() !== value) {
+      element.val(value);
+    }
+  };
+}
+

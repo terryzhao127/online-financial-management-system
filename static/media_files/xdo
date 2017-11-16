@@ -1,0 +1,300 @@
+ * Additionally it prevents the default action (which for form means sending the request to the
+ * server and reloading the current page), but only if the form does not contain `action`,
+ * `data-action`, or `x-action` attributes.
+ *
+ * <div class="alert alert-warning">
+ * **Warning:** Be careful not to cause "double-submission" by using both the `ngClick` and
+ * `ngSubmit` handlers together. See the
+ * {@link form#submitting-a-form-and-preventing-the-default-action `form` directive documentation}
+ * for a detailed discussion of when `ngSubmit` may be triggered.
+ * </div>
+ *
+ * @element form
+ * @priority 0
+ * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
+ * ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+   <example module="submitExample" name="ng-submit">
+     <file name="index.html">
+      <script>
+        angular.module('submitExample', [])
+          .controller('ExampleController', ['$scope', function($scope) {
+            $scope.list = [];
+            $scope.text = 'hello';
+            $scope.submit = function() {
+              if ($scope.text) {
+                $scope.list.push(this.text);
+                $scope.text = '';
+              }
+            };
+          }]);
+      </script>
+      <form ng-submit="submit()" ng-controller="ExampleController">
+        Enter text and hit enter:
+        <input type="text" ng-model="text" name="text" />
+        <input type="submit" id="submit" value="Submit" />
+        <pre>list={{list}}</pre>
+      </form>
+     </file>
+     <file name="protractor.js" type="protractor">
+       it('should check ng-submit', function() {
+         expect(element(by.binding('list')).getText()).toBe('list=[]');
+         element(by.css('#submit')).click();
+         expect(element(by.binding('list')).getText()).toContain('hello');
+         expect(element(by.model('text')).getAttribute('value')).toBe('');
+       });
+       it('should ignore empty strings', function() {
+         expect(element(by.binding('list')).getText()).toBe('list=[]');
+         element(by.css('#submit')).click();
+         element(by.css('#submit')).click();
+         expect(element(by.binding('list')).getText()).toContain('hello');
+        });
+     </file>
+   </example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngFocus
+ *
+ * @description
+ * Specify custom behavior on focus event.
+ *
+ * Note: As the `focus` event is executed synchronously when calling `input.focus()`
+ * AngularJS executes the expression using `scope.$evalAsync` if the event is fired
+ * during an `$apply` to ensure a consistent state.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngFocus {@link guide/expression Expression} to evaluate upon
+ * focus. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngBlur
+ *
+ * @description
+ * Specify custom behavior on blur event.
+ *
+ * A [blur event](https://developer.mozilla.org/en-US/docs/Web/Events/blur) fires when
+ * an element has lost focus.
+ *
+ * Note: As the `blur` event is executed synchronously also during DOM manipulations
+ * (e.g. removing a focussed input),
+ * AngularJS executes the expression using `scope.$evalAsync` if the event is fired
+ * during an `$apply` to ensure a consistent state.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngBlur {@link guide/expression Expression} to evaluate upon
+ * blur. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngCopy
+ *
+ * @description
+ * Specify custom behavior on copy event.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngCopy {@link guide/expression Expression} to evaluate upon
+ * copy. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+   <example name="ng-copy">
+     <file name="index.html">
+      <input ng-copy="copied=true" ng-init="copied=false; value='copy me'" ng-model="value">
+      copied: {{copied}}
+     </file>
+   </example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngCut
+ *
+ * @description
+ * Specify custom behavior on cut event.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngCut {@link guide/expression Expression} to evaluate upon
+ * cut. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+   <example name="ng-cut">
+     <file name="index.html">
+      <input ng-cut="cut=true" ng-init="cut=false; value='cut me'" ng-model="value">
+      cut: {{cut}}
+     </file>
+   </example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngPaste
+ *
+ * @description
+ * Specify custom behavior on paste event.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngPaste {@link guide/expression Expression} to evaluate upon
+ * paste. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+   <example name="ng-paste">
+     <file name="index.html">
+      <input ng-paste="paste=true" ng-init="paste=false" placeholder='paste here'>
+      pasted: {{paste}}
+     </file>
+   </example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngIf
+ * @restrict A
+ * @multiElement
+ *
+ * @description
+ * The `ngIf` directive removes or recreates a portion of the DOM tree based on an
+ * {expression}. If the expression assigned to `ngIf` evaluates to a false
+ * value then the element is removed from the DOM, otherwise a clone of the
+ * element is reinserted into the DOM.
+ *
+ * `ngIf` differs from `ngShow` and `ngHide` in that `ngIf` completely removes and recreates the
+ * element in the DOM rather than changing its visibility via the `display` css property.  A common
+ * case when this difference is significant is when using css selectors that rely on an element's
+ * position within the DOM, such as the `:first-child` or `:last-child` pseudo-classes.
+ *
+ * Note that when an element is removed using `ngIf` its scope is destroyed and a new scope
+ * is created when the element is restored.  The scope created within `ngIf` inherits from
+ * its parent scope using
+ * [prototypal inheritance](https://github.com/angular/angular.js/wiki/Understanding-Scopes#javascript-prototypal-inheritance).
+ * An important implication of this is if `ngModel` is used within `ngIf` to bind to
+ * a javascript primitive defined in the parent scope. In this case any modifications made to the
+ * variable within the child scope will override (hide) the value in the parent scope.
+ *
+ * Also, `ngIf` recreates elements using their compiled state. An example of this behavior
+ * is if an element's class attribute is directly modified after it's compiled, using something like
+ * jQuery's `.addClass()` method, and the element is later removed. When `ngIf` recreates the element
+ * the added class will be lost because the original compiled state is used to regenerate the element.
+ *
+ * Additionally, you can provide animations via the `ngAnimate` module to animate the `enter`
+ * and `leave` effects.
+ *
+ * @animations
+ * | Animation                        | Occurs                               |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#enter enter}  | just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container |
+ * | {@link ng.$animate#leave leave}  | just before the `ngIf` contents are removed from the DOM |
+ *
+ * @element ANY
+ * @scope
+ * @priority 600
+ * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
+ *     the element is removed from the DOM tree. If it is truthy a copy of the compiled
+ *     element is added to the DOM tree.
+ *
+ * @example
+  <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-if">
+    <file name="index.html">
+      <label>Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /></label><br/>
+      Show when checked:
+      <span ng-if="checked" class="animate-if">
+        This is removed when the checkbox is unchecked.
+      </span>
+    </file>
+    <file name="animations.css">
+      .animate-if {
+        background:white;
+        border:1px solid black;
+        padding:10px;
+      }
+
+      .animate-if.ng-enter, .animate-if.ng-leave {
+        transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+      }
+
+      .animate-if.ng-enter,
+      .animate-if.ng-leave.ng-leave-active {
+        opacity:0;
+      }
+
+      .animate-if.ng-leave,
+      .animate-if.ng-enter.ng-enter-active {
+        opacity:1;
+      }
+    </file>
+  </example>
+ */
+var ngIfDirective = ['$animate', '$compile', function($animate, $compile) {
+  return {
+    multiElement: true,
+    transclude: 'element',
+    priority: 600,
+    terminal: true,
+    restrict: 'A',
+    $$tlb: true,
+    link: function($scope, $element, $attr, ctrl, $transclude) {
+        var block, childScope, previousElements;
+        $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
+
+          if (value) {
+            if (!childScope) {
+              $transclude(function(clone, newScope) {
+                childScope = newScope;
+                clone[clone.length++] = $compile.$$createComment('end ngIf', $attr.ngIf);
+                // Note: We only need the first/last node of the cloned nodes.
+                // However, we need to keep the reference to the jqlite wrapper as it might be changed later
+                // by a directive with templateUrl when its template arrives.
+                block = {
+                  clone: clone
+                };
+                $animate.enter(clone, $element.parent(), $element);
+              });
+            }
+          } else {
+            if (previousElements) {
+              previousElements.remove();
+              previousElements = null;
+            }
+            if (childScope) {
+              childScope.$destroy();
+              childScope = null;
+            }
+            if (block) {
+              previousElements = getBlockNodes(block.clone);
+              $animate.leave(previousElements).done(function(response) {
+                if (response !== false) previousElements = null;
+              });
+              block = null;
+            }
+          }
+        });
+    }
+  };
+}];
+
+/**
+ * @ngdoc directive
+ * @name ngInclude
+ * @restrict ECA
+ *
+ * @description
+ * Fetches, compiles and includes an external HTML fragment.
+ *
+ * By default, the template URL is restricted to the same domain and protocol as the
+ * application document. This is done by calling {@link $sce#getTrustedResourceUrl
+ * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols

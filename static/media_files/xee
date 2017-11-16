@@ -1,0 +1,300 @@
+        if (slotName && !$transclude.isSlotFilled(slotName)) {
+          useFallbackContent();
+        }
+
+        function ngTranscludeCloneAttachFn(clone, transcludedScope) {
+          if (clone.length && notWhitespace(clone)) {
+            $element.append(clone);
+          } else {
+            useFallbackContent();
+            // There is nothing linked against the transcluded scope since no content was available,
+            // so it should be safe to clean up the generated scope.
+            transcludedScope.$destroy();
+          }
+        }
+
+        function useFallbackContent() {
+          // Since this is the fallback content rather than the transcluded content,
+          // we link against the scope of this directive rather than the transcluded scope
+          fallbackLinkFn($scope, function(clone) {
+            $element.append(clone);
+          });
+        }
+
+        function notWhitespace(nodes) {
+          for (var i = 0, ii = nodes.length; i < ii; i++) {
+            var node = nodes[i];
+            if (node.nodeType !== NODE_TYPE_TEXT || node.nodeValue.trim()) {
+              return true;
+            }
+          }
+        }
+      };
+    }
+  };
+}];
+
+/**
+ * @ngdoc directive
+ * @name script
+ * @restrict E
+ *
+ * @description
+ * Load the content of a `<script>` element into {@link ng.$templateCache `$templateCache`}, so that the
+ * template can be used by {@link ng.directive:ngInclude `ngInclude`},
+ * {@link ngRoute.directive:ngView `ngView`}, or {@link guide/directive directives}. The type of the
+ * `<script>` element must be specified as `text/ng-template`, and a cache name for the template must be
+ * assigned through the element's `id`, which can then be used as a directive's `templateUrl`.
+ *
+ * @param {string} type Must be set to `'text/ng-template'`.
+ * @param {string} id Cache name of the template.
+ *
+ * @example
+  <example  name="script-tag">
+    <file name="index.html">
+      <script type="text/ng-template" id="/tpl.html">
+        Content of the template.
+      </script>
+
+      <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
+      <div id="tpl-content" ng-include src="currentTpl"></div>
+    </file>
+    <file name="protractor.js" type="protractor">
+      it('should load template defined inside script tag', function() {
+        element(by.css('#tpl-link')).click();
+        expect(element(by.css('#tpl-content')).getText()).toMatch(/Content of the template/);
+      });
+    </file>
+  </example>
+ */
+var scriptDirective = ['$templateCache', function($templateCache) {
+  return {
+    restrict: 'E',
+    terminal: true,
+    compile: function(element, attr) {
+      if (attr.type === 'text/ng-template') {
+        var templateUrl = attr.id,
+            text = element[0].text;
+
+        $templateCache.put(templateUrl, text);
+      }
+    }
+  };
+}];
+
+/* exported selectDirective, optionDirective */
+
+var noopNgModelController = { $setViewValue: noop, $render: noop };
+
+function setOptionSelectedStatus(optionEl, value) {
+  optionEl.prop('selected', value);
+  /**
+   * When unselecting an option, setting the property to null / false should be enough
+   * However, screenreaders might react to the selected attribute instead, see
+   * https://github.com/angular/angular.js/issues/14419
+   * Note: "selected" is a boolean attr and will be removed when the "value" arg in attr() is false
+   * or null
+   */
+  optionEl.attr('selected', value);
+}
+
+/**
+ * @ngdoc type
+ * @name  select.SelectController
+ *
+ * @description
+ * The controller for the {@link ng.select select} directive. The controller exposes
+ * a few utility methods that can be used to augment the behavior of a regular or an
+ * {@link ng.ngOptions ngOptions} select element.
+ *
+ * @example
+ * ### Set a custom error when the unknown option is selected
+ *
+ * This example sets a custom error "unknownValue" on the ngModelController
+ * when the select element's unknown option is selected, i.e. when the model is set to a value
+ * that is not matched by any option.
+ *
+ * <example name="select-unknown-value-error" module="staticSelect">
+ * <file name="index.html">
+ * <div ng-controller="ExampleController">
+ *   <form name="myForm">
+ *     <label for="testSelect"> Single select: </label><br>
+ *     <select name="testSelect" ng-model="selected" unknown-value-error>
+ *       <option value="option-1">Option 1</option>
+ *       <option value="option-2">Option 2</option>
+ *     </select><br>
+ *     <span ng-if="myForm.testSelect.$error.unknownValue">Error: The current model doesn't match any option</span>
+ *
+ *     <button ng-click="forceUnknownOption()">Force unknown option</button><br>
+ *   </form>
+ * </div>
+ * </file>
+ * <file name="app.js">
+ *  angular.module('staticSelect', [])
+ *    .controller('ExampleController', ['$scope', function($scope) {
+ *      $scope.selected = null;
+ *
+ *      $scope.forceUnknownOption = function() {
+ *        $scope.selected = 'nonsense';
+ *      };
+ *   }])
+ *   .directive('unknownValueError', function() {
+ *     return {
+ *       require: ['ngModel', 'select'],
+ *       link: function(scope, element, attrs, ctrls) {
+ *         var ngModelCtrl = ctrls[0];
+ *         var selectCtrl = ctrls[1];
+ *
+ *         ngModelCtrl.$validators.unknownValue = function(modelValue, viewValue) {
+ *           if (selectCtrl.$isUnknownOptionSelected()) {
+ *             return false;
+ *           }
+ *
+ *           return true;
+ *         };
+ *       }
+ *
+ *     };
+ *   });
+ * </file>
+ *</example>
+ *
+ *
+ * @example
+ * ### Set the "required" error when the unknown option is selected.
+ *
+ * By default, the "required" error on the ngModelController is only set on a required select
+ * when the empty option is selected. This example adds a custom directive that also sets the
+ * error when the unknown option is selected.
+ *
+ * <example name="select-unknown-value-required" module="staticSelect">
+ * <file name="index.html">
+ * <div ng-controller="ExampleController">
+ *   <form name="myForm">
+ *     <label for="testSelect"> Select: </label><br>
+ *     <select name="testSelect" ng-model="selected" unknown-value-required>
+ *       <option value="option-1">Option 1</option>
+ *       <option value="option-2">Option 2</option>
+ *     </select><br>
+ *     <span ng-if="myForm.testSelect.$error.required">Error: Please select a value</span><br>
+ *
+ *     <button ng-click="forceUnknownOption()">Force unknown option</button><br>
+ *   </form>
+ * </div>
+ * </file>
+ * <file name="app.js">
+ *  angular.module('staticSelect', [])
+ *    .controller('ExampleController', ['$scope', function($scope) {
+ *      $scope.selected = null;
+ *
+ *      $scope.forceUnknownOption = function() {
+ *        $scope.selected = 'nonsense';
+ *      };
+ *   }])
+ *   .directive('unknownValueRequired', function() {
+ *     return {
+ *       priority: 1, // This directive must run after the required directive has added its validator
+ *       require: ['ngModel', 'select'],
+ *       link: function(scope, element, attrs, ctrls) {
+ *         var ngModelCtrl = ctrls[0];
+ *         var selectCtrl = ctrls[1];
+ *
+ *         var originalRequiredValidator = ngModelCtrl.$validators.required;
+ *
+ *         ngModelCtrl.$validators.required = function() {
+ *           if (attrs.required && selectCtrl.$isUnknownOptionSelected()) {
+ *             return false;
+ *           }
+ *
+ *           return originalRequiredValidator.apply(this, arguments);
+ *         };
+ *       }
+ *     };
+ *   });
+ * </file>
+ *</example>
+ *
+ *
+ */
+var SelectController =
+        ['$element', '$scope', /** @this */ function($element, $scope) {
+
+  var self = this,
+      optionsMap = new NgMap();
+
+  self.selectValueMap = {}; // Keys are the hashed values, values the original values
+
+  // If the ngModel doesn't get provided then provide a dummy noop version to prevent errors
+  self.ngModelCtrl = noopNgModelController;
+  self.multiple = false;
+
+  // The "unknown" option is one that is prepended to the list if the viewValue
+  // does not match any of the options. When it is rendered the value of the unknown
+  // option is '? XXX ?' where XXX is the hashKey of the value that is not known.
+  //
+  // Support: IE 9 only
+  // We can't just jqLite('<option>') since jqLite is not smart enough
+  // to create it in <select> and IE barfs otherwise.
+  self.unknownOption = jqLite(window.document.createElement('option'));
+
+  // The empty option is an option with the value '' that the application developer can
+  // provide inside the select. It is always selectable and indicates that a "null" selection has
+  // been made by the user.
+  // If the select has an empty option, and the model of the select is set to "undefined" or "null",
+  // the empty option is selected.
+  // If the model is set to a different unmatched value, the unknown option is rendered and
+  // selected, i.e both are present, because a "null" selection and an unknown value are different.
+  self.hasEmptyOption = false;
+  self.emptyOption = undefined;
+
+  self.renderUnknownOption = function(val) {
+    var unknownVal = self.generateUnknownOptionValue(val);
+    self.unknownOption.val(unknownVal);
+    $element.prepend(self.unknownOption);
+    setOptionSelectedStatus(self.unknownOption, true);
+    $element.val(unknownVal);
+  };
+
+  self.updateUnknownOption = function(val) {
+    var unknownVal = self.generateUnknownOptionValue(val);
+    self.unknownOption.val(unknownVal);
+    setOptionSelectedStatus(self.unknownOption, true);
+    $element.val(unknownVal);
+  };
+
+  self.generateUnknownOptionValue = function(val) {
+    return '? ' + hashKey(val) + ' ?';
+  };
+
+  self.removeUnknownOption = function() {
+    if (self.unknownOption.parent()) self.unknownOption.remove();
+  };
+
+  self.selectEmptyOption = function() {
+    if (self.emptyOption) {
+      $element.val('');
+      setOptionSelectedStatus(self.emptyOption, true);
+    }
+  };
+
+  self.unselectEmptyOption = function() {
+    if (self.hasEmptyOption) {
+      setOptionSelectedStatus(self.emptyOption, false);
+    }
+  };
+
+  $scope.$on('$destroy', function() {
+    // disable unknown option so that we don't do work when the whole select is being destroyed
+    self.renderUnknownOption = noop;
+  });
+
+  // Read the value of the select control, the implementation of this changes depending
+  // upon whether the select can have multiple values and whether ngOptions is at work.
+  self.readValue = function readSingleValue() {
+    var val = $element.val();
+    // ngValue added option values are stored in the selectValueMap, normal interpolations are not
+    var realVal = val in self.selectValueMap ? self.selectValueMap[val] : val;
+
+    if (self.hasOption(realVal)) {
+      return realVal;
+    }
