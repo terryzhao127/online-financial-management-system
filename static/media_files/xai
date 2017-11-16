@@ -1,0 +1,300 @@
+           */
+          factory: invokeLaterAndSetModuleName('$provide', 'factory'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#service
+           * @module ng
+           * @param {string} name service name
+           * @param {Function} constructor A constructor function that will be instantiated.
+           * @description
+           * See {@link auto.$provide#service $provide.service()}.
+           */
+          service: invokeLaterAndSetModuleName('$provide', 'service'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#value
+           * @module ng
+           * @param {string} name service name
+           * @param {*} object Service instance object.
+           * @description
+           * See {@link auto.$provide#value $provide.value()}.
+           */
+          value: invokeLater('$provide', 'value'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#constant
+           * @module ng
+           * @param {string} name constant name
+           * @param {*} object Constant value.
+           * @description
+           * Because the constants are fixed, they get applied before other provide methods.
+           * See {@link auto.$provide#constant $provide.constant()}.
+           */
+          constant: invokeLater('$provide', 'constant', 'unshift'),
+
+           /**
+           * @ngdoc method
+           * @name angular.Module#decorator
+           * @module ng
+           * @param {string} name The name of the service to decorate.
+           * @param {Function} decorFn This function will be invoked when the service needs to be
+           *                           instantiated and should return the decorated service instance.
+           * @description
+           * See {@link auto.$provide#decorator $provide.decorator()}.
+           */
+          decorator: invokeLaterAndSetModuleName('$provide', 'decorator', configBlocks),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#animation
+           * @module ng
+           * @param {string} name animation name
+           * @param {Function} animationFactory Factory function for creating new instance of an
+           *                                    animation.
+           * @description
+           *
+           * **NOTE**: animations take effect only if the **ngAnimate** module is loaded.
+           *
+           *
+           * Defines an animation hook that can be later used with
+           * {@link $animate $animate} service and directives that use this service.
+           *
+           * ```js
+           * module.animation('.animation-name', function($inject1, $inject2) {
+           *   return {
+           *     eventName : function(element, done) {
+           *       //code to run the animation
+           *       //once complete, then run done()
+           *       return function cancellationFunction(element) {
+           *         //code to cancel the animation
+           *       }
+           *     }
+           *   }
+           * })
+           * ```
+           *
+           * See {@link ng.$animateProvider#register $animateProvider.register()} and
+           * {@link ngAnimate ngAnimate module} for more information.
+           */
+          animation: invokeLaterAndSetModuleName('$animateProvider', 'register'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#filter
+           * @module ng
+           * @param {string} name Filter name - this must be a valid angular expression identifier
+           * @param {Function} filterFactory Factory function for creating new instance of filter.
+           * @description
+           * See {@link ng.$filterProvider#register $filterProvider.register()}.
+           *
+           * <div class="alert alert-warning">
+           * **Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
+           * Names with special characters, such as hyphens and dots, are not allowed. If you wish to namespace
+           * your filters, then you can use capitalization (`myappSubsectionFilterx`) or underscores
+           * (`myapp_subsection_filterx`).
+           * </div>
+           */
+          filter: invokeLaterAndSetModuleName('$filterProvider', 'register'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#controller
+           * @module ng
+           * @param {string|Object} name Controller name, or an object map of controllers where the
+           *    keys are the names and the values are the constructors.
+           * @param {Function} constructor Controller constructor function.
+           * @description
+           * See {@link ng.$controllerProvider#register $controllerProvider.register()}.
+           */
+          controller: invokeLaterAndSetModuleName('$controllerProvider', 'register'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#directive
+           * @module ng
+           * @param {string|Object} name Directive name, or an object map of directives where the
+           *    keys are the names and the values are the factories.
+           * @param {Function} directiveFactory Factory function for creating new instance of
+           * directives.
+           * @description
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           */
+          directive: invokeLaterAndSetModuleName('$compileProvider', 'directive'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#component
+           * @module ng
+           * @param {string} name Name of the component in camel-case (i.e. myComp which will match as my-comp)
+           * @param {Object} options Component definition object (a simplified
+           *    {@link ng.$compile#directive-definition-object directive definition object})
+           *
+           * @description
+           * See {@link ng.$compileProvider#component $compileProvider.component()}.
+           */
+          component: invokeLaterAndSetModuleName('$compileProvider', 'component'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#config
+           * @module ng
+           * @param {Function} configFn Execute this function on module load. Useful for service
+           *    configuration.
+           * @description
+           * Use this method to register work which needs to be performed on module loading.
+           * For more about how to configure services, see
+           * {@link providers#provider-recipe Provider Recipe}.
+           */
+          config: config,
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#run
+           * @module ng
+           * @param {Function} initializationFn Execute this function after injector creation.
+           *    Useful for application initialization.
+           * @description
+           * Use this method to register work which should be performed when the injector is done
+           * loading all modules.
+           */
+          run: function(block) {
+            runBlocks.push(block);
+            return this;
+          }
+        };
+
+        if (configFn) {
+          config(configFn);
+        }
+
+        return moduleInstance;
+
+        /**
+         * @param {string} provider
+         * @param {string} method
+         * @param {String=} insertMethod
+         * @returns {angular.Module}
+         */
+        function invokeLater(provider, method, insertMethod, queue) {
+          if (!queue) queue = invokeQueue;
+          return function() {
+            queue[insertMethod || 'push']([provider, method, arguments]);
+            return moduleInstance;
+          };
+        }
+
+        /**
+         * @param {string} provider
+         * @param {string} method
+         * @returns {angular.Module}
+         */
+        function invokeLaterAndSetModuleName(provider, method, queue) {
+          if (!queue) queue = invokeQueue;
+          return function(recipeName, factoryFunction) {
+            if (factoryFunction && isFunction(factoryFunction)) factoryFunction.$$moduleName = name;
+            queue.push([provider, method, arguments]);
+            return moduleInstance;
+          };
+        }
+      });
+    };
+  });
+
+}
+
+/* global shallowCopy: true */
+
+/**
+ * Creates a shallow copy of an object, an array or a primitive.
+ *
+ * Assumes that there are no proto properties for objects.
+ */
+function shallowCopy(src, dst) {
+  if (isArray(src)) {
+    dst = dst || [];
+
+    for (var i = 0, ii = src.length; i < ii; i++) {
+      dst[i] = src[i];
+    }
+  } else if (isObject(src)) {
+    dst = dst || {};
+
+    for (var key in src) {
+      if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
+        dst[key] = src[key];
+      }
+    }
+  }
+
+  return dst || src;
+}
+
+/* exported toDebugString */
+
+function serializeObject(obj, maxDepth) {
+  var seen = [];
+
+  // There is no direct way to stringify object until reaching a specific depth
+  // and a very deep object can cause a performance issue, so we copy the object
+  // based on this specific depth and then stringify it.
+  if (isValidObjectMaxDepth(maxDepth)) {
+    // This file is also included in `angular-loader`, so `copy()` might not always be available in
+    // the closure. Therefore, it is lazily retrieved as `angular.copy()` when needed.
+    obj = angular.copy(obj, null, maxDepth);
+  }
+  return JSON.stringify(obj, function(key, val) {
+    val = toJsonReplacer(key, val);
+    if (isObject(val)) {
+
+      if (seen.indexOf(val) >= 0) return '...';
+
+      seen.push(val);
+    }
+    return val;
+  });
+}
+
+function toDebugString(obj, maxDepth) {
+  if (typeof obj === 'function') {
+    return obj.toString().replace(/ \{[\s\S]*$/, '');
+  } else if (isUndefined(obj)) {
+    return 'undefined';
+  } else if (typeof obj !== 'string') {
+    return serializeObject(obj, maxDepth);
+  }
+  return obj;
+}
+
+/* global angularModule: true,
+  version: true,
+
+  $CompileProvider,
+
+  htmlAnchorDirective,
+  inputDirective,
+  inputDirective,
+  formDirective,
+  scriptDirective,
+  selectDirective,
+  optionDirective,
+  ngBindDirective,
+  ngBindHtmlDirective,
+  ngBindTemplateDirective,
+  ngClassDirective,
+  ngClassEvenDirective,
+  ngClassOddDirective,
+  ngCloakDirective,
+  ngControllerDirective,
+  ngFormDirective,
+  ngHideDirective,
+  ngIfDirective,
+  ngIncludeDirective,
+  ngIncludeFillContentDirective,
+  ngInitDirective,
+  ngNonBindableDirective,
+  ngPluralizeDirective,
+  ngRepeatDirective,
+  ngShowDirective,

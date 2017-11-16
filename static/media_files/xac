@@ -1,0 +1,300 @@
+ * @description
+ * A function that performs no operations. This function can be useful when writing code in the
+ * functional style.
+   ```js
+     function foo(callback) {
+       var result = calculateResult();
+       (callback || angular.noop)(result);
+     }
+   ```
+ */
+function noop() {}
+noop.$inject = [];
+
+
+/**
+ * @ngdoc function
+ * @name angular.identity
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * A function that returns its first argument. This function is useful when writing code in the
+ * functional style.
+ *
+   ```js
+   function transformer(transformationFn, value) {
+     return (transformationFn || angular.identity)(value);
+   };
+
+   // E.g.
+   function getResult(fn, input) {
+     return (fn || angular.identity)(input);
+   };
+
+   getResult(function(n) { return n * 2; }, 21);   // returns 42
+   getResult(null, 21);                            // returns 21
+   getResult(undefined, 21);                       // returns 21
+   ```
+ *
+ * @param {*} value to be returned.
+ * @returns {*} the value passed in.
+ */
+function identity($) {return $;}
+identity.$inject = [];
+
+
+function valueFn(value) {return function valueRef() {return value;};}
+
+function hasCustomToString(obj) {
+  return isFunction(obj.toString) && obj.toString !== toString;
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isUndefined
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is undefined.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is undefined.
+ */
+function isUndefined(value) {return typeof value === 'undefined';}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isDefined
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is defined.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is defined.
+ */
+function isDefined(value) {return typeof value !== 'undefined';}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isObject
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is an `Object`. Unlike `typeof` in JavaScript, `null`s are not
+ * considered to be objects. Note that JavaScript arrays are objects.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is an `Object` but not `null`.
+ */
+function isObject(value) {
+  // http://jsperf.com/isobject4
+  return value !== null && typeof value === 'object';
+}
+
+
+/**
+ * Determine if a value is an object with a null prototype
+ *
+ * @returns {boolean} True if `value` is an `Object` with a null prototype
+ */
+function isBlankObject(value) {
+  return value !== null && typeof value === 'object' && !getPrototypeOf(value);
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isString
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is a `String`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `String`.
+ */
+function isString(value) {return typeof value === 'string';}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isNumber
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is a `Number`.
+ *
+ * This includes the "special" numbers `NaN`, `+Infinity` and `-Infinity`.
+ *
+ * If you wish to exclude these then you can use the native
+ * [`isFinite'](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isFinite)
+ * method.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Number`.
+ */
+function isNumber(value) {return typeof value === 'number';}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isDate
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a value is a date.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Date`.
+ */
+function isDate(value) {
+  return toString.call(value) === '[object Date]';
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isArray
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is an `Array`. Alias of Array.isArray.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is an `Array`.
+ */
+var isArray = Array.isArray;
+
+/**
+ * @description
+ * Determines if a reference is an `Error`.
+ * Loosely based on https://www.npmjs.com/package/iserror
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is an `Error`.
+ */
+function isError(value) {
+  var tag = toString.call(value);
+  switch (tag) {
+    case '[object Error]': return true;
+    case '[object Exception]': return true;
+    case '[object DOMException]': return true;
+    default: return value instanceof Error;
+  }
+}
+
+/**
+ * @ngdoc function
+ * @name angular.isFunction
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is a `Function`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Function`.
+ */
+function isFunction(value) {return typeof value === 'function';}
+
+
+/**
+ * Determines if a value is a regular expression object.
+ *
+ * @private
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `RegExp`.
+ */
+function isRegExp(value) {
+  return toString.call(value) === '[object RegExp]';
+}
+
+
+/**
+ * Checks if `obj` is a window object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a window obj.
+ */
+function isWindow(obj) {
+  return obj && obj.window === obj;
+}
+
+
+function isScope(obj) {
+  return obj && obj.$evalAsync && obj.$watch;
+}
+
+
+function isFile(obj) {
+  return toString.call(obj) === '[object File]';
+}
+
+
+function isFormData(obj) {
+  return toString.call(obj) === '[object FormData]';
+}
+
+
+function isBlob(obj) {
+  return toString.call(obj) === '[object Blob]';
+}
+
+
+function isBoolean(value) {
+  return typeof value === 'boolean';
+}
+
+
+function isPromiseLike(obj) {
+  return obj && isFunction(obj.then);
+}
+
+
+var TYPED_ARRAY_REGEXP = /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/;
+function isTypedArray(value) {
+  return value && isNumber(value.length) && TYPED_ARRAY_REGEXP.test(toString.call(value));
+}
+
+function isArrayBuffer(obj) {
+  return toString.call(obj) === '[object ArrayBuffer]';
+}
+
+
+var trim = function(value) {
+  return isString(value) ? value.trim() : value;
+};
+
+// Copied from:
+// http://docs.closure-library.googlecode.com/git/local_closure_goog_string_string.js.source.html#line1021
+// Prereq: s is a string.
+var escapeForRegexp = function(s) {
+  return s
+    .replace(/([-()[\]{}+?*.$^|,:#<!\\])/g, '\\$1')
+    // eslint-disable-next-line no-control-regex
+    .replace(/\x08/g, '\\x08');
+};
+
+
+/**
+ * @ngdoc function
+ * @name angular.isElement
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is a DOM element (or wrapped jQuery element).
+ *

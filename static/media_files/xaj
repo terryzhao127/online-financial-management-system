@@ -1,0 +1,300 @@
+  ngStyleDirective,
+  ngSwitchDirective,
+  ngSwitchWhenDirective,
+  ngSwitchDefaultDirective,
+  ngOptionsDirective,
+  ngTranscludeDirective,
+  ngModelDirective,
+  ngListDirective,
+  ngChangeDirective,
+  patternDirective,
+  patternDirective,
+  requiredDirective,
+  requiredDirective,
+  minlengthDirective,
+  minlengthDirective,
+  maxlengthDirective,
+  maxlengthDirective,
+  ngValueDirective,
+  ngModelOptionsDirective,
+  ngAttributeAliasDirectives,
+  ngEventDirectives,
+
+  $AnchorScrollProvider,
+  $AnimateProvider,
+  $CoreAnimateCssProvider,
+  $$CoreAnimateJsProvider,
+  $$CoreAnimateQueueProvider,
+  $$AnimateRunnerFactoryProvider,
+  $$AnimateAsyncRunFactoryProvider,
+  $BrowserProvider,
+  $CacheFactoryProvider,
+  $ControllerProvider,
+  $DateProvider,
+  $DocumentProvider,
+  $$IsDocumentHiddenProvider,
+  $ExceptionHandlerProvider,
+  $FilterProvider,
+  $$ForceReflowProvider,
+  $InterpolateProvider,
+  $IntervalProvider,
+  $HttpProvider,
+  $HttpParamSerializerProvider,
+  $HttpParamSerializerJQLikeProvider,
+  $HttpBackendProvider,
+  $xhrFactoryProvider,
+  $jsonpCallbacksProvider,
+  $LocationProvider,
+  $LogProvider,
+  $$MapProvider,
+  $ParseProvider,
+  $RootScopeProvider,
+  $QProvider,
+  $$QProvider,
+  $$SanitizeUriProvider,
+  $SceProvider,
+  $SceDelegateProvider,
+  $SnifferProvider,
+  $TemplateCacheProvider,
+  $TemplateRequestProvider,
+  $$TestabilityProvider,
+  $TimeoutProvider,
+  $$RAFProvider,
+  $WindowProvider,
+  $$jqLiteProvider,
+  $$CookieReaderProvider
+*/
+
+
+/**
+ * @ngdoc object
+ * @name angular.version
+ * @module ng
+ * @description
+ * An object that contains information about the current AngularJS version.
+ *
+ * This object has the following properties:
+ *
+ * - `full` – `{string}` – Full version string, such as "0.9.18".
+ * - `major` – `{number}` – Major version number, such as "0".
+ * - `minor` – `{number}` – Minor version number, such as "9".
+ * - `dot` – `{number}` – Dot version number, such as "18".
+ * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
+ */
+var version = {
+  // These placeholder strings will be replaced by grunt's `build` task.
+  // They need to be double- or single-quoted.
+  full: '1.6.6',
+  major: 1,
+  minor: 6,
+  dot: 6,
+  codeName: 'interdimensional-cable'
+};
+
+
+function publishExternalAPI(angular) {
+  extend(angular, {
+    'errorHandlingConfig': errorHandlingConfig,
+    'bootstrap': bootstrap,
+    'copy': copy,
+    'extend': extend,
+    'merge': merge,
+    'equals': equals,
+    'element': jqLite,
+    'forEach': forEach,
+    'injector': createInjector,
+    'noop': noop,
+    'bind': bind,
+    'toJson': toJson,
+    'fromJson': fromJson,
+    'identity': identity,
+    'isUndefined': isUndefined,
+    'isDefined': isDefined,
+    'isString': isString,
+    'isFunction': isFunction,
+    'isObject': isObject,
+    'isNumber': isNumber,
+    'isElement': isElement,
+    'isArray': isArray,
+    'version': version,
+    'isDate': isDate,
+    'lowercase': lowercase,
+    'uppercase': uppercase,
+    'callbacks': {$$counter: 0},
+    'getTestability': getTestability,
+    'reloadWithDebugInfo': reloadWithDebugInfo,
+    '$$minErr': minErr,
+    '$$csp': csp,
+    '$$encodeUriSegment': encodeUriSegment,
+    '$$encodeUriQuery': encodeUriQuery,
+    '$$stringify': stringify
+  });
+
+  angularModule = setupModuleLoader(window);
+
+  angularModule('ng', ['ngLocale'], ['$provide',
+    function ngModule($provide) {
+      // $$sanitizeUriProvider needs to be before $compileProvider as it is used by it.
+      $provide.provider({
+        $$sanitizeUri: $$SanitizeUriProvider
+      });
+      $provide.provider('$compile', $CompileProvider).
+        directive({
+            a: htmlAnchorDirective,
+            input: inputDirective,
+            textarea: inputDirective,
+            form: formDirective,
+            script: scriptDirective,
+            select: selectDirective,
+            option: optionDirective,
+            ngBind: ngBindDirective,
+            ngBindHtml: ngBindHtmlDirective,
+            ngBindTemplate: ngBindTemplateDirective,
+            ngClass: ngClassDirective,
+            ngClassEven: ngClassEvenDirective,
+            ngClassOdd: ngClassOddDirective,
+            ngCloak: ngCloakDirective,
+            ngController: ngControllerDirective,
+            ngForm: ngFormDirective,
+            ngHide: ngHideDirective,
+            ngIf: ngIfDirective,
+            ngInclude: ngIncludeDirective,
+            ngInit: ngInitDirective,
+            ngNonBindable: ngNonBindableDirective,
+            ngPluralize: ngPluralizeDirective,
+            ngRepeat: ngRepeatDirective,
+            ngShow: ngShowDirective,
+            ngStyle: ngStyleDirective,
+            ngSwitch: ngSwitchDirective,
+            ngSwitchWhen: ngSwitchWhenDirective,
+            ngSwitchDefault: ngSwitchDefaultDirective,
+            ngOptions: ngOptionsDirective,
+            ngTransclude: ngTranscludeDirective,
+            ngModel: ngModelDirective,
+            ngList: ngListDirective,
+            ngChange: ngChangeDirective,
+            pattern: patternDirective,
+            ngPattern: patternDirective,
+            required: requiredDirective,
+            ngRequired: requiredDirective,
+            minlength: minlengthDirective,
+            ngMinlength: minlengthDirective,
+            maxlength: maxlengthDirective,
+            ngMaxlength: maxlengthDirective,
+            ngValue: ngValueDirective,
+            ngModelOptions: ngModelOptionsDirective
+        }).
+        directive({
+          ngInclude: ngIncludeFillContentDirective
+        }).
+        directive(ngAttributeAliasDirectives).
+        directive(ngEventDirectives);
+      $provide.provider({
+        $anchorScroll: $AnchorScrollProvider,
+        $animate: $AnimateProvider,
+        $animateCss: $CoreAnimateCssProvider,
+        $$animateJs: $$CoreAnimateJsProvider,
+        $$animateQueue: $$CoreAnimateQueueProvider,
+        $$AnimateRunner: $$AnimateRunnerFactoryProvider,
+        $$animateAsyncRun: $$AnimateAsyncRunFactoryProvider,
+        $browser: $BrowserProvider,
+        $cacheFactory: $CacheFactoryProvider,
+        $controller: $ControllerProvider,
+        $document: $DocumentProvider,
+        $$isDocumentHidden: $$IsDocumentHiddenProvider,
+        $exceptionHandler: $ExceptionHandlerProvider,
+        $filter: $FilterProvider,
+        $$forceReflow: $$ForceReflowProvider,
+        $interpolate: $InterpolateProvider,
+        $interval: $IntervalProvider,
+        $http: $HttpProvider,
+        $httpParamSerializer: $HttpParamSerializerProvider,
+        $httpParamSerializerJQLike: $HttpParamSerializerJQLikeProvider,
+        $httpBackend: $HttpBackendProvider,
+        $xhrFactory: $xhrFactoryProvider,
+        $jsonpCallbacks: $jsonpCallbacksProvider,
+        $location: $LocationProvider,
+        $log: $LogProvider,
+        $parse: $ParseProvider,
+        $rootScope: $RootScopeProvider,
+        $q: $QProvider,
+        $$q: $$QProvider,
+        $sce: $SceProvider,
+        $sceDelegate: $SceDelegateProvider,
+        $sniffer: $SnifferProvider,
+        $templateCache: $TemplateCacheProvider,
+        $templateRequest: $TemplateRequestProvider,
+        $$testability: $$TestabilityProvider,
+        $timeout: $TimeoutProvider,
+        $window: $WindowProvider,
+        $$rAF: $$RAFProvider,
+        $$jqLite: $$jqLiteProvider,
+        $$Map: $$MapProvider,
+        $$cookieReader: $$CookieReaderProvider
+      });
+    }
+  ])
+  .info({ angularVersion: '1.6.6' });
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *     Any commits to this file should be reviewed with security in mind.  *
+ *   Changes to this file can potentially create security vulnerabilities. *
+ *          An approval from 2 Core members with history of modifying      *
+ *                         this file is required.                          *
+ *                                                                         *
+ *  Does the change somehow allow for arbitrary javascript to be executed? *
+ *    Or allows for someone to change the prototype of built-in objects?   *
+ *     Or gives undesired access to variables likes document or window?    *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/* global
+  JQLitePrototype: true,
+  BOOLEAN_ATTR: true,
+  ALIASED_ATTR: true
+*/
+
+//////////////////////////////////
+//JQLite
+//////////////////////////////////
+
+/**
+ * @ngdoc function
+ * @name angular.element
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
+ *
+ * If jQuery is available, `angular.element` is an alias for the
+ * [jQuery](http://api.jquery.com/jQuery/) function. If jQuery is not available, `angular.element`
+ * delegates to Angular's built-in subset of jQuery, called "jQuery lite" or **jqLite**.
+ *
+ * jqLite is a tiny, API-compatible subset of jQuery that allows
+ * Angular to manipulate the DOM in a cross-browser compatible way. jqLite implements only the most
+ * commonly needed functionality with the goal of having a very small footprint.
+ *
+ * To use `jQuery`, simply ensure it is loaded before the `angular.js` file. You can also use the
+ * {@link ngJq `ngJq`} directive to specify that jqlite should be used over jQuery, or to use a
+ * specific version of jQuery if multiple versions exist on the page.
+ *
+ * <div class="alert alert-info">**Note:** All element references in Angular are always wrapped with jQuery or
+ * jqLite (such as the element argument in a directive's compile / link function). They are never raw DOM references.</div>
+ *
+ * <div class="alert alert-warning">**Note:** Keep in mind that this function will not find elements
+ * by tag name / CSS selector. For lookups by tag name, try instead `angular.element(document).find(...)`
+ * or `$document.find()`, or use the standard DOM APIs, e.g. `document.querySelectorAll()`.</div>
+ *
+ * ## Angular's jqLite
+ * jqLite provides only the following jQuery methods:
+ *
+ * - [`addClass()`](http://api.jquery.com/addClass/) - Does not support a function as first argument
+ * - [`after()`](http://api.jquery.com/after/)
+ * - [`append()`](http://api.jquery.com/append/)
+ * - [`attr()`](http://api.jquery.com/attr/) - Does not support functions as parameters
+ * - [`bind()`](http://api.jquery.com/bind/) (_deprecated_, use [`on()`](http://api.jquery.com/on/)) - Does not support namespaces, selectors or eventData
+ * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
+ * - [`clone()`](http://api.jquery.com/clone/)
+ * - [`contents()`](http://api.jquery.com/contents/)
+ * - [`css()`](http://api.jquery.com/css/) - Only retrieves inline-styles, does not call `getComputedStyle()`.

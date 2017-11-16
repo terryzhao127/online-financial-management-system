@@ -1,0 +1,300 @@
+ * @param  {String} context the context in which the name is used, such as module or directive
+ */
+function assertNotHasOwnProperty(name, context) {
+  if (name === 'hasOwnProperty') {
+    throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+  }
+}
+
+/**
+ * Return the value accessible from the object by path. Any undefined traversals are ignored
+ * @param {Object} obj starting object
+ * @param {String} path path to traverse
+ * @param {boolean} [bindFnToScope=true]
+ * @returns {Object} value as accessible by path
+ */
+//TODO(misko): this function needs to be removed
+function getter(obj, path, bindFnToScope) {
+  if (!path) return obj;
+  var keys = path.split('.');
+  var key;
+  var lastInstance = obj;
+  var len = keys.length;
+
+  for (var i = 0; i < len; i++) {
+    key = keys[i];
+    if (obj) {
+      obj = (lastInstance = obj)[key];
+    }
+  }
+  if (!bindFnToScope && isFunction(obj)) {
+    return bind(lastInstance, obj);
+  }
+  return obj;
+}
+
+/**
+ * Return the DOM siblings between the first and last node in the given array.
+ * @param {Array} array like object
+ * @returns {Array} the inputted object or a jqLite collection containing the nodes
+ */
+function getBlockNodes(nodes) {
+  // TODO(perf): update `nodes` instead of creating a new object?
+  var node = nodes[0];
+  var endNode = nodes[nodes.length - 1];
+  var blockNodes;
+
+  for (var i = 1; node !== endNode && (node = node.nextSibling); i++) {
+    if (blockNodes || nodes[i] !== node) {
+      if (!blockNodes) {
+        blockNodes = jqLite(slice.call(nodes, 0, i));
+      }
+      blockNodes.push(node);
+    }
+  }
+
+  return blockNodes || nodes;
+}
+
+
+/**
+ * Creates a new object without a prototype. This object is useful for lookup without having to
+ * guard against prototypically inherited properties via hasOwnProperty.
+ *
+ * Related micro-benchmarks:
+ * - http://jsperf.com/object-create2
+ * - http://jsperf.com/proto-map-lookup/2
+ * - http://jsperf.com/for-in-vs-object-keys2
+ *
+ * @returns {Object}
+ */
+function createMap() {
+  return Object.create(null);
+}
+
+function stringify(value) {
+  if (value == null) { // null || undefined
+    return '';
+  }
+  switch (typeof value) {
+    case 'string':
+      break;
+    case 'number':
+      value = '' + value;
+      break;
+    default:
+      if (hasCustomToString(value) && !isArray(value) && !isDate(value)) {
+        value = value.toString();
+      } else {
+        value = toJson(value);
+      }
+  }
+
+  return value;
+}
+
+var NODE_TYPE_ELEMENT = 1;
+var NODE_TYPE_ATTRIBUTE = 2;
+var NODE_TYPE_TEXT = 3;
+var NODE_TYPE_COMMENT = 8;
+var NODE_TYPE_DOCUMENT = 9;
+var NODE_TYPE_DOCUMENT_FRAGMENT = 11;
+
+/**
+ * @ngdoc type
+ * @name angular.Module
+ * @module ng
+ * @description
+ *
+ * Interface for configuring angular {@link angular.module modules}.
+ */
+
+function setupModuleLoader(window) {
+
+  var $injectorMinErr = minErr('$injector');
+  var ngMinErr = minErr('ng');
+
+  function ensure(obj, name, factory) {
+    return obj[name] || (obj[name] = factory());
+  }
+
+  var angular = ensure(window, 'angular', Object);
+
+  // We need to expose `angular.$$minErr` to modules such as `ngResource` that reference it during bootstrap
+  angular.$$minErr = angular.$$minErr || minErr;
+
+  return ensure(angular, 'module', function() {
+    /** @type {Object.<string, angular.Module>} */
+    var modules = {};
+
+    /**
+     * @ngdoc function
+     * @name angular.module
+     * @module ng
+     * @description
+     *
+     * The `angular.module` is a global place for creating, registering and retrieving Angular
+     * modules.
+     * All modules (angular core or 3rd party) that should be available to an application must be
+     * registered using this mechanism.
+     *
+     * Passing one argument retrieves an existing {@link angular.Module},
+     * whereas passing more than one argument creates a new {@link angular.Module}
+     *
+     *
+     * # Module
+     *
+     * A module is a collection of services, directives, controllers, filters, and configuration information.
+     * `angular.module` is used to configure the {@link auto.$injector $injector}.
+     *
+     * ```js
+     * // Create a new module
+     * var myModule = angular.module('myModule', []);
+     *
+     * // register a new service
+     * myModule.value('appName', 'MyCoolApp');
+     *
+     * // configure existing services inside initialization blocks.
+     * myModule.config(['$locationProvider', function($locationProvider) {
+     *   // Configure existing providers
+     *   $locationProvider.hashPrefix('!');
+     * }]);
+     * ```
+     *
+     * Then you can create an injector and load your modules like this:
+     *
+     * ```js
+     * var injector = angular.injector(['ng', 'myModule'])
+     * ```
+     *
+     * However it's more likely that you'll just use
+     * {@link ng.directive:ngApp ngApp} or
+     * {@link angular.bootstrap} to simplify this process for you.
+     *
+     * @param {!string} name The name of the module to create or retrieve.
+     * @param {!Array.<string>=} requires If specified then new module is being created. If
+     *        unspecified then the module is being retrieved for further configuration.
+     * @param {Function=} configFn Optional configuration function for the module. Same as
+     *        {@link angular.Module#config Module#config()}.
+     * @returns {angular.Module} new module with the {@link angular.Module} api.
+     */
+    return function module(name, requires, configFn) {
+
+      var info = {};
+
+      var assertNotHasOwnProperty = function(name, context) {
+        if (name === 'hasOwnProperty') {
+          throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+        }
+      };
+
+      assertNotHasOwnProperty(name, 'module');
+      if (requires && modules.hasOwnProperty(name)) {
+        modules[name] = null;
+      }
+      return ensure(modules, name, function() {
+        if (!requires) {
+          throw $injectorMinErr('nomod', 'Module \'{0}\' is not available! You either misspelled ' +
+             'the module name or forgot to load it. If registering a module ensure that you ' +
+             'specify the dependencies as the second argument.', name);
+        }
+
+        /** @type {!Array.<Array.<*>>} */
+        var invokeQueue = [];
+
+        /** @type {!Array.<Function>} */
+        var configBlocks = [];
+
+        /** @type {!Array.<Function>} */
+        var runBlocks = [];
+
+        var config = invokeLater('$injector', 'invoke', 'push', configBlocks);
+
+        /** @type {angular.Module} */
+        var moduleInstance = {
+          // Private state
+          _invokeQueue: invokeQueue,
+          _configBlocks: configBlocks,
+          _runBlocks: runBlocks,
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#info
+           * @module ng
+           *
+           * @param {Object=} info Information about the module
+           * @returns {Object|Module} The current info object for this module if called as a getter,
+           *                          or `this` if called as a setter.
+           *
+           * @description
+           * Read and write custom information about this module.
+           * For example you could put the version of the module in here.
+           *
+           * ```js
+           * angular.module('myModule', []).info({ version: '1.0.0' });
+           * ```
+           *
+           * The version could then be read back out by accessing the module elsewhere:
+           *
+           * ```
+           * var version = angular.module('myModule').info().version;
+           * ```
+           *
+           * You can also retrieve this information during runtime via the
+           * {@link $injector#modules `$injector.modules`} property:
+           *
+           * ```js
+           * var version = $injector.modules['myModule'].info().version;
+           * ```
+           */
+          info: function(value) {
+            if (isDefined(value)) {
+              if (!isObject(value)) throw ngMinErr('aobj', 'Argument \'{0}\' must be an object', 'value');
+              info = value;
+              return this;
+            }
+            return info;
+          },
+
+          /**
+           * @ngdoc property
+           * @name angular.Module#requires
+           * @module ng
+           *
+           * @description
+           * Holds the list of modules which the injector will load before the current module is
+           * loaded.
+           */
+          requires: requires,
+
+          /**
+           * @ngdoc property
+           * @name angular.Module#name
+           * @module ng
+           *
+           * @description
+           * Name of the module.
+           */
+          name: name,
+
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#provider
+           * @module ng
+           * @param {string} name service name
+           * @param {Function} providerType Construction function for creating new instance of the
+           *                                service.
+           * @description
+           * See {@link auto.$provide#provider $provide.provider()}.
+           */
+          provider: invokeLaterAndSetModuleName('$provide', 'provider'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#factory
+           * @module ng
+           * @param {string} name service name
+           * @param {Function} providerFunction Function for creating new instance of the service.
+           * @description
+           * See {@link auto.$provide#factory $provide.factory()}.

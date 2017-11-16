@@ -1,0 +1,300 @@
+          User 2: <pre>{{user2 | json}}</pre>
+          Equal: <pre>{{result}}</pre>
+        </form>
+      </div>
+    </file>
+    <file name="script.js">
+        angular.module('equalsExample', []).controller('ExampleController', ['$scope', function($scope) {
+          $scope.user1 = {};
+          $scope.user2 = {};
+          $scope.compare = function() {
+            $scope.result = angular.equals($scope.user1, $scope.user2);
+          };
+        }]);
+    </file>
+  </example>
+ */
+function equals(o1, o2) {
+  if (o1 === o2) return true;
+  if (o1 === null || o2 === null) return false;
+  // eslint-disable-next-line no-self-compare
+  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
+  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+  if (t1 === t2 && t1 === 'object') {
+    if (isArray(o1)) {
+      if (!isArray(o2)) return false;
+      if ((length = o1.length) === o2.length) {
+        for (key = 0; key < length; key++) {
+          if (!equals(o1[key], o2[key])) return false;
+        }
+        return true;
+      }
+    } else if (isDate(o1)) {
+      if (!isDate(o2)) return false;
+      return simpleCompare(o1.getTime(), o2.getTime());
+    } else if (isRegExp(o1)) {
+      if (!isRegExp(o2)) return false;
+      return o1.toString() === o2.toString();
+    } else {
+      if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) ||
+        isArray(o2) || isDate(o2) || isRegExp(o2)) return false;
+      keySet = createMap();
+      for (key in o1) {
+        if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
+        if (!equals(o1[key], o2[key])) return false;
+        keySet[key] = true;
+      }
+      for (key in o2) {
+        if (!(key in keySet) &&
+            key.charAt(0) !== '$' &&
+            isDefined(o2[key]) &&
+            !isFunction(o2[key])) return false;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+var csp = function() {
+  if (!isDefined(csp.rules)) {
+
+
+    var ngCspElement = (window.document.querySelector('[ng-csp]') ||
+                    window.document.querySelector('[data-ng-csp]'));
+
+    if (ngCspElement) {
+      var ngCspAttribute = ngCspElement.getAttribute('ng-csp') ||
+                    ngCspElement.getAttribute('data-ng-csp');
+      csp.rules = {
+        noUnsafeEval: !ngCspAttribute || (ngCspAttribute.indexOf('no-unsafe-eval') !== -1),
+        noInlineStyle: !ngCspAttribute || (ngCspAttribute.indexOf('no-inline-style') !== -1)
+      };
+    } else {
+      csp.rules = {
+        noUnsafeEval: noUnsafeEval(),
+        noInlineStyle: false
+      };
+    }
+  }
+
+  return csp.rules;
+
+  function noUnsafeEval() {
+    try {
+      // eslint-disable-next-line no-new, no-new-func
+      new Function('');
+      return false;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+/**
+ * @ngdoc directive
+ * @module ng
+ * @name ngJq
+ *
+ * @element ANY
+ * @param {string=} ngJq the name of the library available under `window`
+ * to be used for angular.element
+ * @description
+ * Use this directive to force the angular.element library.  This should be
+ * used to force either jqLite by leaving ng-jq blank or setting the name of
+ * the jquery variable under window (eg. jQuery).
+ *
+ * Since angular looks for this directive when it is loaded (doesn't wait for the
+ * DOMContentLoaded event), it must be placed on an element that comes before the script
+ * which loads angular. Also, only the first instance of `ng-jq` will be used and all
+ * others ignored.
+ *
+ * @example
+ * This example shows how to force jqLite using the `ngJq` directive to the `html` tag.
+ ```html
+ <!doctype html>
+ <html ng-app ng-jq>
+ ...
+ ...
+ </html>
+ ```
+ * @example
+ * This example shows how to use a jQuery based library of a different name.
+ * The library name must be available at the top most 'window'.
+ ```html
+ <!doctype html>
+ <html ng-app ng-jq="jQueryLib">
+ ...
+ ...
+ </html>
+ ```
+ */
+var jq = function() {
+  if (isDefined(jq.name_)) return jq.name_;
+  var el;
+  var i, ii = ngAttrPrefixes.length, prefix, name;
+  for (i = 0; i < ii; ++i) {
+    prefix = ngAttrPrefixes[i];
+    el = window.document.querySelector('[' + prefix.replace(':', '\\:') + 'jq]');
+    if (el) {
+      name = el.getAttribute(prefix + 'jq');
+      break;
+    }
+  }
+
+  return (jq.name_ = name);
+};
+
+function concat(array1, array2, index) {
+  return array1.concat(slice.call(array2, index));
+}
+
+function sliceArgs(args, startIndex) {
+  return slice.call(args, startIndex || 0);
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.bind
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
+ * `fn`). You can supply optional `args` that are prebound to the function. This feature is also
+ * known as [partial application](http://en.wikipedia.org/wiki/Partial_application), as
+ * distinguished from [function currying](http://en.wikipedia.org/wiki/Currying#Contrast_with_partial_function_application).
+ *
+ * @param {Object} self Context which `fn` should be evaluated in.
+ * @param {function()} fn Function to be bound.
+ * @param {...*} args Optional arguments to be prebound to the `fn` function call.
+ * @returns {function()} Function that wraps the `fn` with all the specified bindings.
+ */
+function bind(self, fn) {
+  var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
+  if (isFunction(fn) && !(fn instanceof RegExp)) {
+    return curryArgs.length
+      ? function() {
+          return arguments.length
+            ? fn.apply(self, concat(curryArgs, arguments, 0))
+            : fn.apply(self, curryArgs);
+        }
+      : function() {
+          return arguments.length
+            ? fn.apply(self, arguments)
+            : fn.call(self);
+        };
+  } else {
+    // In IE, native methods are not functions so they cannot be bound (note: they don't need to be).
+    return fn;
+  }
+}
+
+
+function toJsonReplacer(key, value) {
+  var val = value;
+
+  if (typeof key === 'string' && key.charAt(0) === '$' && key.charAt(1) === '$') {
+    val = undefined;
+  } else if (isWindow(value)) {
+    val = '$WINDOW';
+  } else if (value &&  window.document === value) {
+    val = '$DOCUMENT';
+  } else if (isScope(value)) {
+    val = '$SCOPE';
+  }
+
+  return val;
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.toJson
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Serializes input into a JSON-formatted string. Properties with leading $$ characters will be
+ * stripped since angular uses this notation internally.
+ *
+ * @param {Object|Array|Date|string|number|boolean} obj Input to be serialized into JSON.
+ * @param {boolean|number} [pretty=2] If set to true, the JSON output will contain newlines and whitespace.
+ *    If set to an integer, the JSON output will contain that many spaces per indentation.
+ * @returns {string|undefined} JSON-ified string representing `obj`.
+ * @knownIssue
+ *
+ * The Safari browser throws a `RangeError` instead of returning `null` when it tries to stringify a `Date`
+ * object with an invalid date value. The only reliable way to prevent this is to monkeypatch the
+ * `Date.prototype.toJSON` method as follows:
+ *
+ * ```
+ * var _DatetoJSON = Date.prototype.toJSON;
+ * Date.prototype.toJSON = function() {
+ *   try {
+ *     return _DatetoJSON.call(this);
+ *   } catch(e) {
+ *     if (e instanceof RangeError) {
+ *       return null;
+ *     }
+ *     throw e;
+ *   }
+ * };
+ * ```
+ *
+ * See https://github.com/angular/angular.js/pull/14221 for more information.
+ */
+function toJson(obj, pretty) {
+  if (isUndefined(obj)) return undefined;
+  if (!isNumber(pretty)) {
+    pretty = pretty ? 2 : null;
+  }
+  return JSON.stringify(obj, toJsonReplacer, pretty);
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.fromJson
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Deserializes a JSON string.
+ *
+ * @param {string} json JSON string to deserialize.
+ * @returns {Object|Array|string|number} Deserialized JSON string.
+ */
+function fromJson(json) {
+  return isString(json)
+      ? JSON.parse(json)
+      : json;
+}
+
+
+var ALL_COLONS = /:/g;
+function timezoneToOffset(timezone, fallback) {
+  // Support: IE 9-11 only, Edge 13-15+
+  // IE/Edge do not "understand" colon (`:`) in timezone
+  timezone = timezone.replace(ALL_COLONS, '');
+  var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+  return isNumberNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
+}
+
+
+function addDateMinutes(date, minutes) {
+  date = new Date(date.getTime());
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
+}
+
+
+function convertTimezoneToLocal(date, timezone, reverse) {
+  reverse = reverse ? -1 : 1;
+  var dateTimezoneOffset = date.getTimezoneOffset();
+  var timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
+  return addDateMinutes(date, reverse * (timezoneOffset - dateTimezoneOffset));
+}
+
+
