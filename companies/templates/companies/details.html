@@ -22,9 +22,12 @@
         </tbody>
     </table>
 
-    <!-- Delete Modal Trigger -->
     <div class="text-center">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-or-quit-confirmation">
+        <a href="{% url 'update_company' company_uuid=company.unique_id %}" class="btn btn-primary"
+           role="button">Update</a>
+
+        <!-- Delete Modal Trigger Button -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-or-quit-confirmation">
             {% if is_owner %}
                 DELETE
             {% else %}

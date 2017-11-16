@@ -138,7 +138,12 @@ def delete(request, data):
 @custom_login_required
 def details(request, data, company_uuid):
     # Get Company instance.
-    data['company'] = Company.objects.get(unique_id=company_uuid)
+    try:
+        data['company'] = Company.objects.get(unique_id=company_uuid)
+    except ValidationError:
+        return custom_error_404(request, data)
+    except ObjectDoesNotExist:
+        return custom_error_404(request, data)
 
     # Get permission.
     staff = Staff.objects.get(user=request.user)
@@ -173,3 +178,28 @@ def leave(request, data):
         return redirect_with_data(request, data, '/companies/1+1/#tab1')
     else:
         return custom_error_404(request, data)
+
+
+@custom_login_required
+def update(request, data, company_uuid):
+    # Get Company instance.
+    try:
+        data['company'] = Company.objects.get(unique_id=company_uuid)
+    except ValidationError:
+        return custom_error_404(request, data)
+    except ObjectDoesNotExist:
+        return custom_error_404(request, data)
+    if request.method == 'POST':
+        # Get form data.
+        name = request.POST['name']
+
+        # Update company.
+        data['company'].name = name
+        data['company'].save()
+
+        # Success
+        data['alerts'].append(
+            ('success', 'Update successfully!', 'You have successfully updated information of a company.'))
+        return redirect_with_data(request, data, '/companies/details/' + company_uuid + '/')
+    else:
+        return render(request, 'companies/update.html', data)

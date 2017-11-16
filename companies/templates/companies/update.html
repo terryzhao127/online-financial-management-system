@@ -1,0 +1,43 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Update information of company{% endblock %}
+
+{% block apps_base_title %}Update information of company{% endblock %}
+
+{% block apps_base_content %}
+    <form class="form-block" action="{% url 'update_company' company_uuid=company.unique_id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group text-left">
+            <label for="company-name">Company Name:</label>
+            <input id="company-name" class="form-control" type="text" name="name" maxlength="80"
+                   value="{{ company.name }}" required/>
+        </div>
+
+        <!-- A button able to have a tooltip even when disabled -->
+        <div class="disabled-button-container" style="position:relative;">
+            <button class="btn btn-lg btn-primary btn-block" data-toggle="tooltip" data-placement="bottom"
+                    data-trigger="manual" title="You have not made any changes." type="submit">Update
+            </button>
+            <div style="position:absolute; left:0; right:0; top:0; bottom:0;"></div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        {# Disable button unless field changed #}
+        $('form')
+            .each(function () {
+                $(this).data('serialized', $(this).serialize())
+            })
+            .on('change input', function () {
+                $(this)
+                    .find('input:submit, button:submit')
+                    .prop('disabled', $(this).serialize() === $(this).data('serialized'))
+                ;
+            })
+            .find('input:submit, button:submit')
+            .prop('disabled', true)
+        ;
+    </script>
+{% endblock %}

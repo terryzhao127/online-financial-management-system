@@ -123,9 +123,27 @@
 <script src="{% static "js/popper.min.js" %}"></script>
 <script src="{% static "js/bootstrap.min.js" %}"></script>
 <script>
-    {# Initialize Tooltip #}
+    {# Initialize tooltips #}
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    {# Get tooltips on disabled buttons #}
+    var disabledButton = $('.disabled-button-container > div');
+
+    disabledButton.hover(function (e) {
+        if ($(this).prev('button').is(':disabled')) {
+            $(this).prev('button').tooltip('toggle');
+            $(this).parent().css("cursor", "not-allowed");
+        } else {
+            $(this).parent().css("cursor", "pointer");
+        }
+    });
+
+    disabledButton.click(function (e) {
+        if (!$(this).prev('button').is(':disabled')) {
+            $(this).prev('button').trigger('click');
+        }
     });
 
     {# Make date input field auto set to today #}
