@@ -8,8 +8,8 @@
     <form class="form-block" action="{% url 'update_company' company_uuid=company.unique_id %}" method="post">
         {% csrf_token %}
         <div class="form-group text-left">
-            <label for="company-name">Company Name:</label>
-            <input id="company-name" class="form-control" type="text" name="name" maxlength="80"
+            <label for="update-company-name">Company Name:</label>
+            <input id="update-company-name" class="form-control" type="text" name="name" maxlength="80"
                    value="{{ company.name }}" required/>
         </div>
 

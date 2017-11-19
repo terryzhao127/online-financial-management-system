@@ -9,8 +9,8 @@
     <form class="form-block" action="{% url 'create_company' %}" method="post">
         {% csrf_token %}
         <div class="form-group text-left">
-            <label for="company-name">Company Name:</label>
-            <input id="company-name" class="form-control" type="text" name="company_name" maxlength="80" required/>
+            <label for="create-company-name">Company Name:</label>
+            <input id="create-company-name" class="form-control" type="text" name="company_name" maxlength="80" required/>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
     </form>

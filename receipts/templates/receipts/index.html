@@ -95,7 +95,6 @@
 {% block apps_base_scripts %}
     <script>
         {# Reload page when another company is selected. #}
-
         function reloadWorkplace() {
             var company_uuid = $('#tables-joined-workplaces').find(":selected").val();
             window.location.replace("/receipts/" + company_uuid + "/1/");

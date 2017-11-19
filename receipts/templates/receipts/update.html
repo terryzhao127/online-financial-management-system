@@ -1,0 +1,119 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Update information of receipt{% endblock %}
+
+{% block apps_base_title %}Update information of receipt{% endblock %}
+
+{% block apps_base_content %}
+    <form class="form-block" action="{% url 'update_receipt' receipt_id=receipt.id %}" method="post">
+        {% csrf_token %}
+        <header class="form-title text-muted">Receipt Information</header>
+        <div class="container row">
+            <div class="form-group col-md-6">
+                <label for="update-receipt-payer-name">Payer</label>
+                <input id="update-receipt-payer-name" class="form-control" type="text" name="payer" maxlength="30"
+                       value="{{ receipt.payer }}" required/>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="update-receipt-payee-name">Payee</label>
+                <input id="update-receipt-payee-name" class="form-control" type="text" name="payee" maxlength="30"
+                       value="{{ receipt.payee }}"
+                       required/>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="update-receipt-address">Address</label>
+                <input id="update-receipt-address" class="form-control" type="text" name="address" maxlength="80"
+                       value="{{ receipt.address }}"
+                       required/>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="update-receipt-date">Date</label>
+                <input id="update-receipt-date" class="form-control auto-set-to-today" type="date" name="date"
+                       value="{{ receipt.date }}"
+                       required/>
+            </div>
+            <div class="form-group col-md-12 center-block">
+                <label for="update-receipt-notes">Notes</label>
+                <input id="update-receipt-notes" class="form-control" type="text" name="notes" maxlength="80"
+                       value="{{ receipt.notes }}"/>
+            </div>
+        </div>
+        <header class="form-title text-muted">Items in Receipt</header>
+        {% for item in item_containers %}
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.name }}">Item Name</label>
+                    <input id="{{ item.frontend_fields.name }}" name="{{ item.backend_fields.name }}" type="text"
+                           class="form-control" maxlength="10" value="{{ item.item_values.name }}"
+                           required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.spec }}">Spec</label>
+                    <input id="{{ item.frontend_fields.spec }}" name="{{ item.backend_fields.spec }}" type="text"
+                           class="form-control" maxlength="10" value="{{ item.item_values.spec }}"
+                           required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.number }}">Number</label>
+                    <input id="{{ item.frontend_fields.number }}" name="{{ item.backend_fields.number }}" type="number"
+                           class="form-control" min="1" value="{{ item.item_values.number }}"
+                           step="1" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.unit }}">Unit</label>
+                    <input id="{{ item.frontend_fields.unit }}" name="{{ item.backend_fields.unit }}" type="text"
+                           class="form-control" maxlength="10" value="{{ item.item_values.unit }}"
+                           required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.price }}">Price</label>
+                    <input id="{{ item.frontend_fields.price }}" name="{{ item.backend_fields.price }}" type="number"
+                           class="form-control" min="0" value="{{ item.item_values.price }}"
+                           step="0.01" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="{{ item.frontend_fields.total_cost }}">Total Cost</label>
+                    <input id="{{ item.frontend_fields.total_cost }}" name="{{ item.backend_fields.total_cost }}"
+                           type="number" class="form-control" value="{{ item.item_values.total_cost }}"
+                           min="0" step="0.01"
+                           readonly required>
+                </div>
+            </div>
+        {% endfor %}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+    </form>
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        {# Disable button unless field changed #}
+        $('form')
+            .each(function () {
+                $(this).data('serialized', $(this).serialize())
+            })
+            .on('change input', function () {
+                $(this)
+                    .find('input:submit, button:submit')
+                    .prop('disabled', $(this).serialize() === $(this).data('serialized'))
+                ;
+            })
+            .find('input:submit, button:submit')
+            .prop('disabled', true)
+        ;
+
+        {# Auto calculate total cost #}
+        $(document).ready(function () {
+            var a = document.getElementById("update-receipt-item-number-0").value;
+            var b = document.getElementById("update-receipt-item-price-0").value;
+
+            $("#update-receipt-item-number-0").change(function () {
+                a = $(this).prop('value');
+                document.getElementById("update-receipt-item-total-cost-0").value = a * b;
+            });
+            $("#update-receipt-item-price-0").change(function () {
+                b = $(this).prop('value');
+                document.getElementById("update-receipt-item-total-cost-0").value = a * b;
+            });
+        });
+    </script>
+{% endblock %}
