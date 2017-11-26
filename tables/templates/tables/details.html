@@ -9,6 +9,7 @@
         <header>Items Information</header>
         <a href="" onclick="exportTableToExcel('table-details-table')">Export</a>
     </div>
+    <!--startprint-->
     <table class="table table-bordered table-striped table-responsive-md" id="table-details-table">
         <thead>
         <tr>
@@ -25,10 +26,11 @@
         </tr>
         </tbody>
     </table>
+    <!--endprint-->
 
     <!-- Delete Modal Trigger -->
     <div class="text-center">
-        <button class="btn btn-primary" onclick="window.print()">Print</button>
+        <button type = "button" class="btn btn-primary" onclick="doPrint()">Print</button>
         <button class="btn btn-default disabled">Update</button>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-confirmation">DELETE
         </button>
@@ -62,4 +64,18 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block base_scripts %}
+    <script language="javascript" script.src="jquery.js">
+       function doPrint() {
+           var bdhtml = window.document.body.innerHTML;
+           var start = "<!--startprint-->";
+           var end = "<!--endprint-->";
+           var prnhtml = bdhtml.substr(bdhtml.indexOf(start) + 17);
+           var prnhtml = prnhtml.substring(0, prnhtml.indexOf(end));
+           window.document.body.innerHTML = prnhtml;
+           window.print();
+       }
+    </script>
 {% endblock %}
