@@ -7,7 +7,7 @@
 {% block apps_base_content %}
     <div class="table-title">
         <header>Items Information</header>
-        <a href="" onclick="exportTableToExcel('table-details-table')">Export</a>
+        <a href="" onclick="exportTableToExcel('table-details-table')" id="export">Export</a>
     </div>
     <!--startprint-->
     <table class="table table-bordered table-striped table-responsive-md" id="table-details-table">
@@ -69,6 +69,7 @@
 {% block base_scripts %}
     <script language="javascript" script.src="jquery.js">
        function doPrint() {
+           
            var bdhtml = window.document.body.innerHTML;
            var start = "<!--startprint-->";
            var end = "<!--endprint-->";
