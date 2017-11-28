@@ -1,0 +1,79 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Update salary{% endblock %}
+
+{% block apps_base_title %}Update a new salary record{% endblock %}
+
+{% block apps_base_content %}
+    <form action="{% url 'update_salary' salary_id=salary.id %}" method="post" class="form-block">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="update-salary-base-salary">Base Salary</label>
+            <input id="update-salary-base-salary" name="base_salary" class="form-control" type="number" min="0"
+                   step="0.01" value="{{ salary.base_salary }}"
+                   required/>
+        </div>
+        <div class="form-group">
+            <label for="update-salary-bonus">Bonus</label>
+            <input id="update-salary-bonus" name="bonus" class="form-control" type="number" min="0" step="0.01"
+                   value="{{ salary.bonus }}"
+                   required/>
+        </div>
+        <div class="form-group">
+            <label for="update-salary-total-salary">Total</label>
+            <input id="update-salary-total-salary" name="total" class="form-control" type="number"
+                   value="{{ salary.total }}" readonly
+                   required/>
+        </div>
+        <div class="form-group">
+            <label for="update-salary-date">Date</label>
+            <input id="update-salary-date" name="date" class="form-control auto-set-to-today" type="date"
+                   value="{{ salary.date }}" required/>
+        </div>
+
+
+        <!-- A button able to have a tooltip even when disabled -->
+        <div class="disabled-button-container" style="position:relative;">
+            <button class="btn btn-lg btn-primary btn-block" data-toggle="tooltip" data-placement="bottom"
+                    data-trigger="manual" title="You have not made any changes." type="submit">Update
+            </button>
+            <div style="position:absolute; left:0; right:0; top:0; bottom:0;"></div>
+        </div>
+
+    </form>
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        {# Disable button unless field changed #}
+        $('form')
+            .each(function () {
+                $(this).data('serialized', $(this).serialize())
+            })
+            .on('change input', function () {
+                $(this)
+                    .find('input:submit, button:submit')
+                    .prop('disabled', $(this).serialize() === $(this).data('serialized'))
+                ;
+            })
+            .find('input:submit, button:submit')
+            .prop('disabled', true)
+        ;
+
+        {# Auto calculate total cost #}
+
+
+        $(document).ready(function () {
+            var a = document.getElementById("update-salary-base-salary").value;
+            var b = document.getElementById("update-salary-bonus").value;
+            $("#update-salary-base-salary").change(function () {
+                a = Number($(this).prop('value'));
+                document.getElementById("update-salary-total-salary").value = a + Number(b);
+            });
+            $("#update-salary-bonus").change(function () {
+                b = Number($(this).prop('value'));
+                document.getElementById("update-salary-total-salary").value = Number(a) + b;
+            });
+        });
+    </script>
+{% endblock %}

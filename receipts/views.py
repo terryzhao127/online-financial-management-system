@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import custom_error_404
 from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE, \
     get_slice_and_page_end
-import math
 
 
 @custom_login_required

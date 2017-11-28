@@ -163,3 +163,38 @@ def create(request, data, **kwargs):
         data['company_name'] = company.name
 
         return render(request, 'salary/create.html', data)
+
+
+@custom_login_required
+def update(request, data, salary_id):
+    # Get salary instance.
+    try:
+        salary_record = Salary.objects.get(id=salary_id)
+    except ValidationError:
+        return custom_error_404(request, data)
+    except ObjectDoesNotExist:
+        return custom_error_404(request, data)
+
+    if request.method == 'POST':
+        # TODO
+        # Get form Data.
+        base_salary = request.POST['base_salary']
+        bonus = request.POST['bonus']
+        total = request.POST['total']
+        date = request.POST['date']
+
+        # Update salary.
+        salary_record.base_salary = base_salary
+        salary_record.bonus = bonus
+        salary_record.total = total
+        salary_record.date = date
+        salary_record.save()
+
+        # Success
+        data['alerts'].append(
+            ('success', 'Update successfully!', 'You have successfully updated a record of salary.'))
+        return redirect_with_data(request, data, '/salary/details/' + salary_id + '/')
+    else:
+        data['salary'] = salary_record
+        return render(request, 'salary/update.html', data)
+

@@ -32,9 +32,10 @@
 
     <!-- Delete Modal Trigger -->
     <div class="text-center">
-        <button type="button"class="btn btn-primary" onclick=doPrint()>Print</button>
-        <button class="btn btn-default disabled">Update</button>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-confirmation">DELETE
+        <button type="button" class="btn btn-default" onclick=doPrint()>Print</button>
+        <a href="{% url 'update_salary' salary_id=salary.id %}" class="btn btn-primary"
+           role="button">Update</a>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-confirmation">DELETE
         </button>
     </div>
     <!-- Delete Modal -->
@@ -70,14 +71,14 @@
 
 {% block base_scripts %}
     <script language="javascript" script.src="jquery.js">
-       function doPrint() {
-           var bdhtml = window.document.body.innerHTML;
-           var start = "<!--startprint-->";
-           var end = "<!--endprint-->";
-           var prnhtml = bdhtml.substr(bdhtml.indexOf(start) + 17);
-           var prnhtml = prnhtml.substring(0, prnhtml.indexOf(end));
-           window.document.body.innerHTML = prnhtml;
-           window.print();
-       }
+        function doPrint() {
+            var bdhtml = window.document.body.innerHTML;
+            var start = "<!--startprint-->";
+            var end = "<!--endprint-->";
+            var prnhtml = bdhtml.substr(bdhtml.indexOf(start) + 17);
+            var prnhtml = prnhtml.substring(0, prnhtml.indexOf(end));
+            window.document.body.innerHTML = prnhtml;
+            window.print();
+        }
     </script>
 {% endblock %}
