@@ -7,59 +7,69 @@
 {% block apps_base_content %}
     <form action="{% url 'create_receipt' %}" class="form-fluid" method="post">
         {% csrf_token %}
-        <button class="btn btn-primary add_field_button mb-3"
-                style="margin: 0 auto" type="button">
-            Add More Fields
-        </button>
         <input type="hidden" name="workplace_uuid" value="{{ workplace_uuid }}"/>
         <header class="form-title text-muted">Receipt Information</header>
         <div class="container row">
             <div class="form-group col-md-6">
                 <label for="create-receipt-payer-name">Payer</label>
-                <input id="create-receipt-payer-name" class="form-control" type="text" name="payer" maxlength="30" required/>
+                <input id="create-receipt-payer-name" class="form-control" type="text" name="payer" maxlength="30"
+                       required/>
             </div>
             <div class="form-group col-md-6">
                 <label for="create-receipt-payee-name">Payee</label>
-                <input id="create-receipt-payee-name" class="form-control" type="text" name="payee" maxlength="30" required/>
+                <input id="create-receipt-payee-name" class="form-control" type="text" name="payee" maxlength="30"
+                       required/>
             </div>
             <div class="form-group col-md-6">
                 <label for="create-receipt-address">Address</label>
-                <input id="create-receipt-address" class="form-control" type="text" name="address" maxlength="80" required/>
+                <input id="create-receipt-address" class="form-control" type="text" name="address" maxlength="80"
+                       required/>
             </div>
             <div class="form-group col-md-6">
                 <label for="create-receipt-date">Date</label>
-                <input id="create-receipt-date" class="form-control auto-set-to-today" type="date" name="date" required/>
+                <input id="create-receipt-date" class="form-control auto-set-to-today" type="date" name="date"
+                       required/>
             </div>
             <div class="form-group col-md-12 center-block">
                 <label for="create-receipt-notes">Notes</label>
                 <input id="create-receipt-notes" class="form-control" type="text" name="notes" maxlength="80"/>
             </div>
         </div>
-        <header class="form-title1 text-muted">Items in Receipt</header>
-        <div class="row" id = "item0">
+        <header class="form-title1 text-muted mb-3">Items in Receipt</header>
+        <button class="btn btn-primary add_field_button mb-3"
+                style="margin: 0 auto" type="button">
+            Add More Fields
+        </button>
+        <div class="row" id="item0">
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-name-0">Item Name0</label>
-                <input id="create-receipt-item-name-0" name="name_0" type="text" class="form-control" maxlength="10" required>
+                <input id="create-receipt-item-name-0" name="name_0" type="text" class="form-control" maxlength="10"
+                       required>
             </div>
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-spec-0">Spec</label>
-                <input id="create-receipt-item-spec-0" name="spec_0" type="text" class="form-control" maxlength="10" required>
+                <input id="create-receipt-item-spec-0" name="spec_0" type="text" class="form-control" maxlength="10"
+                       required>
             </div>
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-number-0">Number</label>
-                <input id="create-receipt-item-number-0" name="number_0" type="number" class="form-control" min="1" step="1" required>
+                <input id="create-receipt-item-number-0" name="number_0" type="number" class="form-control" min="1"
+                       step="1" required>
             </div>
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-unit-0">Unit</label>
-                <input id="create-receipt-item-unit-0" name="unit_0" type="text" class="form-control" maxlength="10" required>
+                <input id="create-receipt-item-unit-0" name="unit_0" type="text" class="form-control" maxlength="10"
+                       required>
             </div>
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-price-0">Price</label>
-                <input id="create-receipt-item-price-0" name="price_0" type="number" class="form-control" min="0" step="0.01" required>
+                <input id="create-receipt-item-price-0" name="price_0" type="number" class="form-control" min="0"
+                       step="0.01" required>
             </div>
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-total-cost-0">Total Cost</label>
-                <input id="create-receipt-item-total-cost-0" name="total_cost_0" type="number" class="form-control" min="0" step="0.01"
+                <input id="create-receipt-item-total-cost-0" name="total_cost_0" type="number" class="form-control"
+                       min="0" step="0.01"
                        readonly required>
             </div>
         </div>
@@ -67,23 +77,26 @@
             <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         </div>
     </form>
-{#    <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>#}
-{#    <button id = "add-form" class="btn btn-lg btn-primary btn-block">Add</button>#}
-{#    <button id = "delete-form" class="btn btn-lg btn-primary btn-block">Delete</button>#}
+    {#    <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>#}
+    {#    <button id = "add-form" class="btn btn-lg btn-primary btn-block">Add</button>#}
+    {#    <button id = "delete-form" class="btn btn-lg btn-primary btn-block">Delete</button>#}
 
 {% endblock %}
 
 {% block apps_base_scripts %}
     <script>
+        var cnt = 0;
+
         {# Auto calculate total cost #}
-        var a, b, cnt = 0;
         $(document).ready(function () {
             $("#create-receipt-item-number-0").change(function () {
                 a = this.value;
+                b = $("#create-receipt-item-price-0").val();
                 document.getElementById("create-receipt-item-total-cost-0").value = a * b;
             });
 
             $("#create-receipt-item-price-0").change(function () {
+                a = $("#create-receipt-item-number-0").val();
                 b = this.value;
                 document.getElementById("create-receipt-item-total-cost-0").value = a * b;
             });
@@ -91,50 +104,64 @@
 
         $(document).ready(function () {
             $(".add_field_button").click(function () {
-                if(cnt >= 6) {
+                if (cnt >= 6) {
                     alert("At most 7 items");
                     return
                 }
-                cnt ++;
+                cnt++;
+
                 $(".btn-lg").before(
-                    "         <div class=\"row\" id=\"item" + cnt + "\"> "+
-                    "            <div class=\"form-group col-md-4\">\n" +
-                    "                <label for=\"create-receipt-item-name-"+ cnt +"\">Item Name" + cnt + "</label>\n" +
+                    "         <div class=\"row\" id=\"item" + cnt + "\"> " +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
+                    "                <label for=\"create-receipt-item-name-" + cnt + "\">Item Name" + cnt + "</label>\n" +
                     "                <input id=\"create-receipt-item-name-" + cnt + "\" name=\"name_" + cnt + "\" type=\"text\" class=\"form-control\" maxlength=\"10\" required>\n" +
                     "            </div>\n" +
-                    "            <div class=\"form-group col-md-4\">\n" +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-spec-" + cnt + "\">Spec</label>\n" +
                     "                <input id=\"create-receipt-item-spec-" + cnt + "\" name=\"spec_" + cnt + "\" type=\"text\" class=\"form-control\" maxlength=\"10\" required>\n" +
                     "            </div>\n" +
-                    "            <div class=\"form-group col-md-4\">\n" +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-number-" + cnt + "\">Number</label>\n" +
                     "                <input id=\"create-receipt-item-number-" + cnt + "\" name=\"number_" + cnt + "\" type=\"number\" class=\"form-control\" min=\"1\" step=\"1\" required>\n" +
                     "            </div>\n" +
-                    "            <div class=\"form-group col-md-4\">\n" +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-unit-" + cnt + "\">Unit</label>\n" +
                     "                <input id=\"create-receipt-item-unit-" + cnt + "\" name=\"unit_" + cnt + "\" type=\"text\" class=\"form-control\" maxlength=\"10\" required>\n" +
                     "            </div>\n" +
-                    "            <div class=\"form-group col-md-4\">\n" +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-price-" + cnt + "\">Price</label>\n" +
                     "                <input id=\"create-receipt-item-price-" + cnt + "\" name=\"price_" + cnt + "\" type=\"number\" class=\"form-control\" min=\"0\" step=\"0.01\" required>\n" +
                     "            </div>\n" +
-                    "            <div class=\"form-group col-md-4\">\n" +
+                    "            <div class=\"form-group text-left col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-total-cost-" + cnt + "\">Total Cost</label>\n" +
                     "                <input id=\"create-receipt-item-total-cost-" + cnt + "\" name=\"total_cost_" + cnt + "\" type=\"number\" class=\"form-control\" min=\"0\" step=\"0.01\"\n" +
                     "                       readonly required>\n" +
                     "            </div>\n" +
                     "        </div>");
+
+                {# Add auto-calculate function to newly created item #}
+                $("#create-receipt-item-number-" + cnt).change(function () {
+                    a = this.value;
+                    b = $("#create-receipt-item-price-" + cnt).val();
+                    document.getElementById("create-receipt-item-total-cost-" + cnt).value = a * b;
+                });
+
+                $("#create-receipt-item-price-" + cnt).change(function () {
+                    a = $("#create-receipt-item-number-" + cnt).val();
+                    b = this.value;
+                    document.getElementById("create-receipt-item-total-cost-" + cnt).value = a * b;
+                });
             });
         });
 
         $(document).ready(function () {
             $("#delete-form").click(function () {
-                if(cnt == 0) {
+                if (cnt === 0) {
                     alert("At least 1 items");
                     return
                 }
                 $("#item" + cnt).remove();
-                cnt --;
+                cnt--;
             });
         });
     </script>
