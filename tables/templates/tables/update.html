@@ -1,0 +1,68 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Tables{% endblock %}
+
+{% block apps_base_title %}Update a table{% endblock %}
+
+{% block apps_base_content %}
+    <form action="{% url 'update_table' table_id=table.id %}" method="post" class="form-fluid">
+        {% csrf_token %}
+        <header class="form-title text-muted">Table Information</header>
+        <div class="container row">
+            <div class="form-group col-md-6">
+                <label for="update-table-name">Name</label>
+                <input id="update-table-name" class="form-control" value="{{ table.name }}" type="text"
+                       name="table_name" maxlength="40" required/>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="update-table-date">Date</label>
+                <input id="update-table-date" class="form-control auto-set-to-today" value="{{ table.date }}"
+                       type="date" name="date" required/>
+            </div>
+        </div>
+        <header class="form-title text-muted">Items in Receipt</header>
+
+        {% for item in table.items.all %}
+            <div class="container row">
+                <div class="form-group col-md-6">
+                    <label for="update-table-item-name-{{ forloop.counter0 }}">Name</label>
+                    <input id="update-table-item-name-{{ forloop.counter0 }}" value="{{ item.name }}"
+                           name="item_name_{{ forloop.counter0 }}" type="text" class="form-control" maxlength="40"
+                           required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="update-table-item-money-change-{{ forloop.counter0 }}">Money Change</label>
+                    <input id="update-table-item-money-change-{{ forloop.counter0 }}" value="{{ item.money_change }}"
+                           name="item_money_change_{{ forloop.counter0 }}" type="number" class="form-control"
+                           step="0.01" required>
+                </div>
+            </div>
+        {% endfor %}
+        <!-- A button able to have a tooltip even when disabled -->
+        <div class="disabled-button-container" style="position:relative;">
+            <button class="btn btn-lg btn-primary btn-block" data-toggle="tooltip" data-placement="bottom"
+                    data-trigger="manual" title="You have not made any changes." type="submit">Update
+            </button>
+            <div style="position:absolute; left:0; right:0; top:0; bottom:0;"></div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block apps_base_scripts %}
+    <script>
+        {# Disable button unless field changed #}
+        $('form')
+            .each(function () {
+                $(this).data('serialized', $(this).serialize())
+            })
+            .on('change input', function () {
+                $(this)
+                    .find('input:submit, button:submit')
+                    .prop('disabled', $(this).serialize() === $(this).data('serialized'))
+                ;
+            })
+            .find('input:submit, button:submit')
+            .prop('disabled', true)
+        ;
+    </script>
+{% endblock %}

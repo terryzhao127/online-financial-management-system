@@ -176,8 +176,7 @@ def update(request, data, salary_id):
         return custom_error_404(request, data)
 
     if request.method == 'POST':
-        # TODO
-        # Get form Data.
+        # Get form data.
         base_salary = request.POST['base_salary']
         bonus = request.POST['bonus']
         total = request.POST['total']

@@ -154,3 +154,33 @@ def delete(request, data):
         return redirect_with_data(request, data, '/tables/' + request.POST['workplace_uuid'] + '/1/')
     else:
         return custom_error_404(request, data)
+
+
+@custom_login_required
+def update(request, data, table_id):
+    # Get table instance.
+    try:
+        table_record = Table.objects.get(id=table_id)
+    except ValidationError:
+        return custom_error_404(request, data)
+    except ObjectDoesNotExist:
+        return custom_error_404(request, data)
+
+    if request.method == 'POST':
+        # Update table data.
+        table_record.name = request.POST['table_name']
+        table_record.date = request.POST['date']
+        table_record.save()
+
+        # Update items data.
+        for i, item in enumerate(table_record.items.all()):
+            item.name = request.POST['item_name_' + str(i)]
+            item.money_change = request.POST['item_money_change_' + str(i)]
+            item.save()
+
+        # Success
+        data['alerts'].append(('success', 'Update successfully!', 'You have successfully update a table.'))
+        return redirect_with_data(request, data, '/tables/details/' + table_id + '/')
+    else:
+        data['table'] = table_record
+        return render(request, 'tables/update.html', data)
