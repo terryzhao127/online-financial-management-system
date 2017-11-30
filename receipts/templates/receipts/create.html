@@ -7,6 +7,10 @@
 {% block apps_base_content %}
     <form action="{% url 'create_receipt' %}" class="form-fluid" method="post">
         {% csrf_token %}
+        <button class="btn btn-primary add_field_button mb-3"
+                style="margin: 0 auto" type="button">
+            Add More Fields
+        </button>
         <input type="hidden" name="workplace_uuid" value="{{ workplace_uuid }}"/>
         <header class="form-title text-muted">Receipt Information</header>
         <div class="container row">
@@ -59,10 +63,13 @@
                        readonly required>
             </div>
         </div>
+        <div class="form-group text-center">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+        </div>
     </form>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
-    <button id = "add-form" class="btn btn-lg btn-primary btn-block">Add</button>
-    <button id = "delete-form" class="btn btn-lg btn-primary btn-block">Delete</button>
+{#    <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>#}
+{#    <button id = "add-form" class="btn btn-lg btn-primary btn-block">Add</button>#}
+{#    <button id = "delete-form" class="btn btn-lg btn-primary btn-block">Delete</button>#}
 
 {% endblock %}
 
@@ -83,13 +90,13 @@
         });
 
         $(document).ready(function () {
-            $("#add-form").click(function () {
+            $(".add_field_button").click(function () {
                 if(cnt >= 6) {
                     alert("At most 7 items");
                     return
                 }
                 cnt ++;
-                $(".form-fluid").append(
+                $(".btn-lg").before(
                     "         <div class=\"row\" id=\"item" + cnt + "\"> "+
                     "            <div class=\"form-group col-md-4\">\n" +
                     "                <label for=\"create-receipt-item-name-"+ cnt +"\">Item Name" + cnt + "</label>\n" +
