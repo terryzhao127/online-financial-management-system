@@ -140,17 +140,23 @@
                     "        </div>");
 
                 {# Add auto-calculate function to newly created item #}
-                $("#create-receipt-item-number-" + cnt).change(function () {
-                    a = this.value;
-                    b = $("#create-receipt-item-price-" + cnt).val();
-                    document.getElementById("create-receipt-item-total-cost-" + cnt).value = a * b;
-                });
+                $("#create-receipt-item-number-" + cnt).change((function (e) {
+                        return function () {
+                            a = $("#create-receipt-item-number-" + e).val();
+                            b = $("#create-receipt-item-price-" + e).val();
+                            document.getElementById("create-receipt-item-total-cost-" + e).value = a * b;
+                        }
+                    })(cnt)
+                );
 
-                $("#create-receipt-item-price-" + cnt).change(function () {
-                    a = $("#create-receipt-item-number-" + cnt).val();
-                    b = this.value;
-                    document.getElementById("create-receipt-item-total-cost-" + cnt).value = a * b;
-                });
+                $("#create-receipt-item-price-" + cnt).change((function (e) {
+                        return function () {
+                            a = $("#create-receipt-item-number-" + e).val();
+                            b = $("#create-receipt-item-price-" + e).val();
+                            document.getElementById("create-receipt-item-total-cost-" + e).value = a * b;
+                        }
+                    })(cnt)
+                );
             });
         });
 

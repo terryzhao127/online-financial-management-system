@@ -5,7 +5,7 @@
 {% block apps_base_title %}Update information of receipt{% endblock %}
 
 {% block apps_base_content %}
-    <form class="form-block" action="{% url 'update_receipt' receipt_id=receipt.id %}" method="post">
+    <form class="form-fluid" action="{% url 'update_receipt' receipt_id=receipt.id %}" method="post">
         {% csrf_token %}
         <header class="form-title text-muted">Receipt Information</header>
         <div class="container row">
@@ -103,17 +103,60 @@
 
         {# Auto calculate total cost #}
         $(document).ready(function () {
-            var a = document.getElementById("update-receipt-item-number-0").value;
-            var b = document.getElementById("update-receipt-item-price-0").value;
+            for (var i = 0; i < 7; ++i) {
+                if (!$("#update-receipt-item-number-" + i).length) {
+                    return;
+                }
 
-            $("#update-receipt-item-number-0").change(function () {
-                a = $(this).prop('value');
-                document.getElementById("update-receipt-item-total-cost-0").value = a * b;
-            });
-            $("#update-receipt-item-price-0").change(function () {
-                b = $(this).prop('value');
-                document.getElementById("update-receipt-item-total-cost-0").value = a * b;
-            });
+                $("#update-receipt-item-number-" + i).change((function (e) {
+                        return function () {
+                            a = $("#update-receipt-item-number-" + e).val();
+                            b = $("#update-receipt-item-price-" + e).val();
+                            document.getElementById("update-receipt-item-total-cost-" + e).value = a * b;
+                        }
+                    })(i)
+                );
+
+                $("#update-receipt-item-price-" + i).change((function (e) {
+                        return function () {
+                            a = $("#update-receipt-item-number-" + e).val();
+                            b = $("#update-receipt-item-price-" + e).val();
+                            document.getElementById("update-receipt-item-total-cost-" + e).value = a * b;
+                        }
+                    })(i)
+                );
+            }
         });
+        {#            var i;#}
+        {#            for (i = 0; i < 7; ++i) {#}
+        {#                function updateTotal(x) {#}
+        {#                    a = $("#update-receipt-item-price-" + x).val();#}
+        {#                    b = $("#update-receipt-item-number-" + x).val();#}
+        {#                    document.getElementById("update-receipt-item-total-cost-" + x).value = a * b;#}
+        {#                }#}
+        {##}
+        {#                if ($("#update-receipt-item-number-" + i).length) {#}
+        {#                    $("#update-receipt-item-number-" + i).change(function () {#}
+        {#                        x = i;#}
+        {#                        a = $("#update-receipt-item-price-" + x).val();#}
+        {#                        b = $("#update-receipt-item-number-" + x).val();#}
+        {#                        document.getElementById("update-receipt-item-total-cost-" + x).value = a * b;#}
+        {#                    });#}
+        {#                    $("#update-receipt-item-price-" + i).change(updateTotal(i));#}
+        {#                } else {#}
+        {#                    break;#}
+        {#                }#}
+        {#                $("#update-receipt-item-price-" + i).change(function () {#}
+        {#                        for (i = 0; i < 7; ++i) {#}
+        {##}
+        {#                        }#}
+        {##}
+        {#                    }#}
+        {#                );#}
+        {#            }#}
+        {#        })#}
+        {#        ;#}
+
+
     </script>
 {% endblock %}
