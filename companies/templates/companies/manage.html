@@ -1,0 +1,77 @@
+{% extends 'apps_base.html' %}
+
+{% block title %}Manage Staff{% endblock %}
+
+{% block apps_base_title %}Manage Staff{% endblock %}
+
+{% block apps_base_content %}
+    {% if staff %}
+        <table class="table table-striped text-center table-responsive">
+            <thead class="thead-inverse">
+            <tr>
+                <th class="text-center">Full Name</th>
+                <th class="text-center">Age</th>
+                <th class="text-center">Operation</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employer in staff %}
+                <tr>
+                    <td>{{ employer.full_name }}</td>
+                    <td>{{ employer.age }}</td>
+                    <td>
+                        <!-- Delete Modal Trigger Button -->
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#fire-confirmation">
+                            Fire
+                        </button>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="fire-confirmation" tabindex="-1" role="dialog"
+                             aria-labelledby="fire-confirmation-label"
+                             aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Fire this employee?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                        </button>
+                                        <div class="text-center">
+                                            <div class="text-center">
+                                                <form action="{% url 'fire_employee' %}" method="post">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="unique_id"
+                                                           value="{{ company.unique_id }}"/>
+                                                    <input type="hidden" name="employer_id" value="{{ employer.id }}"/>
+                                                    <button class="btn btn-danger" data-toggle="confirmation"
+                                                            type="submit">
+                                                        Confirm
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            <strong>No employee!</strong>
+            <p>You have no employee in your company.</p>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

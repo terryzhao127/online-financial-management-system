@@ -152,6 +152,9 @@ def details(request, data, company_uuid):
     else:
         data['is_owner'] = False
 
+    # Get number of staff.
+    data['staff_number'] = len(data['company'].staff.all())
+
     return render(request, 'companies/details.html', data)
 
 
@@ -205,3 +208,45 @@ def update(request, data, company_uuid):
     else:
         data['company'] = company
         return render(request, 'companies/update.html', data)
+
+
+@custom_login_required
+def render_staff_page(request, data, company_uuid):
+    # Get staff.
+    try:
+        company = Company.objects.get(unique_id=company_uuid)
+    except ValidationError:
+        return custom_error_404(request, data)
+    except ObjectDoesNotExist:
+        return custom_error_404(request, data)
+
+    data['staff'] = company.staff.all().exclude(user=request.user)
+    data['company'] = company
+
+    return render(request, 'companies/manage.html', data)
+
+
+@custom_login_required
+def fire_staff(request, data):
+    if request.method == 'POST':
+        # Collect form data.
+        unique_id = request.POST['unique_id']
+        employer_id = request.POST['employer_id']
+
+        # Get Company instance.
+        company = Company.objects.get(unique_id=unique_id)
+
+        # Get Staff instance.
+        employee = Staff.objects.get(id=employer_id)
+
+        # Fire
+        company.staff = company.staff.all().exclude(id=employer_id)
+        company.save()
+        employee.workplaces = employee.workplaces.all().exclude(unique_id=unique_id)
+        employee.save()
+
+        # Success
+        data['alerts'].append(('success', 'Delete successfully!', 'You have successfully fired an employee.'))
+        return redirect_with_data(request, data, '/companies/manage/' + unique_id + '/')
+    else:
+        return custom_error_404(request, data)

@@ -1,31 +1,36 @@
 {% extends 'apps_base.html' %}
 
-{% block title %}Companies{% endblock %}
+{% block title %}Details of Company{% endblock %}
 
 {% block apps_base_title %}Details of Company{% endblock %}
 
 {% block apps_base_content %}
-    <table class="table table-striped text-center">
+    <table class="table table-striped text-center table-responsive">
         <thead class="thead-inverse">
         <tr>
             <th class="text-center">Name</th>
+            <th class="text-center">Owner</th>
+            <th class="text-center">Number of Staff</th>
             <th class="text-center">UUID</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>
-                {{ company.name }}
-            </td>
+            <td>{{ company.name }}</td>
+            <td>{{ company.owner.full_name }}</td>
+            <td>{{ staff_number }}</td>
             <td>{{ company.unique_id }}</td>
         </tr>
         </tbody>
     </table>
 
     <div class="text-center">
-        <a href="{% url 'update_company' company_uuid=company.unique_id %}" class="btn btn-primary"
-           role="button">Update</a>
-
+        {% if is_owner %}
+            <a href="{% url 'manage_staff' company_uuid=company.unique_id %}"  class="btn btn-info"
+               role="button">Manage</a>
+            <a href="{% url 'update_company' company_uuid=company.unique_id %}" class="btn btn-primary"
+               role="button">Update</a>
+        {% endif %}
         <!-- Delete Modal Trigger Button -->
         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-or-quit-confirmation">
             {% if is_owner %}
