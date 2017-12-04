@@ -127,36 +127,5 @@
                 );
             }
         });
-        {#            var i;#}
-        {#            for (i = 0; i < 7; ++i) {#}
-        {#                function updateTotal(x) {#}
-        {#                    a = $("#update-receipt-item-price-" + x).val();#}
-        {#                    b = $("#update-receipt-item-number-" + x).val();#}
-        {#                    document.getElementById("update-receipt-item-total-cost-" + x).value = a * b;#}
-        {#                }#}
-        {##}
-        {#                if ($("#update-receipt-item-number-" + i).length) {#}
-        {#                    $("#update-receipt-item-number-" + i).change(function () {#}
-        {#                        x = i;#}
-        {#                        a = $("#update-receipt-item-price-" + x).val();#}
-        {#                        b = $("#update-receipt-item-number-" + x).val();#}
-        {#                        document.getElementById("update-receipt-item-total-cost-" + x).value = a * b;#}
-        {#                    });#}
-        {#                    $("#update-receipt-item-price-" + i).change(updateTotal(i));#}
-        {#                } else {#}
-        {#                    break;#}
-        {#                }#}
-        {#                $("#update-receipt-item-price-" + i).change(function () {#}
-        {#                        for (i = 0; i < 7; ++i) {#}
-        {##}
-        {#                        }#}
-        {##}
-        {#                    }#}
-        {#                );#}
-        {#            }#}
-        {#        })#}
-        {#        ;#}
-
-
     </script>
 {% endblock %}

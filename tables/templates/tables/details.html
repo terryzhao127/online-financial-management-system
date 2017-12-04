@@ -5,12 +5,30 @@
 {% block apps_base_title %}Details of Table{% endblock %}
 
 {% block apps_base_content %}
+    <!--startprint-->
     <div class="table-title">
-        <header>Items Information</header>
+        <header>Table Information</header>
         <a href="" onclick="exportTableToExcel('table-details-table')" id="export">Export</a>
     </div>
-    <!--startprint-->
     <table class="table table-bordered table-striped table-responsive-md" id="table-details-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody class="text-center">
+        <tr>
+            <td>{{ table.name }}</td>
+            <td>{{ table.date }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-title">
+        <header>Items Information</header>
+        <a href="" onclick="exportTableToExcel('items-details-table')" id="export">Export</a>
+    </div>
+    <table class="table table-bordered table-striped table-responsive-md" id="items-details-table">
         <thead>
         <tr>
             <th>Item</th>
@@ -67,7 +85,7 @@
     </div>
 {% endblock %}
 
-{% block base_scripts %}
+{% block apps_base_scripts %}
     <script language="javascript" script.src="jquery.js">
         function doPrint() {
 
