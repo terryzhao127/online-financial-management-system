@@ -37,12 +37,12 @@
         </tr>
         </thead>
         <tbody class="text-center">
-        <tr>
-            {% for item in items %}
+        {% for item in items %}
+            <tr>
                 <td>{{ item.name }}</td>
                 <td>{{ item.money_change }}</td>
-            {% endfor %}
-        </tr>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
     <!--endprint-->

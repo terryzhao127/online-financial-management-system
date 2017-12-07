@@ -18,6 +18,7 @@ def get_slice_and_page_end(data_set, page_num):
 
     return slice_result, page_end
 
+
 def get_alerts(request):
     """
     Collect alerts in session.

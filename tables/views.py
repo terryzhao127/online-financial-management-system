@@ -101,9 +101,8 @@ def create(request, data, **kwargs):
         new_table.save()
 
         # Get items data.
-        for i in range(0, 7):
-            if 'item_name_' + str(i) not in request.POST:
-                break
+        i = 0
+        while 'item_name_' + str(i) in request.POST:
             item_name = request.POST['item_name_' + str(i)]
             money_change = request.POST['item_money_change_' + str(i)]
 
@@ -113,6 +112,8 @@ def create(request, data, **kwargs):
 
             # Update receipt instance.
             new_table.items.add(new_item)
+
+            i = i + 1
 
         # Success
         data['alerts'].append(('success', 'Create successfully!', 'You have successfully create a new table.'))
