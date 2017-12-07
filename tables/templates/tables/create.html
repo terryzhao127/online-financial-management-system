@@ -66,8 +66,8 @@
     <script language="JavaScript" script.src="jquery.js">
         function doDelete() {
             var s1 = "input-box-" + (--i).toString();
-            if(s1 == null) {
-                ;
+            if(i < 1) {
+                return;
             } else {
                 var d = document.getElementById(s1);
                 d.parentNode.removeChild(d);
