@@ -39,9 +39,9 @@
             <script language="JavaScript">
                 var i = 1;
             </script>
-            <button class="btn btn-primary text-left" onclick="doAdd()">Add</button>
-            <button class="btn btn-danger text-left" onclick="doDelete()">Delete</button>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+            <button class="btn btn-primary" style="margin: 0 auto" type="button" onclick="doAdd()">Add</button>
+            <button class="btn btn-danger" style="margin: 0 auto" type="button" onclick="doDelete()">Delete</button>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         </div>
         </div>
     </form>
@@ -61,17 +61,15 @@
             d.insertAdjacentHTML('beforebegin', s);
             i++;
         }
-
-    </script>
-    <script language="JavaScript" script.src="jquery.js">
         function doDelete() {
-            var s1 = "input-box-" + (--i).toString();
-            if(i < 1) {
-                return;
+            if(i <= 1) {
+                alert("at least one item");
             } else {
+                var s1 = "input-box-" + (--i).toString();
                 var d = document.getElementById(s1);
                 d.parentNode.removeChild(d);
             }
         }
     </script>
+
 {% endblock %}
