@@ -40,6 +40,11 @@
                 style="margin: 0 auto" type="button">
             Add More Fields
         </button>
+
+        <button class="btn btn-danger delete_field_button mb-3"
+                style="margin: 0 auto" type="button">
+            Delete Field
+        </button>
         <div class="row" id="item0">
             <div class="form-group col-md-4">
                 <label for="create-receipt-item-name-0">Item Name0</label>
@@ -161,7 +166,7 @@
         });
 
         $(document).ready(function () {
-            $("#delete-form").click(function () {
+            $(".delete_field_button").click(function () {
                 if (cnt === 0) {
                     alert("At least 1 items");
                     return
