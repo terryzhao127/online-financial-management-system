@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from Online_Financial_Management_System.decorators import custom_login_required
+from online_financial_management_system.decorators import custom_login_required
 from companies.models import Company
 from .models import Receipt, Item
 from accounts.models import Staff
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import custom_error_404
-from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE, \
+from online_financial_management_system.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE, \
     get_slice_and_page_end
 
 

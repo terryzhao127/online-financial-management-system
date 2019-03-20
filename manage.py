@@ -3,7 +3,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Online_Financial_Management_System.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "online_financial_management_system.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:

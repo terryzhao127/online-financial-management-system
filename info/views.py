@@ -3,7 +3,7 @@ from accounts.models import Staff
 from companies.models import Company
 from salary.models import Salary
 from django.core.exceptions import ObjectDoesNotExist
-from Online_Financial_Management_System.decorators import custom_login_required
+from online_financial_management_system.decorators import custom_login_required
 
 
 @custom_login_required

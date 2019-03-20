@@ -3,8 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from accounts.models import Staff
 from companies.models import Company
-from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE
+from online_financial_management_system.decorators import custom_login_required
+from online_financial_management_system.utils import redirect_with_data, __ITEMS_NUMBER_IN_A_PAGE
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from errors.views import custom_error_404
 import math

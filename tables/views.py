@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from Online_Financial_Management_System.decorators import custom_login_required
-from Online_Financial_Management_System.utils import redirect_with_data, get_slice_and_page_end
+from online_financial_management_system.decorators import custom_login_required
+from online_financial_management_system.utils import redirect_with_data, get_slice_and_page_end
 from accounts.models import Staff
 from errors.views import custom_error_404
 from companies.models import Company

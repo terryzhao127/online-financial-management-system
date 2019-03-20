@@ -5,9 +5,9 @@ from django.contrib.auth.views import login, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render
 from django.contrib.auth import update_session_auth_hash
-from Online_Financial_Management_System.utils import get_alerts, render_alert_page_with_data, redirect_with_data
+from online_financial_management_system.utils import get_alerts, render_alert_page_with_data, redirect_with_data
 from accounts.forms import SignUpForm
-from Online_Financial_Management_System.decorators import custom_login_required
+from online_financial_management_system.decorators import custom_login_required
 
 
 def custom_login(request):

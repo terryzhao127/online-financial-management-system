@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from Online_Financial_Management_System import utils
+from online_financial_management_system import utils
 
 
 def custom_login_required(view_func):
