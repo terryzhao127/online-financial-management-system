@@ -4,6 +4,16 @@
 
 It is a financial management system which can help you manage your companies affairs, salary, taxes, receipts and etc.
 
+## Getting Started
+
+```shell
+# Python 3.6 and below is required
+pip install -r requirements.txt
+
+python manage.py migrate
+python manage.py runserver
+```
+
 ## Screenshots
 *Homepage*
 ![Homepage](screenshots/homepage.png)
